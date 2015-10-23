@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="style.css">
+
+	<script src="functional.js"></script>
+	<script src="gQuery.js"></script>
+	<script src="template-factory.js"></script>
+	<script src="template.js"></script>
+	<script src="data.js"></script>
+</head>
+<body>
+	<header class="attached">
+		<nav>
+			<ul>
+				<li>me</li>
+				<li>skills</li>
+				<li class="active">language</li>
+				<li>work</li>
+			</ul>
+		</nav>
+	</header>
+	<div id="output-hero" class="hero">
+
+	</div>
+	<section id="output-personal" class="personal"></section>
+	<section class="course">
+		<ul class="course__collection" id="output-course">
+
+		</ul>
+	</section>
+	<section id="output-languages" class="languages"></section>
+	<section id="output-frameworks" class="frameworks"></section>
+	<section id="output-job" class="jobs__group"></section>
+	<section id="output-education" class="education__group"></section>
+	<section id="output-books" class="books__group"></section>
+	<section id="output-blogs" class="blogs__group"></section>
+
+	<footer>
+		<a href="http://www.bmspares.com.au/best-parts/">http://www.bmspares.com.au/best-parts/</a>
+	</footer>
+
+<template id="hero">
+	<div class="hero-inner">
+		<h1>{{name}}</h1>
+		<h4>I develop [ <span id="word">javascript</span> ] things</h4>
+	</div>
+</template>
+
+<template id="personal">
+	<div class="wrapper">
+	<div class="personal">
+		<h3>{{name}}</h3>
+		<div class="details">
+			<ul class="personal__info">
+				<li>{{address}}</li>
+				<li>{{suburb}}</li>
+				<li><a href="tel:{{phone}}">{{phone}}</a></li>
+				<li><a href="mailto:{{email}}">{{email}}</a></li>
+			</ul>
+			<p>{{description}}</p>
+			<ul class="personal__attributes tick-list">
+				{{foreach attributes as attribute}}
+					<li class="personal__attribute-item"><span>{{attribute}}</span></li>
+				{{/foreach}}
+			</ul>
+		</div>
+	</div>
+	</div>
+</template>
+
+<template id="job">
+	<div class="slideshow">
+		<span class="slideshow-nav" id="slideshow-nav-left"></span>
+		<ul class="slideshow-wrapper">
+			{{foreach jobs as job}}
+				<li class="slide vertical-center-parent">
+					<div class="job vertical-center-element">
+					<h3><a href="{{job.url}}" target="_blank">{{job.company}}</a></h3>
+						<div class="details">
+							<ul class="company__info">
+								<li class="job__address">{{job.address}}</li>
+								<li class="job__title">{{job.title}}</li>
+								<li class="job__dates">{{job.dates}}</li>
+							</ul>
+							<h4>Responsibilities</h4>
+							<ul class="job__details">
+								{{foreach job.responsibilities as responsibility}}
+								<li>{{responsibility}}</li>
+								{{/foreach}}
+							</ul>
+						</div>
+					</div>
+				</li>
+			{{/foreach}}
+		</ul>
+		<span class="slideshow-nav" id="slideshow-nav-right"></span>
+	</div>
+</template>
+
+<template id="education">
+	<div class="wrapper">
+		{{foreach education as course}}
+			<div class="education">
+				<h3><a href="{{course.url}}" target="_blank">{{course.institution}}</a></h3>
+				<div class="details">
+					<h4>{{course.course}}</h4>
+					<p>{{course.dates}}</p>
+				</div>
+			</div>
+		{{/foreach}}
+	</div>
+</template>
+
+<template id="course">
+	<li class="education">
+		<h3><a href="{{course.url}}" target="_blank">{{course.institution}}</a></h3>
+		<div class="details">
+			<h4>{{course.course}}</h4>
+			<p>{{course.dates}}</p>
+		</div>
+	</li>
+</template>
+
+<template id="books">
+	<div class="vertical-center-parent">
+		<div class="wrapper">
+			{{foreach books as book}}
+				<div class="book">
+					<h3><a href="{{book.url}}" target="_blank">{{book.title}}</a></h3>
+					<div class="details">
+						<ul class="books__info">
+							<li>{{book.author}}</li>
+							<li>{{book.year}}</li>
+							<li>{{book.subject}}</li>
+						</ul>
+						<p>{{book.learnt}}</p>
+					</div>
+				</div>
+			{{/foreach}}
+		</div>
+	</div>
+</template>
+
+<template id="blogs">
+	<div class="wrapper">
+		<div class="blogs">
+			{{foreach blogs as blog}}
+				<h3><a href="{{blog.url}}">{{blog.title}}</a></h3>
+			{{/foreach}}
+		</div>
+	</div>
+</template>
+
+<template id="languages">
+	<div class="wrapper">
+		{{foreach languages as language}}
+			<div class="language">
+				<div class="language__time">{{language.time}} {{language.name}}</div>
+				<div class="language__level">{{language.level}}</div>
+				<div class="language__progress" data-score="{{language.score}}">
+					<div class="language__progress-inner"></div>
+				</div>
+			</div>
+		{{/foreach}}
+		{{foreach frameworks as framework}}
+			<div class="language">
+				<div class="language__time">{{framework.time}} {{framework.name}}</div>
+				<div class="language__level">{{framework.level}}</div>
+				<div class="language__progress" data-score="{{framework.score}}">
+					<div class="language__progress-inner"></div>
+				</div>
+			</div>
+		{{/foreach}}
+	</div>
+</template>
+
+<template id="frameworks">
+	<div class="wrapper">
+		{{foreach frameworks as framework}}
+		<div class="framework">
+			<h3><a href="{{framework.url}}">{{framework.name}}</a></h3>
+			<ul class="framework__info">
+				<li>{{framework.level}}</li>
+				<li>{{framework.score}}</li>
+				<li>{{framework.time}}</li>
+			</ul>
+			<p>{{framework.desc}}</p>
+		</div>
+		{{/foreach}}
+	</div>
+</template>
+
+<script>
+
+	var
+		template = function( id ){
+			var template = Template.get( id ),
+			    output = document.getElementById( 'output-' + id ),
+			    wrapper;
+			return function( vars ){
+				wrapper = document.createElement( 'div' );
+				wrapper.innerHTML = template.send( vars );
+				output.appendChild( wrapper.children[0] );
+			}
+		},
+		heroTemplate        = template('hero'),
+		personalTemplate    = template('personal'),
+		jobTemplate         = template('job' ),
+		educationTemplate   = template('education'),
+		booksTemplate       = template('books'),
+		blogsTemplate       = template('blogs' ),
+		languagesTemplate   = template('languages' ),
+		frameworksTemplate  = template('frameworks' ),
+		courseTemplate      = template('course');
+
+
+	personalTemplate( resume.personal );
+	heroTemplate( resume.personal );
+	languagesTemplate( { languages: resume.languages, frameworks: resume.frameworks } );
+	frameworksTemplate( { frameworks: resume.frameworks } );
+	jobTemplate( {jobs: resume.work} );
+	educationTemplate( {education: resume.education} );
+	booksTemplate({books: resume.books});
+	blogsTemplate({blogs: resume.blogs});
+
+	resume.education.forEach(function(course){
+		courseTemplate({course: course});
+	});
+
+	var log = ( fn ) =>
+		function( ...args ) {
+			return console.log( '%c  ' + fn.name + '  ', 'background:#3cf;color:white;',  fn.apply( this, args) );
+		};
+
+	function add( num ){
+		return function _add( val ){
+			return val + num;
+		}
+	}
+
+	var adder = log(add( 4 ));
+
+	function Slideshow(){
+
+		this.currentSlide = 0;
+		this.length = 0;
+		this.width = 0;
+
+	}
+
+	var scrollSpy = (function(){
+
+		var
+			stopped = true,
+			offset = 0,
+			events = [];
+
+		return {
+
+			run: function run( cb ){
+
+				function update(){
+
+					offset = window.scrollY;
+
+					events = events.filter(function( event ){
+
+						if( offset > event.offset ){
+
+							event.cb.call( event.el, event.el, offset );
+							return false;
+						}
+
+						return true;
+
+					});
+
+					if( events.length ){
+						stopped = false;
+						window.setTimeout( function(){
+							window.requestAnimationFrame(update)
+						}, 120 );
+					} else {
+						stopped = true;
+					}
+				}
+
+				update();
+
+			},
+
+			bind: function( elOrOffset, cb ){
+
+				var offset = null;
+
+				if (isString( elOrOffset ) ) {
+					elOrOffset = $( elOrOffset );
+					offset     = elOrOffset.offset();
+				} else {
+					offset = elOrOffset
+				}
+
+				events.push({
+					el: elOrOffset,
+					cb: cb,
+					offset: offset - (window.innerHeight * .5)
+				});
+
+				if( stopped ){
+					this.run();
+				}
+
+			}
+
+		};
+
+	})();
+
+	scrollSpy.bind(200, function(){
+		$('header' ).removeClass('attached');
+	});
+
+	scrollSpy.bind(600, function( el, offset ){
+
+		$( '.personal__attribute-item' ).stagger( ( ii ) => ii * 500, { opacity: 1 }, 2000 );
+
+	});
+
+	scrollSpy.bind('#output-languages', function( el, offset ){
+
+		$( '.language' ).each( function( el, ii ){
+			var $this     = $( this ),
+			    $progress = $this.find( '.language__progress' ),
+			    width     = parseInt( $progress.css( 'width' ) ),
+			    $inner    = $this.find( '.language__progress-inner' ),
+			    progress  = parseInt( $progress.data( 'score' ) ) / 10;
+
+			$inner.animate( { width: ((width * progress / width) * 100) + '%' }, 2000 );
+		});
+
+	});
+
+	scrollSpy.bind( '#output-frameworks', function( el, offset ){
+
+		var heaadings = el.find( 'h3 a' ).css( { color: '#ffa' } );
+	});
+
+	extend(Slideshow.prototype, {
+		init: fluent(function(){
+
+			var self = this,
+			    $window = $(window);
+
+			this.slideshow = $('.slideshow');
+			this.wrapper   = this.slideshow.find( '.slideshow-wrapper' );
+			this.slides    = this.wrapper.children();
+			this.length    = this.slides.length;
+			this.left      = this.slideshow.find( '#slideshow-nav-left' );
+			this.right     = this.slideshow.find( '#slideshow-nav-right' );
+
+			this.left.on( 'click', function( e ){
+				self.setLeft('backward' );
+			});
+
+			this.right.on( 'click', function( e ){
+				self.setLeft('forward' );
+			});
+
+			$window.on('resize', function( e ){
+
+				var
+					width = parseFloat(self.slideshow.css('width') ),
+					pos = width * self.currentSlide;
+
+				self.wrapper.css({left: -pos + 'px'});
+				self.width = width;
+			});
+
+		}),
+		setLeft: function( direction ){
+			var
+				self = this,
+				width = this.width || parseFloat( this.slideshow.css( 'width' ) ),
+				curr  = this.wrapper.css( 'left' ),
+			    val;
+
+			console.log( this.currentSlide );
+
+			if (direction === 'forward'){
+				if( this.currentSlide >= this.length - 1 ){
+					return false;
+				}
+				this.currentSlide++;
+				val = ( curr - width );
+			} else {
+				if( this.currentSlide <= 0 ){
+					return false;
+				}
+				this.currentSlide--;
+				val = ( curr + width );
+			}
+
+			this.width = width;
+
+			this.wrapper.animate( { left: val }, 1000, function(){
+
+			});
+		}
+
+	});
+
+
+	function words(){
+
+		var words = 'javascript node php css scss less html awesome simple complex clean functional oop asyncronous awesome elegant optimised abstracted'.split(' '),
+		    wordEl = document.getElementById('word');
+
+		function show(){
+
+			var word = words[ Math.floor( Math.random() * words.length ) ],
+			    rect;
+			wordEl.style.opacity = 1;
+			wordEl.innerHTML = word;
+
+			window.setTimeout( function(){
+
+				fadeOut( wordEl, function(){
+					window.requestAnimationFrame( show );
+				});
+
+			}, (Math.random() * 500) + 500 );
+
+		}
+		show();
+
+		function fadeIn( el ){
+			var rect = el.getBoundingClientRect();
+
+			el.style.width = (rect.width / 16) + 'em';
+			console.log( 'fadeIn', rect.width );
+		}
+
+		function fadeOut( el, cb ){
+			var rect = el.getBoundingClientRect(),
+			    random = Math.floor(Math.random() * 250) + 250;
+
+			el.style.width = (rect.width / 16) + 'em';
+			console.log( rect.width );
+
+			$(el).animate({opacity: 0}, random, function( el ){
+				cb.call( this, el );
+			});
+		}
+
+	}
+
+	words();
+
+	var slideshow = new Slideshow().init();
+
+
+</script>
+
+</body>
+</html>
+
+
