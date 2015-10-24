@@ -400,4 +400,12 @@ div.hero {
     height: 100%;
     background: #f02673; }
 
+.truck {
+  position: absolute;
+  bottom: 200px;
+  left: 2000px;
+  max-width: 600px;
+  width: 90%;
+  margin: auto; }
+
 /*# sourceMappingURL=style.css.map */

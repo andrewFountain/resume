@@ -28,6 +28,8 @@
 
     <main class="main" id="site-content">
 
+        <object type="image/svg+xml" data="vectors/ice-creame-truck-smaller.svg" class="truck"></object>
+
         <div id="output-hero" class="hero">
 
         </div>
@@ -52,7 +54,7 @@
     </main>
 
 <template id="hero">
-	<div class="hero-inner">
+	<div class="hero-inner" id="hero-inner">
 		<h1>{{name}}</h1>
 		<h4>I develop [ <span id="word">javascript</span> ] things</h4>
 	</div>
@@ -344,7 +346,7 @@
 		$('header' ).removeClass('attached');
 	});
 
-	scrollSpy.bind(600, function( el, offset ){
+	scrollSpy.bind('#output-personal', function( el, offset ){
 
 		$( '.personal__attribute-item' ).stagger( ( ii ) => ii * 500, { opacity: 1 }, 2000 );
 
@@ -526,6 +528,14 @@
         }
     };
 
+    $('.truck').animate({
+        left: '200px'
+    }, 4000, function(){
+        scrollSpy.bind(800, function () {
+            $('.truck').animate({left: '-600px'}, 4000);
+        });
+    });
+
 //    console.clear();
 //    c.title('Awesome you must like seeing how things work too');
 //    c.list('I live in here, so maybe I should tell you what\'s happening behind the scenes');
@@ -591,7 +601,7 @@ I hid the contact details on the site, you can send me an email using the functi
         };
 
         function markdownToConsole(id){
-            console.clear();
+            // console.clear();
             var md = $(id).html().split('\n');
 
             md.forEach(function( line ){
