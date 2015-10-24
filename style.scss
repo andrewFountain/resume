@@ -11,7 +11,6 @@ $background-detail: #f9f9f9;
 $background-heading: #87d9fc;
 $purple: #cd80de;
 $background-heading: #f02673;
-//$background-heading: #e0e0e0;
 $transparent: rgba(220,220,220,0.4);
 $box-shadow: .3em .3em 1em #222;
 
@@ -88,6 +87,24 @@ html, body {
 	box-sizing         : border-box;
 }
 
+header#site-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 4em;
+	background: $background-heading;
+}
+
+main#site-content {
+	position: absolute;
+	top: 4em;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	// overflow: auto;
+}
+
 section {
 	@include clear;
 	position : relative;
@@ -104,8 +121,11 @@ section {
 		position : absolute;
 		left: 50%;
 		top: -1em;
-		background: $background-section;;
 		transform: rotateZ(45deg);
+
+		&:not(:nth-child(1)) {
+			background: $background-section;
+		}
 	}
 
 	&:nth-child(odd){
@@ -114,6 +134,17 @@ section {
 		&:before {
 			background: #fff;
 		}
+	}
+
+	&.primary {
+		background: $background-heading;
+	}
+
+	h2 {
+		display: block;
+		padding-bottom: 1em;
+		border-bottom: .2em solid $background-heading;
+		width: 100%;
 	}
 }
 
@@ -198,14 +229,19 @@ section div.details {
 	@include clear;
 }
 
-section h3 {
-	background: $background-heading;
-	padding: 1em;
-	margin: 0;
+a {
+	text-decoration: none;
+}
 
-	a {
-		color: $color-heading;
-		text-decoration : none;
+section {
+
+	h1, h2, h3, h4, h5 {
+
+		a {
+			text-decoration: none;
+			color: $color-text;
+		}
+
 	}
 }
 
@@ -267,14 +303,14 @@ ul.tick-list {
 	.language__progress-inner {
 		background: $blue;
 		width: 0%;
-		height: 100%;
+		height: 100%; //
 	}
 
 }
 
 .books__group {
 
-	.wrapper {
+	.books {
 		display : flex;
 		align-content: flex-start;
 		align-items: flex-start;
@@ -284,6 +320,21 @@ ul.tick-list {
 	.book {
 		flex: 0 1 auto;
 		width: 21%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.book__heading {
+		flex: 1;
+		background: $background-heading;
+
+		a {
+			color: #fff;
+		}
+	}
+
+	.book__details {
+		flex: 4;
 	}
 
 }
@@ -303,7 +354,7 @@ ul.tick-list {
 	}
 }
 
-header {
+header#site-header {
 
 	background: #222;
 	position: fixed;
@@ -368,5 +419,64 @@ div.hero {
 	#word {
 		font-weight: bold;
 		color: $background-heading;
+	}
+}
+
+#output-frameworks {
+
+	.container {
+		max-width: ems(1200);
+		width: 100%;
+		margin: 1em auto;
+	}
+
+	.framework {
+		display: flex;
+		background: #fff;
+		margin-bottom: 1em;
+		position: relative;
+		// color: #fff;
+
+		header {
+			flex: 1;
+			background: $background-heading;
+			padding: 1em;
+
+			a, & {
+				color: #fff;
+			}
+		}
+
+		.framework__info {
+			flex: 4;
+			padding: 0 1.2em;
+		}
+
+		.framework__info-collection {
+
+			display: flex;
+
+			li {
+				flex: 1;
+			}
+		}
+
+		.framework__info-desc {
+			padding: 1.2em;
+		}
+	}
+}
+
+.progress {
+	height: .2em;
+	width: 100%;
+	margin: .4em 0;
+	position: relative;
+	background: $background-section;
+
+	.progress-inner {
+		width: 0%;
+		height: 100%;
+		background: $background-heading;
 	}
 }

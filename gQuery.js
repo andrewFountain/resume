@@ -111,6 +111,25 @@
 			} );
 		} ),
 
+        /**
+		 * $.prototype.text
+		 *
+		 * this method will set or return an elements innerHTML, if cannot find
+		 * css property on element, will use getComputedStyle and cause ui reflow.
+		 *
+		 * @param   {Object|String}     style       Object: style properties, String:style property identifier
+		 */
+		html: fluent( function( text ){
+
+			if( !text ){
+				return this[ 0 ].innerHTML;
+			}
+
+			this.each( function( el ){
+				el.innerHTML = text;
+			});
+		}),
+
 		/**
 		 * $.prototype.each
 		 *
@@ -403,7 +422,72 @@
 				}, timeout );
 			});
 
-		}
+		},
+
+
+        spy: (function () {
+
+            var
+                stopped = true,
+                offset = 0,
+                events = [];
+
+            return function _spy(cb, offset) {
+
+                this.each(function( el ){
+
+                    var
+                        elOrOffset = null;
+
+                    if (!offset) {
+                        offset = $(el).offset();
+                    }
+
+                    events.push({
+                        el: elOrOffset,
+                        cb: cb,
+                        offset: offset - (window.innerHeight * .5)
+                    });
+
+                    if (stopped) {
+                        _run();
+                    }
+
+                });
+            };
+
+            function _run() {
+
+                if (events.length) {
+                    stopped = false;
+                    window.setTimeout(function () {
+                        window.requestAnimationFrame(_update)
+                    }, 120);
+                } else {
+                    stopped = true;
+                }
+
+                _update();
+
+            }
+
+            function _update() {
+
+                offset = window.scrollY;
+
+                events = events.filter(function (event) {
+
+                    if (offset > event.offset) {
+                        event.cb.call(event.el, event.el, offset);
+                        return false;
+                    }
+
+                    return true;
+
+                });
+            }
+
+        })()
 
 	});
 

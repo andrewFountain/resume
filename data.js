@@ -5,7 +5,7 @@ var resume = {
 		suburb     : 'Moonee Ponds VIC 3039',
 		phone      : '0416 006 176',
 		email      : 'founts24@gmail.com',
-		description: 'A full stack developer, focused mainly on javascript and asynchronous engineering seeking new opportunities to develop my skills. About me:',
+		description: 'A full stack developer, focused mainly on javascript and asynchronous engineering seeking new opportunities to develop my skills.',
 		attributes : [
 			'Obsessed with clean code.',
 			'Driven to simplify complex problems',
@@ -53,6 +53,8 @@ var resume = {
 		{
 			name: 'jQuery',
 			level: 'intermediate',
+            language: 'javascript',
+            url: 'jquery.com',
 			desc: 'I use jQuery every day in my current job, but have never really looked at training in it. From my wealth of knowledge of vanilla javascript I can make assumptions to how the jQuery api works, but still need to look at the docs sometimes.',
 			score: 4,
 			time: 1
@@ -60,6 +62,8 @@ var resume = {
 		{
 			name: 'Angular',
 			level: 'familiar',
+            language: 'javascript',
+            url: 'angular.io',
 			desc: 'I have built a site with angular when i was playing with it, this has made me familiar with it\'s concepts and how it runs, but would need further practice to fully understand this framework.',
 			score: 3,
 			time: .5
@@ -67,6 +71,8 @@ var resume = {
 		{
 			name: 'laravel',
 			level: 'familiar',
+            language: 'php',
+            url: 'laravel.io',
 			desc: 'I played with laravel a lot when I was first learning php. To me it is the most efficient way to build a site from scratch. When I used laravel I was so impressed with it\'s api, I decided to make a clone to understand it\'s core',
 			score: 3,
 			time: .5
@@ -74,6 +80,8 @@ var resume = {
 		{
 			name: 'Polymer',
 			level: 'familiar',
+            language: 'javascript',
+            url: 'polymer.io',
 			desc: 'I have played with Polymer enough to be able to be familiar with it, however it has since been changed and released as a 1.0, so would need to look at it again to be confident',
 			score: 2,
 			time: .25
@@ -81,6 +89,8 @@ var resume = {
 		{
 			name: 'Famous',
 			level: 'beginner',
+            language: 'javascript',
+            url: 'famo.us',
 			desc: 'I awaited the arival of famous for all that it promised in bridging the gap between mobile and desktop, as well as having an incredible physics engine behind the scenes. Unfortunately I have not had a lot of time with this framework since it\'s release.',
 			score: 1,
 			time: .25
@@ -88,13 +98,17 @@ var resume = {
 		{
 			name: 'React',
 			level: 'beginner',
-			desc: 'React is the new kid on the block, so i have had a look at the docs, and read some articles, I intend to set some time aside to learn more about it, but understand the concept of having a virtual DOM, and a templating language that is built into the js, althouht this is the main reason I have non dug deeper',
+            language: 'javascript',
+            url: 'facebook.github.io/react/',
+			desc: 'React is the new kid on the block, so i have had a look at the docs, and read some articles, I intend to set some time aside to learn more about it, but understand the concept of having a virtual DOM, what jsx does, although this is the main reason I have non dug deeper.',
 			score: 1,
 			time: .125
 		},
 		{
 			name: 'scss',
 			level: 'intermediate',
+            language: 'css',
+            url: 'sass-lang.com',
 			desc: 'I understand mixins, functions, nesting in scss. I have used these tools to create a mini css fromework that was mainly a dynamic grid and some nice mixins. I now use bourbon and neat for the same thing',
 			score: 4,
 			time: .5
@@ -102,6 +116,8 @@ var resume = {
 		{
 			name: 'less',
 			level: 'beginner',
+            language: 'css',
+            url: 'lesscss.org',
 			desc: 'I have spent less time with the less preprocessor, however most of the masic concepts are transferable from scss. I like scss more due to it\'s more declaritive nature, but you can\'t beat the compile time of lessc',
 			score: 3,
 			time: .125
@@ -267,16 +283,19 @@ var resume = {
 		{
 			institution: 'Swinburne University of Technology',
 			course     : 'Diploma of Digital Media/Website Development',
+            learnt     : 'After deciding to take programming seriously, and having already experienced to University, I chose to go to TAFE as I prefer to learn something then create something with the new found knowledge.',
 			dates      : '2013 - 2014'
 		},
 		{
 			institution: 'La Trobe University, Bundoora',
 			course     : 'Bachelor of Biological Sciences',
+            learnt     : 'I learnt that I love tackling and understanding complex problems, and I need to live in both the theoretical and the tangible world. For me biology was too conceptual.',
 			dates      : 'Started 2009 - Deferred'
 		},
 		{
 			institution: 'Gordon Institute of TAFE',
 			course     : 'Victorian Certificate of Education',
+            learnt     : 'I never finished school when I was a teenager, instead I got a job at 15. I always wished I had finished school, so decided to go back and complete it as a mature student. I learn\'t that I can challenge my own pre-conceived notions of myself and re-invent my life.',
 			dates      : '2008'
 		}
 	],
