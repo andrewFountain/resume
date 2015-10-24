@@ -98,11 +98,18 @@
   content: '\e80d'; }
 
 /* '?' */
+@font-face {
+  font-family: 'proxima';
+  src: url("font/ProximaNova-Regular.otf"); }
+@font-face {
+  font-family: 'proxima';
+  font-weight: bold;
+  src: url("font/Proxima%20Nova%20Bold.otf"); }
 html, body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'proxima', 'Roboto', sans-serif;
   font-weight: 300;
   background: #fff;
-  color: #222;
+  color: #493e45;
   line-height: 200%;
   height: 100%;
   width: 100%;
@@ -116,8 +123,7 @@ html, body {
 
 section {
   position: relative;
-  background: #efefef;
-  margin: 1em auto;
+  background: #fff;
   padding: 1em;
   min-height: 100%;
   width: 100%; }
@@ -132,8 +138,12 @@ section {
     position: absolute;
     left: 50%;
     top: -1em;
-    background: #fff;
+    background: #efefef;
     transform: rotateZ(45deg); }
+  section:nth-child(odd) {
+    background: #efefef; }
+    section:nth-child(odd):before {
+      background: #fff; }
 
 section .wrapper {
   margin: 1em auto; }
@@ -199,7 +209,7 @@ section div.details {
     clear: both; }
 
 section h3 {
-  background: #e0e0e0;
+  background: #f02673;
   padding: 1em;
   margin: 0; }
   section h3 a {
@@ -319,5 +329,8 @@ div.hero {
     text-align: center;
     background: rgba(240, 240, 240, 0.4);
     border: 1px solid rgba(240, 240, 240, 0.8); }
+  div.hero #word {
+    font-weight: bold;
+    color: #f02673; }
 
 /*# sourceMappingURL=style.css.map */

@@ -2,14 +2,16 @@ $blue : #87d9fc;
 $grey: #999;
 $mid-grey: #999;
 $dark-grey: #444;
-$color-text: #222;
+$color-text: #493e45;
 $color-highlight: #87d9fc;
 $color-heading: #fff;
 $background: #fff;
 $background-section: #efefef;
 $background-detail: #f9f9f9;
 $background-heading: #87d9fc;
-$background-heading: #e0e0e0;
+$purple: #cd80de;
+$background-heading: #f02673;
+//$background-heading: #e0e0e0;
 $transparent: rgba(220,220,220,0.4);
 $box-shadow: .3em .3em 1em #222;
 
@@ -55,10 +57,21 @@ $box-shadow: .3em .3em 1em #222;
 
 @import 'fontello';
 
+@font-face {
+	font-family: 'proxima';
+	src: url('font/ProximaNova-Regular.otf');
+}
+
+@font-face {
+	font-family: 'proxima';
+	font-weight : bold;
+	src: url('font/Proxima%20Nova%20Bold.otf');
+}
+
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
 
 html, body {
-	font-family : 'Roboto', sans-serif;
+	font-family : 'proxima', 'Roboto', sans-serif;
 	font-weight: 300;
 	background: $background;
 	color: $color-text;
@@ -78,8 +91,8 @@ html, body {
 section {
 	@include clear;
 	position : relative;
-	background: $background-section;
-	margin: 1em auto;
+	background: #fff;
+	//margin: 1em auto 2em;
 	padding: 1em;
 	min-height:100%;
 	width: 100%;
@@ -91,8 +104,16 @@ section {
 		position : absolute;
 		left: 50%;
 		top: -1em;
-		background: #fff;
+		background: $background-section;;
 		transform: rotateZ(45deg);
+	}
+
+	&:nth-child(odd){
+		background: $background-section;
+
+		&:before {
+			background: #fff;
+		}
 	}
 }
 
@@ -342,5 +363,10 @@ div.hero {
 		text-align : center;
 		background: rgba(240,240,240,.4);
 		border: 1px solid rgba(240, 240, 240, .8);
+	}
+
+	#word {
+		font-weight: bold;
+		color: $background-heading;
 	}
 }
