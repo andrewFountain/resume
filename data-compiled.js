@@ -40,7 +40,7 @@ var resume = {
 		level: 'intermediate',
 		language: 'javascript',
 		url: 'jquery.com',
-		desc: 'I use jQuery every day in my current job, but have never really looked at training in it. From my wealth of knowledge of vanilla javascript I can make assumptions to how the jQuery api works, but still need to look at the docs sometimes.',
+		desc: 'I use jQuery every day in my current job, but have never really looked at training in it. From my wealth of knowledge of vanilla javascript I can make assumptions to how the jQuery api works, but still need to look at the docs sometimes. Honestly as jQuery is such a large library it wouldn\'t be hard to surprise me with new functionality that\'s built into it',
 		score: 4,
 		time: 1
 	}, {
