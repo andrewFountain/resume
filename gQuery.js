@@ -34,10 +34,10 @@
 	 */
 	function selector( selector /*, context */ ){
 		if( selector === window || selector === document || selector instanceof HTMLElement){
-			return new gQuery([selector]);
+			return new gQuery('object', [selector]);
 		}
 		let els = isNodeList(selector) ? selector : ( arguments[1] || document ).querySelectorAll( selector );
-		return new gQuery( els );
+		return new gQuery( selector, els );
 	}
 
 	/**
@@ -47,10 +47,11 @@
 	 *
 	 * @param   {NodeList}  els     elements to wrap with gQuery
 	 */
-	function gQuery( els ){
+	function gQuery( selector, els ){
 		this.add( els );
 		this.length = els.length;
 		this.events = {};
+		this.selector = selector;
 	}
 
 	let
@@ -221,7 +222,7 @@
 				let children = slice( el.children );
 				Array.prototype.splice.apply( ret, [ ret.length, 0 ].concat( children ) );
 			} );
-			return new gQuery( ret );
+			return new gQuery( this.selector, ret );
 		},
 
 		/**
@@ -248,7 +249,7 @@
 				const children = slice( el.querySelectorAll( selector ) );
 				Array.prototype.splice.apply( ret, [ ret.length, 0 ].concat( children ) );
 			});
-			return new gQuery( ret );
+			return new gQuery( this.selector, ret );
 		},
 
 		/**
