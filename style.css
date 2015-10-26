@@ -127,7 +127,8 @@ header#site-header {
   left: 0;
   right: 0;
   height: 4em;
-  background: #f02673; }
+  background: #f02673;
+  border-bottom: 0.2em solid #f02673; }
 
 main#site-content {
   position: absolute;
@@ -184,6 +185,7 @@ section .slideshow {
   width: 100%;
   overflow-x: hidden;
   background: #eee;
+  background: url("./images/background.jpg");
   background-size: 120%; }
   section .slideshow .slideshow-nav {
     position: absolute;
@@ -219,8 +221,6 @@ section .slideshow {
     flex-basis: 16.66667%;
     min-width: 12.5em;
     max-width: 62.5em; }
-    section .slideshow li.slide .job {
-      box-shadow: 0.3em 0.3em 1em #222; }
     section .slideshow li.slide .details {
       background: rgba(220, 220, 220, 0.4); }
 
@@ -389,6 +389,11 @@ div.hero {
   #output-frameworks .framework .framework__info-desc, #output-languages .framework .framework__info-desc {
     padding: 1.2em; }
 
+#output-frameworks .framework header {
+  background: #efefef; }
+  #output-frameworks .framework header, #output-frameworks .framework header a {
+    color: #f02673; }
+
 .progress {
   height: .2em;
   width: 100%;
@@ -403,9 +408,13 @@ div.hero {
 .truck {
   position: absolute;
   bottom: 10px;
-  left: 2000px;
+  transform: matrix(1, 0, 0, 1, 2000, 0);
   max-width: 600px;
   width: 90%;
   margin: auto; }
+
+.scenery {
+  position: absolute;
+  width: 300%; }
 
 /*# sourceMappingURL=style.css.map */

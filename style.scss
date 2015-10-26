@@ -11,7 +11,7 @@ $background-detail: #f9f9f9;
 $background-heading: #87d9fc;
 $purple: #cd80de;
 $background-heading: #f02673;
-$transparent: rgba(220,220,220,0.4);
+$transparent: rgba(220,220,220, 0.4);
 $box-shadow: .3em .3em 1em #222;
 
 @mixin clear {
@@ -94,6 +94,7 @@ header#site-header {
 	right: 0;
 	height: 4em;
 	background: $background-heading;
+	border-bottom: .2em solid $background-heading;
 }
 
 main#site-content {
@@ -102,7 +103,8 @@ main#site-content {
 	left: 0;
 	bottom: 0;
 	right: 0;
-	// overflow: auto;
+	//overflow-y: auto;
+	//overflow-x : hidden;
 }
 
 section {
@@ -166,7 +168,7 @@ section .slideshow {
 	width: 100%;
 	overflow-x: hidden;
 	background: #eee;
-	//background      : url('./images/background.jpg');
+	background      : url('./images/background.jpg');
 	background-size : 120%;
 
 	.slideshow-nav {
@@ -215,7 +217,7 @@ section .slideshow {
 		max-width : ems(1000);
 
 		.job {
-			box-shadow : $box-shadow;
+			//box-shadow : $box-shadow;
 		}
 
 		.details {
@@ -392,6 +394,10 @@ header#site-header {
 
 }
 
+#output-hero {
+
+}
+
 div.hero {
 	min-height: 100%;
 	width: 100%;
@@ -467,6 +473,21 @@ div.hero {
 	}
 }
 
+#output-frameworks {
+
+	.framework {
+
+		header{
+			background: $background-section;
+
+			&, a {
+				color : $background-heading;
+			}
+		}
+
+	}
+}
+
 .progress {
 	height: .2em;
 	width: 100%;
@@ -484,8 +505,15 @@ div.hero {
 .truck {
 	position: absolute;
 	bottom: 10px;
-	left: 2000px;
+	transform: matrix(1,0,0,1,2000,0);
 	max-width: 600px;
 	width: 90%;
 	margin: auto;
+}
+
+.scenery {
+
+	position  : absolute;
+	width: 300%;
+
 }

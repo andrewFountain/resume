@@ -17,33 +17,36 @@
 	<header class="attached" id="site-header">
 <!--        <div>Resume <span>Andrew Fountain</span></div>-->
 		<nav>
-			<ul>
-				<li>me</li>
-				<li>skills</li>
-				<li class="active">language</li>
-				<li>work</li>
+			<ul id="navigation">
+				<li data-section="#output-personal">me</li>
+				<li data-section="#output-languages">languages</li>
+				<li data-section="#output-frameworks" class="active">frameworks</li>
+				<li data-section="#output-job">work</li>
+				<li data-section="#course">education</li>
+				<li data-section="#output-books">books</li>
+				<li data-section="#output-blogs">blogs</li>
 			</ul>
 		</nav>
 	</header>
 
     <main class="main" id="site-content">
 
+	    <!-- <object type="image/svg+xml" data="vectors/scenery-no-truck.svg" class="scenery"></object> -->
+
         <object type="image/svg+xml" data="vectors/ice-creame-truck-smaller.svg" class="truck"></object>
+
 
         <div id="output-hero" class="hero">
 
         </div>
         <section id="output-personal" class="personal"></section>
-
-        <section class="course">
-            <h2>Formal Education</h2>
-            <ul class="course__collection" id="output-course"></ul>
-        </section>
-
         <section id="output-languages" class="languages"></section>
         <section id="output-frameworks" class="frameworks"></section>
         <section id="output-job" class="jobs__group"></section>
-        <section id="output-education" class="education__group"></section>
+	    <section class="education" id="course">
+		    <h2>Formal Education</h2>
+		    <ul class="course__collection" id="output-education"></ul>
+	    </section>
         <section id="output-books" class="books__group"></section>
         <section id="output-blogs" class="blogs__group"></section>
 
@@ -113,21 +116,6 @@
 </template>
 
 <template id="education">
-	<div class="wrapper">
-        <h2>Formal Education</h2>
-		{{foreach education as course}}
-			<div class="education">
-				<h3><a href="{{course.url}}" target="_blank">{{course.institution}}</a></h3>
-				<div class="details">
-					<h4>{{course.course}}</h4>
-					<p>{{course.dates}}</p>
-				</div>
-			</div>
-		{{/foreach}}
-	</div>
-</template>
-
-<template id="course">
 	<li class="education">
 		<h3><a href="{{course.url}}" target="_blank">{{course.institution}}</a></h3>
 		<div class="details">
@@ -180,8 +168,6 @@
 				<header>
 					<h3>
 						<a href="{{framework.url}}">{{framework.name}}</a>
-
-						<p>{{framework.language}}</p>
 					</h3>
 				</header>
 				<div class="framework__info">
@@ -248,12 +234,11 @@
 		heroTemplate        = template('hero'),
 		personalTemplate    = template('personal'),
 		jobTemplate         = template('job' ),
-		educationTemplate   = template('education'),
 		booksTemplate       = template('books'),
 		blogsTemplate       = template('blogs' ),
 		languagesTemplate   = template('languages' ),
 		frameworksTemplate  = template('frameworks' ),
-		courseTemplate      = template('course');
+		educationTemplate      = template('education');
 
 
 	personalTemplate( resume.personal );
@@ -261,12 +246,11 @@
 	languagesTemplate( { languages: resume.languages, frameworks: resume.frameworks } );
 	frameworksTemplate( { frameworks: resume.frameworks } );
 	jobTemplate( {jobs: resume.work} );
-	educationTemplate( {education: resume.education} );
 	booksTemplate({books: resume.books});
 	blogsTemplate({blogs: resume.blogs});
 
 	resume.education.forEach(function(course){
-		courseTemplate({course: course});
+		educationTemplate({course: course});
 	});
 
 	var log = ( fn ) =>
@@ -364,27 +348,28 @@
 
 	scrollSpy.bind('#output-personal', function( el, offset ){
 
-		$( '.personal__attribute-item' ).stagger( ( ii ) => ii * 500, { opacity: 1 }, 2000 );
+		$( '.personal__attribute-item' ).stagger( ( ii ) => ii * 500, null, { opacity: 1 }, 2000 );
 
 	});
 
-	scrollSpy.bind('#output-languages', function( el, offset ){
+	scrollSpy.bind('#output-languages', function( $el, offset ){
 
-		$( '.language' ).each( function( el, ii ){
+		$el.find('.framework').each( function( el, ii ){
+
 			var $this     = $( this ),
-			    $progress = $this.find( '.language__progress' ),
+			    $progress = $this.find( '.progress' ),
 			    width     = parseInt( $progress.css( 'width' ) ),
-			    $inner    = $this.find( '.language__progress-inner' ),
+			    $inner    = $this.find( '.progress-inner' ),
 			    progress  = parseInt( $progress.data( 'score' ) ) / 10;
 
-			$inner.animate( { width: ((width * progress / width) * 100) + '%' }, 2000 );
+			$inner.animate( null, { width: ((width * progress / width) * 100) + '%' }, 2000 );
 		});
 
 	});
 
-	scrollSpy.bind( '#output-frameworks', function( el, offset ){
+	scrollSpy.bind( '#output-frameworks', function( $el, offset ){
 
-        $('.framework').each(function (el, ii) {
+        $el.find('.framework').each(function (el, ii) {
 
             var $this = $(this),
                 $progress = $this.find('.progress'),
@@ -392,7 +377,7 @@
                 $inner = $this.find('.progress-inner'),
                 progress = parseInt($progress.data('score')) / 10;
 
-            $inner.animate({width: ((width * progress / width) * 100) + '%'}, 2000);
+            $inner.animate( null, {width: ((width * progress / width) * 100) + '%'}, 2000);
 
         });
 	});
@@ -424,16 +409,17 @@
 					width = parseFloat(self.slideshow.css('width') ),
 					pos = width * self.currentSlide;
 
-				self.wrapper.css({left: -pos + 'px'});
+				self.wrapper.matrix(-pos, 0);
 				self.width = width;
 			});
 
 		}),
 		setLeft: function( direction ){
 			var
-				self = this,
-				width = this.width || parseFloat( this.slideshow.css( 'width' ) ),
-				curr  = this.wrapper.css( 'left' ),
+				self    = this,
+				width   = this.width || parseFloat( this.slideshow.css( 'width' ) ),
+				matrix  = this.wrapper.matrix(),
+				curr    = matrix[ 4 ],
 			    val;
 
 			console.log( this.currentSlide );
@@ -454,7 +440,7 @@
 
 			this.width = width;
 
-			this.wrapper.animate( { left: val }, 1000, function(){
+			this.wrapper.animate( [val, 0], null, 1000, function(){
 
 			});
 		}
@@ -499,7 +485,7 @@
 			el.style.width = (rect.width / 16) + 'em';
 			//console.log( rect.width );
 
-			$(el).animate({opacity: 0}, random, function( el ){
+			$(el).animate(null, {opacity: 0}, random, function( el ){
 				cb.call( this, el );
 			});
 		}
@@ -544,18 +530,27 @@
         }
     };
 
-    $('.truck').animate({
-        left: '200px'
-    }, 4000, function(){
+    $('.truck').animate([200, 0], {opacity: 1}, 4000, function(){
         scrollSpy.bind(800, function () {
-            $('.truck').animate({left: '-600px'}, 4000);
+            $('.truck').animate([-600, 0], {left: '-600px'}, 4000);
         });
     });
+
+
+	$('#navigation')
+		.find('li' )
+		.on('click', function( e ){
+
+			var $this = $(this),
+			    section = $this.data('section');
+
+			$(section ).scrollTo();
+
+		});
 
 //    console.clear();
 //    c.title('Awesome you must like seeing how things work too');
 //    c.list('I live in here, so maybe I should tell you what\'s happening behind the scenes');
-
 
 </script>
 
@@ -713,11 +708,11 @@ I hid the contact details on the site, you can send me an email using the functi
 
 		   _show('intro');
 
-		   $( window ).on('keyup', function(e){
-			   console.log( 'keyevet', e );
-		   });
-
 	    })();
+
+//	    $( window ).on('wheel', function( e ){
+//		   console.log( (-1 / 40 * e.wheelDeltaY ) );
+//	    });
     </script>
 
 </body>

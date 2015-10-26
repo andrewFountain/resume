@@ -176,6 +176,8 @@
 		 */
 		mapWith     =   flip( map ),
 
+		parseIntMap    = mapWith( first(parseInt)),
+
 		/**
 		 * filter
 		 *
@@ -519,6 +521,17 @@
 							one < two
 								? two - one
 								: ( one - two ) * -1,
+
+		diffArray   =   (left, right) => {
+							var ret = [],
+								ii = 0,
+								ll = left.length;
+
+							for( ; ii < ll; ii++ ){
+								ret.push(diff( left[ii], right[ii] ));
+							}
+							return ret;
+						},
 
 
 		getSet      =   ( prop, fn ) => {
