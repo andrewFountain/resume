@@ -273,6 +273,7 @@ ul.tick-list {
 		@include clear;
 		display: block;
 		opacity: 0;
+		transform         : matrix(1,0,0,1,0,50);
 	}
 
 	li span {

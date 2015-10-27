@@ -248,7 +248,8 @@ ul.tick-list {
   padding: 1em; }
   ul.tick-list li {
     display: block;
-    opacity: 0; }
+    opacity: 0;
+    transform: matrix(1, 0, 0, 1, 0, 50); }
     ul.tick-list li::before, ul.tick-list li::after {
       content: " ";
       display: block;

@@ -641,69 +641,99 @@
 
 	}
 
-	var AnimationTrait = {
+	/**
+	 * base animation class to inherit
+	 */
+	function Animation(){}
+	extend( Animation.prototype, {
 
-	};
+		alive: function(){
 
-	function Animation( frame ){
+			if( this.progress < this.time ){
+				return true;
+			} else {
+				if( isFunction( this.cb ) ){
+					this.cb.call( this.el, this.el, this );
 
-		var prop = valueAndUnit( frame.property );
+					return false;
+				}
 
-		this.el      = frame.el;
-		this.prop    = prop.value;
-		this.unit    = prop.unit;
-		this.initial = prop.value;
-		this.curr    = cssProp( frame.el, frame.prop );
-		this.to      = frame.to;
-		this.diff    = diff( prop.value, frame.to );
-		this.easing  = easing[ frame.easing || 'easeIn' ];
-		this.time    = frame.time;
-		this.start   = Date.now();
+			}
+
+		}
+	});
+
+	function StyleProperty( el, key, prop, time, cb, ease ){
+
+		prop = valueAndUnit( prop );
+
+		var initial = cssProp( el, key );
+
+		this.el         = el;
+		this.prop       = key;
+		this.unit       = prop.unit;
+		this.initial    = initial;
+		this.curr       = initial;
+		this.to         = prop.value;
+		this.diff       = diff( initial, prop.value );
+		this.easing     = easing[ ease || 'easeIn' ];
+		this.time       = time;
+		this.progress   = 0;
+		this.cb         = cb;
+		this.start      = Date.now();
 	}
 
-	extend( Animation.prototype, {
+	StyleProperty.prototype = new Animation;
+
+	extend( StyleProperty.prototype, {
 
 		update: fluent( function( now ){
 
-			var progress = now - this.start;
+			this.progress = now - this.start;
 
-			this.curr = this.easing( progress, this.initial, this.diff, this.time );
+			this.curr = this.easing( this.progress, this.initial, this.diff, this.time );
 
 			this.el.style[ this.prop ] = this.curr + ( this.unit || 0 );
 		} )
 
 	} );
 
-	function Vector( frame ){
+	function Vector( el, xy, time, cb, ease ){
 
-		var _matrix = matrix( frame.el ),
+		var _matrix = matrix( el ),
 		    to;
 
-		to = frame.to.length === 2
-			? [ 1, 0, 0, 1 ].concat( frame.to )
-			: frame.to;
+		to = xy.length === 2
+			? [ 1, 0, 0, 1 ].concat( xy )
+			: xy;
 
-		this.el      = frame.el;
-		this.prop    = prop.value;
-		this.initial = _matrix;
-		this.curr    = _matrix;
-		this.to      = to;
-		this.diff    = diffArray( prop.value, frame.to );
-		this.easing  = easing[ frame.easing || 'easeIn' ];
-		this.time    = frame.time;
-		this.start   = Date.now();
+		this.el         = el;
+		this.initial    = _matrix;
+		this.curr       = _matrix;
+		this.to         = to;
+		this.diff       = diffArray( _matrix, to );
+		this.easing     = easing[ ease || 'easeIn' ];
+		this.time       = time;
+		this.progress   = 0;
+		this.cb         = cb;
+		this.start      = Date.now();
 	}
 
+	Vector.prototype = new Animation;
 
 	extend(Vector.prototype, {
 
 		update: fluent( function( now ){
 
-			var progress = now - this.start;
+			var newCurr = [];
+
+			this.progress = now - this.start;
 
 			for( var ii = 0, ll = this.curr.length; ii < ll; ii++ ){
-				this.curr[0] = this.easing( progress, this.initial[0], this.diff[0], this.time );
+				newCurr[ ii ] = this.easing( this.progress, this.initial[ ii ], this.diff[ ii ], this.time );
 			}
+
+			this.curr = newCurr;
 
 			matrix( this.el, this.curr );
 		})
@@ -800,21 +830,8 @@
 		};
 
 		if( xy ){
-
-			if( xy.length === 2 ){
-				xy = [ 1, 0, 0, 1 ].concat( xy );
-			}
-
-			var _matrix = matrix( el );
-			ret.props['matrix'] = {
-				initial: _matrix,
-				curr: _matrix,
-				to     : xy,
-				diff   : diffArray( _matrix, xy ),
-				easing: ease,
-				time  : time,
-				start : Date.now()
-			};
+			var vector = new Vector( el, xy, time, cb, ease );
+			animations.push( vector );
 		}
 
 		if( styles ){
@@ -822,38 +839,12 @@
 			var key;
 
 			for( key in styles ) {
-				/*let*/
-				var initial = cssProp( el, key ),
-				    prop    = styles[ key ],
-				    noUnit  = [ 'opacity' ].indexOf( key ) > -1,
-				    to, unit;
-				if( isString( prop ) ){
-					/*let*/
-					var match = styles[ key ].match( /([-\.0-9]+)(px|%|em)*/ );
-					to        = parseFloat( match[ 1 ] );
-					unit      = match[ 2 ] || 'px';
-				} else {
-					to   = prop;
-					unit = noUnit
-						? ''
-						: unit || 'px';
-				}
 
-				ret.props[ key ]      = {
-					curr   : initial,
-					to     : to,
-					unit   : unit,
-					initial: initial,
-					easing : ease,
-					time   : time,
-					start  : Date.now()
-				};
-				ret.props[ key ].diff = diff( initial, to );
+				var prop = new StyleProperty( el, key, styles[key], time, cb, ease );
 
+				animations.push( prop );
 			}
 		}
-
-		animations.push( ret );
 
 		if( !running ){
 			running = true;
@@ -865,9 +856,8 @@
 	/**
 	 * _animate
 	 *
-	 * this function will loop over the current animation queue calculating
-	 * new vertors and updating the styles, finished animations are removed from
-	 * the queue.
+	 * this function will loop over the current animation queue. and call the
+	 * Animation instances update method
 	 *
 	 * @param   {Number}     timestamp       timestamp inherited from api
 	 *
@@ -877,57 +867,22 @@
 	 * @private
 	 */
 	function _animate( timestamp ){
-		// filter out any finished animations
-		animations = animations.filter( function( animation ){
 
-			/*let*/
-			var
-				prop,
-			    property,
-			    progress;
+		animations = animations.filter(function( animation ){
 
-			for( prop in animation.props ) {
+			animation.update( Date.now() );
 
-				property = animation.props[ prop ];
-				progress = Date.now() - property.start;
+			return animation.alive();
 
-				if( prop === 'matrix' ){
-
-					var
-						easeFn = easing[ property.easing || 'easeIn' ],
-					    newCurr = [];
-
-					for( var ii = 0, ll = property.curr.length; ii < ll; ii++ ){
-						newCurr[ ii ] = easeFn( progress, property.initial[ ii ], property.diff[ ii ], property.time );
-					}
-
-					property.curr = newCurr;
-
-					matrix(animation.el, property.curr );
-
-				} else {
-
-					property.curr = easing[ property.easing || 'easeIn' ]( progress, property.initial, property.diff, property.time );
-					animation.el.style[ prop ] = property.curr + property.unit;
-
-				}
-
-				if( progress < property.time ){
-					return true;
-				} else {
-					if( isFunction( animation.cb ) ){
-						animation.cb.call( animation.el, animation.el, animation );
-					}
-					return false;
-				}
-			}
 		});
-		// only call the _animaate function if there are animations still pending
+
+		// only call the _animate function if there are animations still pending
 		if( animations.length ){
 			window.requestAnimationFrame( _animate );
 		} else {
 			running = false;
 		}
+
 	}
 
 	/**
