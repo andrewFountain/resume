@@ -7,10 +7,10 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="style.css">
 
-	<script src="functional.js"></script>
-	<script src="gQuery.js"></script>
+	<script src="./functional-compiled.js"></script>
 	<script src="template-factory.js"></script>
 	<script src="template.js"></script>
+	<script src="./gQuery-compiled.js"></script>
 	<script src="data.js"></script>
 </head>
 <body>
@@ -530,7 +530,7 @@
         }
     };
 
-    $('.truck').animate([200, 0], {opacity: 1}, 4000, function(){
+    $('.truck').animate( [rand(),rand(),rand(),rand(),200, 0], {opacity: 1}, 4000, function(){
         scrollSpy.bind(800, function () {
             $('.truck').animate([-600, 0], {left: '-600px'}, 4000);
         });
@@ -547,6 +547,10 @@
 			$(section ).scrollTo();
 
 		});
+
+	function rand(){
+		return (Math.random() * 2) - 1;
+	}
 
 //    console.clear();
 //    c.title('Awesome you must like seeing how things work too');
@@ -606,7 +610,8 @@ The clipart is all canvas. The only thing I didn't write for this site is the ca
 I love this stuff, I spend all my time developing, but I'm a bit of a programming cowboy, a Junior - Mid developer with a lot of passion. I have little concept of time, like a beer and a laugh, but sometimes need to be on my own, I try not to take life too seriously, because when I do shit get's real. eol
 
 ### cool story bro, but why do you want another job
-My current work doesn't really appreciate what javascript can offer, and doesn't have any senior developers who are capable of teaching me anything about scaleable rock solid front and back end architecture, so I am really looking for a company that has seasoned developers who's brains I can pick and learn something from. I unfortunately have not been on any projects while in my current role as they have placed me in website support for the past year. it's killing me inside so looking to move on. eol
+My current work doesn't really appreciate what javascript can offer, and doesn't have any senior developers who are capable of teaching me anything about scaleable rock solid front and back end architecture, so I am really looking for a company that has seasoned developers who's brains I can pick and learn something from, I don't need my hand held, but would like the oportunity to discuss the application architecture with experienced professionals before begining a task. eol
+I unfortunately have not been on any projects while in my current role as they have placed me in website support for the past year. it's killing me inside so looking to move on to bigger and better things. eol
 </script>
 
 <script type="text/x-markdown" id="scene-contact">

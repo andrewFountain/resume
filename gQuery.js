@@ -69,7 +69,8 @@
 		 * this array holds any currently running animations
 		 * @type {Array}
 		 */
-		animations = [];
+		animations = [],
+		tweens     = [];
 
 	/*const*/
 	var
@@ -580,6 +581,198 @@
 	});
 
 	/**
+	 * gQuery static methods
+	 */
+	extend(gQuery, {
+
+		tween: function( tweenArr, cb ){
+
+			tweenArr.forEach(function( tween ){
+
+				_addTween( tween );
+
+			});
+
+		}
+
+	});
+
+	//$.tweenTo( [
+	//	{
+	//		el   : '.thing:nth-child(1)',
+	//		pos  : [ 0, 0 ],
+	//		style: {
+	//			opacity: 1
+	//		},
+	//		time : 1000,
+	//		delay: 0
+	//	},
+	//	{
+	//		el   : '.thing:nth-child(2)',
+	//		pos  : [ 200, 0 ],
+	//		style: {
+	//			apacity: 1
+	//		},
+	//		time : 1000,
+	//		delay: 0
+	//	}
+	//], function(){
+	//	console.log( 'tweening complete' );
+	//} );
+
+
+	function Timeline( el, tweenArr ){
+
+		this.length = tweenArr.length;
+		this.time = 0;
+
+		tweenArr.reduce(function( self, tween ){
+
+			self.animations = [];
+			for( var key in tween.style ){
+				self.animations.push( new Tween( tween.el, tween.pos, key, tween.style[ key ], tween.time, tween.ease ) );
+			}
+
+			self.time = self.time < tween.time ? tween.time : self.time;
+
+			return self;
+
+		}, this );
+
+	}
+
+	var AnimationTrait = {
+
+	};
+
+	function Animation( frame ){
+
+		var prop = valueAndUnit( frame.property );
+
+		this.el      = frame.el;
+		this.prop    = prop.value;
+		this.unit    = prop.unit;
+		this.initial = prop.value;
+		this.curr    = cssProp( frame.el, frame.prop );
+		this.to      = frame.to;
+		this.diff    = diff( prop.value, frame.to );
+		this.easing  = easing[ frame.easing || 'easeIn' ];
+		this.time    = frame.time;
+		this.start   = Date.now();
+	}
+
+	extend( Animation.prototype, {
+
+		update: fluent( function( now ){
+
+			var progress = now - this.start;
+
+			this.curr = this.easing( progress, this.initial, this.diff, this.time );
+
+			this.el.style[ this.prop ] = this.curr + ( this.unit || 0 );
+		} )
+
+	} );
+
+	function Vector( frame ){
+
+		var _matrix = matrix( frame.el ),
+		    to;
+
+		to = frame.to.length === 2
+			? [ 1, 0, 0, 1 ].concat( frame.to )
+			: frame.to;
+
+		this.el      = frame.el;
+		this.prop    = prop.value;
+		this.initial = _matrix;
+		this.curr    = _matrix;
+		this.to      = to;
+		this.diff    = diffArray( prop.value, frame.to );
+		this.easing  = easing[ frame.easing || 'easeIn' ];
+		this.time    = frame.time;
+		this.start   = Date.now();
+	}
+
+
+	extend(Vector.prototype, {
+
+		update: fluent( function( now ){
+
+			var progress = now - this.start;
+
+			for( var ii = 0, ll = this.curr.length; ii < ll; ii++ ){
+				this.curr[0] = this.easing( progress, this.initial[0], this.diff[0], this.time );
+			}
+
+			matrix( this.el, this.curr );
+		})
+
+	});
+
+	function valueAndUnit( value ){
+
+		var
+		    unit,
+		    match,
+		    type;
+
+		if( isString( value ) ){
+			if(( match = value.match( /([-\.0-9]+)(px|%|em)*/ ) )){
+				value = parseFloat( match[ 1 ] );
+				unit  = match[ 2 ] || 'px';
+				type =  Number
+			} else {
+				type = String
+			}
+		}
+
+		return {
+			value: value,
+			unit: unit,
+			type: type || Number
+		};
+
+	}
+
+	//(function(){
+	//
+	//	var tween = new Tween();
+	//
+	//	function __animate(){
+	//
+	//		tween.update( Date.now() );
+	//
+	//		window.setTimeout( __animate, 16 );
+	//	}
+	//
+	//})();
+
+
+	function _addTween( tweenArr ){
+
+		tweens.push( tweenArr.map(function( tween ){
+
+			var _tween =  {
+				el: tween.el,
+				initial: _matrix,
+				curr   : _matrix,
+				to     : xy,
+				diff   : diffArray( _matrix, xy ),
+				easing : ease,
+				time   : time,
+				start  : Date.now()
+			};
+
+		}));
+
+		if( !running ){
+			running = true;
+			window.requestAnimationFrame( _animate );
+		}
+	}
+
+	/**
 	 * _addAnimation
 	 *
 	 * this function will add an event to the event stack, and begin animation if it
@@ -693,44 +886,40 @@
 			    property,
 			    progress;
 
-			if( animation.props ){
+			for( prop in animation.props ) {
 
-				for( prop in animation.props ) {
+				property = animation.props[ prop ];
+				progress = Date.now() - property.start;
 
-					property = animation.props[ prop ];
-					progress = Date.now() - property.start;
+				if( prop === 'matrix' ){
 
-					if( prop === 'matrix' ){
+					var
+						easeFn = easing[ property.easing || 'easeIn' ],
+					    newCurr = [];
 
-						var
-							easeFn = easing[ property.easing || 'easeIn' ],
-						    newCurr = [];
-
-						for( var ii = 0, ll = property.curr.length; ii < ll; ii++ ){
-							newCurr[ ii ] = easeFn( progress, property.initial[ ii ], property.diff[ ii ], property.time );
-						}
-
-						property.curr = newCurr;
-
-						matrix(animation.el, property.curr );
-
-					} else {
-
-						property.curr = easing[ property.easing || 'easeIn' ]( progress, property.initial, property.diff, property.time );
-						animation.el.style[ prop ] = property.curr + property.unit;
-
+					for( var ii = 0, ll = property.curr.length; ii < ll; ii++ ){
+						newCurr[ ii ] = easeFn( progress, property.initial[ ii ], property.diff[ ii ], property.time );
 					}
 
-					if( progress < property.time ){
-						return true;
-					} else {
-						if( isFunction( animation.cb ) ){
-							animation.cb.call( animation.el, animation.el, animation );
-						}
-						return false;
-					}
+					property.curr = newCurr;
+
+					matrix(animation.el, property.curr );
+
+				} else {
+
+					property.curr = easing[ property.easing || 'easeIn' ]( progress, property.initial, property.diff, property.time );
+					animation.el.style[ prop ] = property.curr + property.unit;
+
 				}
 
+				if( progress < property.time ){
+					return true;
+				} else {
+					if( isFunction( animation.cb ) ){
+						animation.cb.call( animation.el, animation.el, animation );
+					}
+					return false;
+				}
 			}
 		});
 		// only call the _animaate function if there are animations still pending
@@ -793,3 +982,26 @@
 	}
 
 })();
+
+//$.tween([
+//	{
+//		el: '.thing:nth-child(1)',
+//		pos: [0,0],
+//		style: {
+//			opacity: 1
+//		},
+//		time: 1000,
+//		delay: 0
+//	},
+//	{
+//		el: '.thing:nth-child(2)',
+//		pos: [200,0],
+//		style: {
+//			apacity: 1
+//		},
+//		time: 1000,
+//		delay: 0
+//	}
+//], function(){
+//	console.log('tweening complete');
+//});

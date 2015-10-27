@@ -38,7 +38,7 @@
 		if (selector === window || selector === document || selector instanceof HTMLElement) {
 			return new gQuery('object', [selector]);
 		}
-		var els = isNodeList(selector) ? selector : (arguments[1] || document).querySelectorAll(selector);
+		/*let*/var els = isNodeList(selector) ? selector : (arguments[1] || document).querySelectorAll(selector);
 		return new gQuery(selector, els);
 	}
 
@@ -56,6 +56,7 @@
 		this.selector = selector;
 	}
 
+	/*let*/
 	var
 	/**
   * running
@@ -71,8 +72,10 @@
   * this array holds any currently running animations
   * @type {Array}
   */
-	animations = [];
+	animations = [],
+	    tweens = [];
 
+	/*const*/
 	var
 	/**
   * easing
@@ -107,7 +110,7 @@
 			}
 
 			this.each(function (el) {
-				for (var key in style) {
+				for ( /*let*/var key in style) {
 					el.style[key] = style[key];
 				}
 			});
@@ -143,7 +146,7 @@
    * @param   {Function}  fn      callback function
    */
 		each: fluent(function (fn) {
-			for (var ii = 0, ll = this.length; ii < ll; ii++) {
+			for ( /*let*/var ii = 0, ll = this.length; ii < ll; ii++) {
 				fn.call(this[ii], this[ii], ii, this);
 			}
 		}),
@@ -161,6 +164,7 @@
    * @fluent
    */
 		add: fluent(function (els) {
+			/*let*/
 			var ii = this.length || 0,
 			    el = els.length,
 			    ll = ii + el;
@@ -201,7 +205,7 @@
    * @fluent
    */
 		off: fluent(function (evt) {
-			var fn = this.events[evt];
+			/*const*/var fn = this.events[evt];
 			this.each(function (el) {
 				el.removeEventListener(evt, fn);
 			});
@@ -217,13 +221,49 @@
    * @returns {gQuery}
    */
 		children: function children() {
-			var ret = [];
+			/*let*/var ret = [];
 			this.each(function (el) {
-				var children = slice(el.children);
+				/*let*/var children = slice(el.children);
 				Array.prototype.splice.apply(ret, [ret.length, 0].concat(children));
 			});
 			return new gQuery(this.selector, ret);
 		},
+
+		/**
+  * $.prototype.scrollTo
+   *
+   * this method will scroll the first element in the gQuery object into view
+   *
+   * @param   {Number}    time        time in miliseconds to perform the animation
+   * @param   {String}    easeFn      easing algorithm.
+   *
+   * @fluent
+  **/
+		scrollTo: fluent(function (time, easeFn) {
+
+			time = time || 2000;
+
+			var to = this.offset() - 4 * 16,
+			    curr = window.pageYOffset || document.documentElement.scrollTop,
+			    start = Date.now(),
+			    progress,
+			    initial = curr,
+			    difference = diff(initial, to);
+
+			function _scrollTo() {
+
+				progress = Date.now() - start;
+
+				curr = easing[easeFn || 'easeIn'](progress, initial, difference, time);
+				window.scrollTo(0, curr);
+
+				if (progress < time) {
+					window.requestAnimationFrame(_scrollTo);
+				}
+			}
+
+			_scrollTo();
+		}),
 
 		/**
    * $.prototype.splice
@@ -244,9 +284,9 @@
    * @returns {gQuery}                    new instance with child nodes
    */
 		find: function find(selector) {
-			var ret = [];
+			/*let*/var ret = [];
 			this.each(function (el) {
-				var children = slice(el.querySelectorAll(selector));
+				/*const*/var children = slice(el.querySelectorAll(selector));
 				Array.prototype.splice.apply(ret, [ret.length, 0].concat(children));
 			});
 			return new gQuery(this.selector, ret);
@@ -366,7 +406,7 @@
    *
    * this method will return the translateX property, or set it
    *
-   * @param   {Number}    val     optional:value to set
+   * @param   {String}    val     optional:value to set, with unit
    * @returns {Number}
    */
 		translateX: (function () {
@@ -380,9 +420,10 @@
 				if (val) {
 
 					this.each(function (el) {
-						el.style.transform = 'translateX(' + val + 'px)';
+						el.style.transform = 'translateX(' + val + ')';
 					});
 				} else {
+					/*let*/
 					var transform = this[0].style.transform,
 					    match = transform.match(/translateX\(([0-9-.]+)(px|em|%)*\)/);
 
@@ -392,24 +433,43 @@
 		})(),
 
 		/**
+   * $.prototype.matrix
+   *
+   * this method will set or return the current matrix parameters
+   *
+   * @param   {Array}     matrixArr    optional: array of matrix values [a,b,c,d,x,y] || [x,y]
+   *
+   * @returns {gQuery|Array}          this or array representing current matrix, [a,b,c,d,x,y]
+   */
+		matrix: fluent(function (matrixArr) {
+			if (matrixArr) {
+				this.each(function (el) {
+					matrix(el, matrixArr);
+				});
+			}
+			return matrix(this[0]);
+		}),
+
+		/**
    * $.prototype.animate
    *
    * this method wil add the current animation properties to the animation queue
    * and start it if not already started.
    *
+   * @param {Array}       xy          co-ordinates for animation
    * @param {Object}      styles      key: value object of style properties. (camelCase keys)
-   * @param {Int}         time        total time for the animation
+   * @param {Number}      time        total time for the animation
    * @param {Function}    cb          callback when animation has finished. (called once per element animated)
    * @param {String}      ease        easing algorithm. linear || easeIn (default)
    *
    * @returns void 0;
    */
-		animate: function animate(styles, time, cb, ease) {
-			var self = this;
+		animate: function animate(xy, styles, time, cb, ease) {
+			/*const*/var self = this;
 
 			// build the animation queue
 			this.each(function (el) {
-				return _addAnimation(el, styles, time, cb, ease);
+				return _addAnimation(el, xy, styles, time, cb, ease);
 			});
 		},
 
@@ -423,30 +483,44 @@
    *
    * @param   {Number|Function}   delay       delay time in miliseconds for each iteration,
    *                                          or function to calculate. neww timeout. this: element, args( ii:iteration )
+   * @param   {Array}             xy          xy co-ordinates for animation
    * @param   {Object}            styles      styles to apply to the element
    * @praam   {Number}            time        total animation time
    * @param   {Function}          cb          callback when animation of element is complete
    * @param   {String}            ease        easing algorithm
    */
-		stagger: function stagger(delay, styles, time, cb, ease) {
+		stagger: function stagger(delay, xy, styles, time, cb, ease) {
 
 			this.each(function (el, ii) {
 
 				var timeout = isFunction(delay) ? delay.call(el, ii) : ii * delay;
 
 				return window.setTimeout(function () {
-					_addAnimation(el, styles, time, cb, ease);
+					_addAnimation(el, xy, styles, time, cb, ease);
 				}, timeout);
 			});
 		},
 
+		/**
+   * $.prototype.spy
+   *
+   * this method will bind events to when the elements scroll into view
+   *
+   * $( 'some-element' ).spy( Function:cb [, offset] );
+   *
+   * @param   {Function}  cb      callback when event is fired
+   * @param   {Number}    offset  offset from the top
+   *
+   * TODO: figure out a between method
+   * TODO: make permenant events
+   */
 		spy: (function () {
 
 			var stopped = true,
 			    offset = 0,
 			    events = [];
 
-			return function _spy(cb, offset) {
+			return fluent(function _spy(cb, offset) {
 
 				this.each(function (el) {
 
@@ -466,8 +540,15 @@
 						_run();
 					}
 				});
-			};
+			});
 
+			/**
+    * _run
+    *
+    * this function will create a recursive animation
+    *
+    * @private
+    */
 			function _run() {
 
 				if (events.length) {
@@ -482,6 +563,14 @@
 				_update();
 			}
 
+			/**
+    * _update
+    *
+    * this function will check the scroll position against the events.
+    * if the event has fired it will be removed from the events array.
+    *
+    * @private
+    */
 			function _update() {
 
 				offset = window.scrollY;
@@ -500,39 +589,258 @@
 
 	});
 
-	function _addAnimation(el, styles, time, cb, ease) {
+	/**
+  * gQuery static methods
+  */
+	extend(gQuery, {
 
+		tween: function tween(tweenArr, cb) {
+
+			tweenArr.forEach(function (tween) {
+
+				_addTween(tween);
+			});
+		}
+
+	});
+
+	//$.tweenTo( [
+	//	{
+	//		el   : '.thing:nth-child(1)',
+	//		pos  : [ 0, 0 ],
+	//		style: {
+	//			opacity: 1
+	//		},
+	//		time : 1000,
+	//		delay: 0
+	//	},
+	//	{
+	//		el   : '.thing:nth-child(2)',
+	//		pos  : [ 200, 0 ],
+	//		style: {
+	//			apacity: 1
+	//		},
+	//		time : 1000,
+	//		delay: 0
+	//	}
+	//], function(){
+	//	console.log( 'tweening complete' );
+	//} );
+
+	function Timeline(el, tweenArr) {
+
+		this.length = tweenArr.length;
+		this.time = 0;
+
+		tweenArr.reduce(function (self, tween) {
+
+			self.animations = [];
+			for (var key in tween.style) {
+				self.animations.push(new Tween(tween.el, tween.pos, key, tween.style[key], tween.time, tween.ease));
+			}
+
+			self.time = self.time < tween.time ? tween.time : self.time;
+
+			return self;
+		}, this);
+	}
+
+	var AnimationTrait = {};
+
+	function Animation(frame) {
+
+		var prop = valueAndUnit(frame.property);
+
+		this.el = frame.el;
+		this.prop = prop.value;
+		this.unit = prop.unit;
+		this.initial = prop.value;
+		this.curr = cssProp(frame.el, frame.prop);
+		this.to = frame.to;
+		this.diff = diff(prop.value, frame.to);
+		this.easing = easing[frame.easing || 'easeIn'];
+		this.time = frame.time;
+		this.start = Date.now();
+	}
+
+	extend(Animation.prototype, {
+
+		update: fluent(function (now) {
+
+			var progress = now - this.start;
+
+			this.curr = this.easing(progress, this.initial, this.diff, this.time);
+
+			this.el.style[this.prop] = this.curr + (this.unit || 0);
+		})
+
+	});
+
+	function Vector(frame) {
+
+		var _matrix = matrix(frame.el),
+		    to;
+
+		to = frame.to.length === 2 ? [1, 0, 0, 1].concat(frame.to) : frame.to;
+
+		this.el = frame.el;
+		this.prop = prop.value;
+		this.initial = _matrix;
+		this.curr = _matrix;
+		this.to = to;
+		this.diff = diffArray(prop.value, frame.to);
+		this.easing = easing[frame.easing || 'easeIn'];
+		this.time = frame.time;
+		this.start = Date.now();
+	}
+
+	extend(Vector.prototype, {
+
+		update: fluent(function (now) {
+
+			var progress = now - this.start;
+
+			for (var ii = 0, ll = this.curr.length; ii < ll; ii++) {
+				this.curr[0] = this.easing(progress, this.initial[0], this.diff[0], this.time);
+			}
+
+			matrix(this.el, this.curr);
+		})
+
+	});
+
+	function valueAndUnit(value) {
+
+		var unit, match, type;
+
+		if (isString(value)) {
+			if (match = value.match(/([-\.0-9]+)(px|%|em)*/)) {
+				value = parseFloat(match[1]);
+				unit = match[2] || 'px';
+				type = Number;
+			} else {
+				type = String;
+			}
+		}
+
+		return {
+			value: value,
+			unit: unit,
+			type: type || Number
+		};
+	}
+
+	//(function(){
+	//
+	//	var tween = new Tween();
+	//
+	//	function __animate(){
+	//
+	//		tween.update( Date.now() );
+	//
+	//		window.setTimeout( __animate, 16 );
+	//	}
+	//
+	//})();
+
+	function _addTween(tweenArr) {
+
+		tweens.push(tweenArr.map(function (tween) {
+
+			var _tween = {
+				el: tween.el,
+				initial: _matrix,
+				curr: _matrix,
+				to: xy,
+				diff: diffArray(_matrix, xy),
+				easing: ease,
+				time: time,
+				start: Date.now()
+			};
+		}));
+
+		if (!running) {
+			running = true;
+			window.requestAnimationFrame(_animate);
+		}
+	}
+
+	/**
+  * _addAnimation
+  *
+  * this function will add an event to the event stack, and begin animation if it
+  * has been paused.
+  *
+  * @param   {HTMLElement}   el          Element to bind animation properties to
+  * @param   {Array}         xy          Array representing Matrix or KY parameters
+  * @param   {Object}        styles      style object
+  * @param   {Number}        time        animation length
+  * @param   {Function}      cb          callback when specific animation has finished
+  * @param   {String}        ease        easing function
+  *
+  * @private
+  *
+  * @return  void
+  */
+	function _addAnimation(el, xy, styles, time, cb, ease) {
+
+		/*let*/
 		var ret = {
 			el: el,
 			props: {},
 			cb: cb
 		};
-		var key = undefined;
-		for (key in styles) {
-			var initial = cssProp(el, key),
-			    prop = styles[key],
-			    noUnit = ['opacity'].indexOf(key) > -1,
-			    to = undefined,
-			    unit = undefined;
-			if (isString(prop)) {
-				var match = styles[key].match(/([-\.0-9]+)(px|%|em)*/);
-				to = parseFloat(match[1]);
-				unit = match[2] || 'px';
-			} else {
-				to = prop;
-				unit = noUnit ? '' : unit || 'px';
+
+		if (xy) {
+
+			if (xy.length === 2) {
+				xy = [1, 0, 0, 1].concat(xy);
 			}
 
-			ret.props[key] = {
-				curr: initial,
-				to: to,
-				unit: unit,
-				initial: initial,
+			var _matrix = matrix(el);
+			ret.props['matrix'] = {
+				initial: _matrix,
+				curr: _matrix,
+				to: xy,
+				diff: diffArray(_matrix, xy),
 				easing: ease,
 				time: time,
 				start: Date.now()
 			};
-			ret.props[key].diff = diff(initial, to);
+		}
+
+		if (styles) {
+			/*let*/
+			var key;
+
+			for (key in styles) {
+				/*let*/
+				var initial = cssProp(el, key),
+				    prop = styles[key],
+				    noUnit = ['opacity'].indexOf(key) > -1,
+				    to,
+				    unit;
+				if (isString(prop)) {
+					/*let*/
+					var match = styles[key].match(/([-\.0-9]+)(px|%|em)*/);
+					to = parseFloat(match[1]);
+					unit = match[2] || 'px';
+				} else {
+					to = prop;
+					unit = noUnit ? '' : unit || 'px';
+				}
+
+				ret.props[key] = {
+					curr: initial,
+					to: to,
+					unit: unit,
+					initial: initial,
+					easing: ease,
+					time: time,
+					start: Date.now()
+				};
+				ret.props[key].diff = diff(initial, to);
+			}
 		}
 
 		animations.push(ret);
@@ -561,17 +869,31 @@
 		// filter out any finished animations
 		animations = animations.filter(function (animation) {
 
-			var prop = undefined,
-			    property = undefined,
-			    progress = undefined;
+			/*let*/
+			var prop, property, progress;
 
 			for (prop in animation.props) {
 
 				property = animation.props[prop];
 				progress = Date.now() - property.start;
 
-				property.curr = easing[property.easing || 'easeIn'](progress, property.initial, property.diff, property.time);
-				animation.el.style[prop] = property.curr + property.unit;
+				if (prop === 'matrix') {
+
+					var easeFn = easing[property.easing || 'easeIn'],
+					    newCurr = [];
+
+					for (var ii = 0, ll = property.curr.length; ii < ll; ii++) {
+						newCurr[ii] = easeFn(progress, property.initial[ii], property.diff[ii], property.time);
+					}
+
+					property.curr = newCurr;
+
+					matrix(animation.el, property.curr);
+				} else {
+
+					property.curr = easing[property.easing || 'easeIn'](progress, property.initial, property.diff, property.time);
+					animation.el.style[prop] = property.curr + property.unit;
+				}
 
 				if (progress < property.time) {
 					return true;
@@ -606,20 +928,65 @@
 		return parseFloat(el.style[prop] || window.getComputedStyle(el, null)[prop]);
 	}
 
+	/**
+  * set or get the transform translation property
+  */
+	function matrix(el, xy) {
+
+		if (xy) {
+
+			if (xy.length === 2) {
+				xy = [1, 0, 0, 1].concat(xy);
+			}
+			el.style.transform = 'matrix(' + xy.join() + ')';
+		} else {
+
+			var curr = el.style['transform'] || window.getComputedStyle(el, null)['transform'],
+			    match = curr.match(/matrix\(([^)]+)\)/);
+
+			return match ? parseIntMap(match[1].split(/,/)) : [1, 0, 0, 1, 0, 0];
+		}
+	}
+
+	window.matrix = matrix;
+
 	function every(method) {
 		return function (fn) {
-			var self = this,
+			/*const*/var self = this,
 			    ll = this.length;
 
 			for (var _len4 = arguments.length, args = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
 				args[_key4 - 1] = arguments[_key4];
 			}
 
-			for (var ii = 0; ii < ll; ii++) {
+			for ( /*let*/var ii = 0; ii < ll; ii++) {
 				fn.apply(self[ii], [self[ii]].concat(args));
 			}
 		};
 	}
 })();
+
+//$.tween([
+//	{
+//		el: '.thing:nth-child(1)',
+//		pos: [0,0],
+//		style: {
+//			opacity: 1
+//		},
+//		time: 1000,
+//		delay: 0
+//	},
+//	{
+//		el: '.thing:nth-child(2)',
+//		pos: [200,0],
+//		style: {
+//			apacity: 1
+//		},
+//		time: 1000,
+//		delay: 0
+//	}
+//], function(){
+//	console.log('tweening complete');
+//});
 
 //# sourceMappingURL=gQuery-compiled.js.map

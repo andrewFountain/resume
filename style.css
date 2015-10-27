@@ -334,6 +334,9 @@ header#site-header {
       flex-wrap: wrap;
       flex-basis: 40%;
       text-align: center; }
+      @media screen and (max-width: 56.25em) {
+        header#site-header nav ul {
+          flex-basis: 90%; } }
       header#site-header nav ul li {
         color: #fff;
         flex: 1 1 auto; }

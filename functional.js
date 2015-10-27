@@ -19,7 +19,7 @@
 									    : _curry( a );
 							    };
 							return _curry( [] );
-						};
+					},
 
 		/**
 		 * curryArgs
@@ -590,3 +590,6 @@
 
 		}, reciever )
 	};
+
+
+	// this should force re compiling force again bitches

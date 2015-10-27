@@ -14,6 +14,10 @@ $background-heading: #f02673;
 $transparent: rgba(220,220,220, 0.4);
 $box-shadow: .3em .3em 1em #222;
 
+@function ems($px) {
+	@return ($px / 16) + 0em;
+}
+
 @mixin clear {
 	&::before, &::after {
 		content : " ";
@@ -49,9 +53,20 @@ $box-shadow: .3em .3em 1em #222;
 	text-align : initial;
 }
 
+@mixin breakpoint( $size ){
 
-@function ems($px){
-	@return ($px / 16) + 0em;
+	$sizes: (
+		small: ems(600) ,
+		medium: ems(900),
+		large: ems(1200)
+	);
+
+	$size: map-get($sizes, $size);
+
+	@media screen and (max-width: #{$size} ){
+		@content;
+	}
+
 }
 
 @import 'fontello';
@@ -379,6 +394,10 @@ header#site-header {
 			flex-wrap : wrap;
 			flex-basis : 40%;
 			text-align : center;
+
+			@include breakpoint('medium'){
+				flex-basis: 90%;
+			}
 
 			li {
 				color: $color-heading;
