@@ -177,6 +177,8 @@
 		mapWith     =   flip( map ),
 
 		parseIntMap    = mapWith( first(parseInt)),
+		hexToDecMap    = mapWith( ( hex ) => parseInt(hex, 16) ),
+		negativeMap    = mapWith(( num ) => num * -1),
 
 		/**
 		 * filter

@@ -253,19 +253,6 @@
 		educationTemplate({course: course});
 	});
 
-	var log = ( fn ) =>
-		function( ...args ) {
-			return console.log( '%c  ' + fn.name + '  ', 'background:#3cf;color:white;',  fn.apply( this, args) );
-		};
-
-	function add( num ){
-		return function _add( val ){
-			return val + num;
-		}
-	}
-
-	var adder = log(add( 4 ));
-
 	function Slideshow(){
 
 		this.currentSlide = 0;
@@ -348,7 +335,11 @@
 
 	scrollSpy.bind('#output-personal', function( el, offset ){
 
-		$( '.personal__attribute-item' ).stagger( ( ii ) => ii * 500, [0,0], { opacity: 1 }, 2000 );
+		$( '.personal__attribute-item' ).stagger( ( ii ) => ii * 500, [0,0], {
+			opacity: 1
+		}, 2000 );
+
+		//$('.personal__attribute-item' ).animateFrom([200,200], {}, 2000);
 
 	});
 
@@ -358,11 +349,19 @@
 
 			var $this     = $( this ),
 			    $progress = $this.find( '.progress' ),
+			    $header   = $this.find( 'header' ),
 			    width     = parseInt( $progress.css( 'width' ) ),
 			    $inner    = $this.find( '.progress-inner' ),
 			    progress  = parseInt( $progress.data( 'score' ) ) / 10;
 
-			$inner.animate( null, { width: ((width * progress / width) * 100) + '%' }, 2000 );
+			$inner.animate( null, {
+				width: ((width * progress / width) * 100) + '%',
+				background: '#3cf'
+			}, 2000 );
+
+			$header.animate( null, {
+				background: '#3cf'
+			}, 2000);
 		});
 
 	});
@@ -373,11 +372,14 @@
 
             var $this = $(this),
                 $progress = $this.find('.progress'),
+                $header = $this.find( 'header' ),
                 width = parseInt($progress.css('width')),
                 $inner = $this.find('.progress-inner'),
                 progress = parseInt($progress.data('score')) / 10;
 
-            $inner.animate( null, {width: ((width * progress / width) * 100) + '%'}, 2000);
+            $inner.animate( null, {
+	            width: ((width * progress / width) * 100) + '%'
+            }, 2000);
 
         });
 	});
@@ -530,7 +532,7 @@
         }
     };
 
-    $('.truck').animate( [rand(),rand(),rand(),rand(),200, 0], {opacity: 1}, 4000, function(){
+    $('.truck').animate( [200, 0], {opacity: 1}, 4000, function(){
         scrollSpy.bind(800, function () {
             $('.truck').animate([-600, 0], {left: '-600px'}, 4000);
         });
@@ -711,7 +713,7 @@ I hid the contact details on the site, you can send me an email using the functi
 			    markdownToConsole( '#scene-' + scene );
 		    }
 
-		   _show('intro');
+		  _show('intro');
 
 	    })();
 

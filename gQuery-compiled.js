@@ -106,7 +106,8 @@
 		css: fluent(function (style) {
 
 			if (typeof style === 'string') {
-				return cssProp(this[0], style);
+				var prop = cssProp(this[0], style);
+				return isColorProperty(style) ? prop : parseFloat(prop);
 			}
 
 			this.each(function (el) {
@@ -249,6 +250,15 @@
 			    progress,
 			    initial = curr,
 			    difference = diff(initial, to);
+
+			//var scroller = new Scroller( to, time, ease );
+			//
+			//animations.push( scroller );
+			//
+			//if( !running ){
+			//	running = true;
+			//	window.requestAnimationFrame( _animate );
+			//}
 
 			function _scrollTo() {
 
@@ -473,6 +483,15 @@
 			});
 		},
 
+		animateFrom: function animateFrom(xy, styles, time, cb, ease) {
+			/*const*/var self = this;
+
+			// build the animation queue
+			this.each(function (el) {
+				return _addAnimation(el, xy, styles, time, cb, ease, true);
+			});
+		},
+
 		/**
    * $.protytpe.stagger
    *
@@ -627,24 +646,6 @@
 	//	console.log( 'tweening complete' );
 	//} );
 
-	function Timeline(el, tweenArr) {
-
-		this.length = tweenArr.length;
-		this.time = 0;
-
-		tweenArr.reduce(function (self, tween) {
-
-			self.animations = [];
-			for (var key in tween.style) {
-				self.animations.push(new Tween(tween.el, tween.pos, key, tween.style[key], tween.time, tween.ease));
-			}
-
-			self.time = self.time < tween.time ? tween.time : self.time;
-
-			return self;
-		}, this);
-	}
-
 	/**
   * base animation class to inherit
   */
@@ -669,7 +670,7 @@
 
 		prop = valueAndUnit(prop);
 
-		var initial = cssProp(el, key);
+		var initial = cssProp(el, key, true);
 
 		this.el = el;
 		this.prop = key;
@@ -700,18 +701,62 @@
 
 	});
 
-	function Vector(el, xy, time, cb, ease) {
+	function StyleColor(el, key, value, time, cb, ease) {
 
-		var _matrix = matrix(el),
-		    to;
+		var initial = cssProp(el, key);
 
-		to = xy.length === 2 ? [1, 0, 0, 1].concat(xy) : xy;
+		initial = colorToArray(initial);
+		value = colorToArray(value);
 
 		this.el = el;
-		this.initial = _matrix;
-		this.curr = _matrix;
+		this.prop = key;
+		this.initial = initial;
+		this.curr = initial;
+		this.to = value;
+		this.diff = diffArray(initial, value);
+		this.easing = easing[ease || 'easeIn'];
+		this.time = time;
+		this.progress = 0;
+		this.cb = cb;
+		this.start = Date.now();
+	}
+
+	StyleColor.prototype = new Animation();
+
+	extend(StyleColor.prototype, {
+
+		update: fluent(function (now) {
+
+			var newCurr = [];
+
+			this.progress = now - this.start;
+
+			for (var ii = 0, ll = this.curr.length; ii < ll; ii++) {
+				newCurr[ii] = this.easing(this.progress, this.initial[ii], this.diff[ii], this.time);
+			}
+
+			this.curr = parseIntMap(newCurr);
+
+			this.el.style[this.prop] = 'rgb(' + this.curr.join(',') + ')';
+		})
+
+	});
+
+	function Vector(el, xy, time, cb, ease, isFrom) {
+
+		var _matrix = matrix(el);
+
+		xy = xy.length === 2 ? [1, 0, 0, 1].concat(xy) : xy;
+
+		var initial = isFrom ? xy : _matrix,
+		    to = isFrom ? _matrix : xy,
+		    diff = diffArray(initial, to);
+
+		this.el = el;
+		this.initial = initial;
+		this.curr = initial;
 		this.to = to;
-		this.diff = diffArray(_matrix, to);
+		this.diff = diff;
 		this.easing = easing[ease || 'easeIn'];
 		this.time = time;
 		this.progress = 0;
@@ -740,39 +785,37 @@
 
 	});
 
-	function valueAndUnit(value) {
+	function Scroller(to, time, ease) {
 
-		var unit, match, type;
+		var initial = window.scrollY;
 
-		if (isString(value)) {
-			if (match = value.match(/([-\.0-9]+)(px|%|em)*/)) {
-				value = parseFloat(match[1]);
-				unit = match[2] || 'px';
-				type = Number;
-			} else {
-				type = String;
-			}
-		}
-
-		return {
-			value: value,
-			unit: unit,
-			type: type || Number
-		};
+		this.initial = initial;
+		this.curr = initial;
+		this.to = to;
+		this.diff = diff(initial, to);
+		this.easing = easing[ease || 'easeIn'];
+		this.time = time;
+		this.progress = 0;
+		this.cb = cb;
+		this.start = Date.now();
 	}
 
-	//(function(){
-	//
-	//	var tween = new Tween();
-	//
-	//	function __animate(){
-	//
-	//		tween.update( Date.now() );
-	//
-	//		window.setTimeout( __animate, 16 );
-	//	}
-	//
-	//})();
+	Scroller.prototype = new Animation();
+
+	extend(Scroller.prototype, {
+
+		update: fluent(function (now) {
+
+			this.progress = now - this.start;
+
+			this.curr = this.easing(this.progress, this.initial, this.diff, this.time);
+
+			window.scrollTo = this.curr + (this.unit || 0);
+		}),
+
+		alive: function alive() {}
+
+	});
 
 	function _addTween(tweenArr) {
 
@@ -808,23 +851,17 @@
   * @param   {Number}        time        animation length
   * @param   {Function}      cb          callback when specific animation has finished
   * @param   {String}        ease        easing function
+  * @param   {boolean}       isFrom      true if animating from the given parameters
   *
   * @private
   *
   * @return  void
   */
-	function _addAnimation(el, xy, styles, time, cb, ease) {
-
-		/*let*/
-		var ret = {
-			el: el,
-			props: {},
-			cb: cb
-		};
+	function _addAnimation(el, xy, styles, time, cb, ease, isFrom) {
 
 		if (xy) {
-			var vector = new Vector(el, xy, time, cb, ease);
-			animations.push(vector);
+			var animation = new Vector(el, xy, time, cb, ease, isFrom);
+			animations.push(animation);
 		}
 
 		if (styles) {
@@ -833,9 +870,15 @@
 
 			for (key in styles) {
 
-				var prop = new StyleProperty(el, key, styles[key], time, cb, ease);
+				var animation;
 
-				animations.push(prop);
+				if (isColorProperty(key)) {
+					animation = new StyleColor(el, key, styles[key], time, cb, ease, isFrom);
+				} else {
+					animation = new StyleProperty(el, key, styles[key], time, cb, ease, isFrom);
+				}
+
+				animations.push(animation);
 			}
 		}
 
@@ -862,6 +905,8 @@
 
 		animations = animations.filter(function (animation) {
 
+			if (!(animation instanceof Animation)) return false;
+
 			animation.update(Date.now());
 
 			return animation.alive();
@@ -883,11 +928,43 @@
   *
   * @param   {HTMLElement}   el      element to get style from
   * @param   {String}        prop    property value to retrieve
+  * @param   {bool}          parse   if value is an integer parse it
   *
   * @returns {Number}
   */
-	function cssProp(el, prop) {
-		return parseFloat(el.style[prop] || window.getComputedStyle(el, null)[prop]);
+	function cssProp(el, prop, parse) {
+		prop = el.style[prop] || window.getComputedStyle(el, null)[prop];
+		return parse ? parseFloat(prop) : prop;
+	}
+
+	function isColorProperty(prop) {
+		return ['color', 'background', 'background-color', 'border-color'].indexOf(prop) > -1;
+	}
+
+	function colorToArray(color) {
+
+		var match = null,
+		    hexReg = /\#([0-9a-z]+)/,
+		    rgbReg = /\(([0-9 ,.]+)\)/;
+
+		if (Array.isArray(color)) {
+
+			return color;
+		} else if (match = color.match(hexReg)) {
+
+			if (match[1].length === 3) {
+				color = mapWith(function (ii) {
+					return (ii + 1) * 16;
+				})(hexToDecMap(match[1].split('')));
+			} else {
+				color = hexToDecMap(match[1].match(/.{2}/g));
+			}
+		} else if (match = color.match(rgbReg)) {
+
+			color = parseIntMap(match[1].split(/,\s*/));
+		}
+
+		return color;
 	}
 
 	/**
@@ -910,7 +987,26 @@
 		}
 	}
 
-	window.matrix = matrix;
+	function valueAndUnit(value) {
+
+		var unit, match, type;
+
+		if (isString(value)) {
+			if (match = value.match(/([-\.0-9]+)(px|%|em)*/)) {
+				value = parseFloat(match[1]);
+				unit = match[2] || 'px';
+				type = Number;
+			} else {
+				type = String;
+			}
+		}
+
+		return {
+			value: value,
+			unit: unit,
+			type: type || Number
+		};
+	}
 
 	function every(method) {
 		return function (fn) {

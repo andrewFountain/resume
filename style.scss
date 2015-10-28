@@ -49,7 +49,7 @@ $box-shadow: .3em .3em 1em #222;
 	display        : inline-block;
 	vertical-align : middle;
 	width: 90%;
-	max-width          : $width;
+	max-width : $width;
 	text-align : initial;
 }
 
@@ -273,7 +273,7 @@ ul.tick-list {
 		@include clear;
 		display: block;
 		opacity: 0;
-		transform         : matrix(1,0,0,1,0,50);
+		transform         : matrix(1,0,0,1,50,50);
 	}
 
 	li span {

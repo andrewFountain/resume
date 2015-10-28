@@ -249,7 +249,7 @@ ul.tick-list {
   ul.tick-list li {
     display: block;
     opacity: 0;
-    transform: matrix(1, 0, 0, 1, 0, 50); }
+    transform: matrix(1, 0, 0, 1, 50, 50); }
     ul.tick-list li::before, ul.tick-list li::after {
       content: " ";
       display: block;
