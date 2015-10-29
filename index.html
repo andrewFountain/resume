@@ -399,9 +399,9 @@
 		$( window ).on( 'scroll', function(){
 			if( scrolling === false && events.length ){
 				console.log( 'started scrolling', timeout );
+				scrolling = true;
 				_render();
 			}
-			scrolling = true;
 			window.clearTimeout( timeout );
 			timeout   = window.setTimeout( function(){
 				scrolling = false;
@@ -465,6 +465,8 @@
 
 				return event.update( Date.now() );
 			});
+
+			console.log( 'animating' );
 
 			if( events.length && scrolling ){
 				window.requestAnimationFrame(_render);
