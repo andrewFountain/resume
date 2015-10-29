@@ -268,6 +268,40 @@
 			offset = 0,
 			events = [];
 
+		function ScrollEvt(){}
+		ScrollEvt.prototype = {};
+
+		function SpyEvt( params ){
+			extend( this, params );
+		}
+
+		extend( SpyEvt.prototype, {
+
+			update: function( offset ){
+
+				if( offset > this.offset && this.persist === false ){
+
+					this.cb.call( this.el, this.el, offset );
+					return false;
+				}
+
+				return true;
+			}
+
+		});
+
+		function Paralax( params ){
+			extend( this, params );
+		}
+
+		extend(Paralax.prototype, {
+
+			update: function( offset ){
+				return this.cb.call( this.el, this.curr, this.offset, offset );
+			}
+
+		});
+
 		return {
 
 			run: function run( cb ){
@@ -278,13 +312,7 @@
 
 					events = events.filter(function( event ){
 
-						if( offset > event.offset ){
-
-							event.cb.call( event.el, event.el, offset );
-							return false;
-						}
-
-						return true;
+						return event.update( offset );
 
 					});
 
@@ -302,6 +330,29 @@
 
 			},
 
+			paralax: function paralax( el, cb ){
+
+				if( isElement( el ) || isString( el ) ){
+					el = $(el);
+					offset = el.offset()
+				} else {
+					offset = window.scrollY;
+				}
+
+				events.push( new Paralax({
+					el     : el,
+					cb     : cb,
+					offset : offset,
+					persist: true
+				}));
+
+
+				if( stopped ){
+					this.run();
+				}
+
+			},
+
 			bind: function( elOrOffset, cb ){
 
 				var offset = null;
@@ -313,11 +364,12 @@
 					offset = elOrOffset
 				}
 
-				events.push({
+				events.push( new SpyEvt({
 					el: elOrOffset,
 					cb: cb,
-					offset: offset - (window.innerHeight * .5)
-				});
+					offset: offset - (window.innerHeight * .5),
+					persist: false
+				}));
 
 				if( stopped ){
 					this.run();
@@ -325,9 +377,119 @@
 
 			}
 
-		};
+		}
 
 	})();
+
+
+	var paralax = (function(){
+
+		var events = [],
+		    scrolling = false,
+		    timeout = null;
+
+		/**
+		 * super efficient scrolling request annimation frome
+		 *
+		 * this function will bind an event to the dom scroll event,
+		 * and continually cancel the callback while scrolling. when
+		 * when scrolling is complete the `scrolling` variable will be
+		 * set to false which will end the requestAnimationFrame cycle
+		 */
+		$( window ).on( 'scroll', function(){
+			if( scrolling === false && events.length ){
+				console.log( 'started scrolling', timeout );
+				_render();
+			}
+			scrolling = true;
+			window.clearTimeout( timeout );
+			timeout   = window.setTimeout( function(){
+				scrolling = false;
+				console.log( 'stopped scrolling', timeout );
+			}, 80 );
+		} );
+
+		function Paralax( params ){
+			extend( this, params );
+		}
+
+		extend(Paralax.prototype, {
+			update: function( timestamp ){
+
+				var offset = window.scrollY,
+				    heightOffset = window.innerHeight * 1;
+
+				this.height = this.el.css( 'height' );
+
+				this.curr = offset - this.offset;
+				this.bottom = this.curr + heightOffset;
+
+				if( ( this.curr > 0 - heightOffset ) && ( this.curr < this.height ) ){
+
+					this.progress = (this.bottom / this.height) * 100;
+
+					return this.cb.call( this, this.progress, this );
+
+				}
+
+				return true; // persistent animation
+			}
+		});
+
+		return {
+			add: function( el, cb ){
+
+				var offset;
+
+				if( isElement(el) || isString(el)){
+					el = $(el);
+					offset = el.offset();
+				} else {
+					offset = window.offsetY;
+				}
+
+				events.push( new Paralax({
+					el: el,
+					height: el.css('height'),
+					progress: 0,
+					offset: offset,
+					curr: offset,
+					cb: cb
+				}));
+			}
+		};
+
+		function _render(){
+
+			events = events.filter(function( event ){
+
+				return event.update( Date.now() );
+			});
+
+			if( events.length && scrolling ){
+				window.requestAnimationFrame(_render);
+			}
+
+		}
+
+	})();
+
+	paralax.add( '#output-frameworks', function( progress, para ){
+
+		var elOffsets = [],
+		    offset = window.scrollY;
+
+
+		this.el.find('.framework' ).each(function( el ){
+			var $el = $(el);
+
+			elOffsets.push( para.bottom - el.offsetTop );
+		});
+
+//		console.log( 'progress', elOffsets, para );
+		return true;
+
+	});
 
 	scrollSpy.bind(200, function(){
 		$('header' ).removeClass('attached');
@@ -554,6 +716,12 @@
 		return (Math.random() * 2) - 1;
 	}
 
+//	$(window ).on('scroll', function( e ){
+//
+//		console.log( e );
+//
+//	});
+
 //    console.clear();
 //    c.title('Awesome you must like seeing how things work too');
 //    c.list('I live in here, so maybe I should tell you what\'s happening behind the scenes');
@@ -713,7 +881,7 @@ I hid the contact details on the site, you can send me an email using the functi
 			    markdownToConsole( '#scene-' + scene );
 		    }
 
-		  _show('intro');
+		  //_show('intro');
 
 	    })();
 

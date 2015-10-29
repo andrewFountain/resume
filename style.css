@@ -185,8 +185,9 @@ section .slideshow {
   width: 100%;
   overflow-x: hidden;
   background: #eee;
-  background: url("./images/background.jpg");
-  background-size: 120%; }
+  background: url("./images/background.png");
+  background-size: cover;
+  background-attachment: fixed; }
   section .slideshow .slideshow-nav {
     position: absolute;
     height: 4em;
