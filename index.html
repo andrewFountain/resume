@@ -18,9 +18,10 @@
 <!--        <div>Resume <span>Andrew Fountain</span></div>-->
 		<nav>
 			<ul id="navigation">
+				<li data-section="#site-content" class="active">home</li>
 				<li data-section="#output-personal">me</li>
 				<li data-section="#output-languages">languages</li>
-				<li data-section="#output-frameworks" class="active">frameworks</li>
+				<li data-section="#output-frameworks">frameworks</li>
 				<li data-section="#output-job">work</li>
 				<li data-section="#course">education</li>
 				<li data-section="#output-books">books</li>
@@ -238,7 +239,7 @@
 		blogsTemplate       = template('blogs' ),
 		languagesTemplate   = template('languages' ),
 		frameworksTemplate  = template('frameworks' ),
-		educationTemplate      = template('education');
+		educationTemplate   = template('education');
 
 
 	personalTemplate( resume.personal );
@@ -266,20 +267,42 @@
 		var
 			stopped = true,
 			offset = 0,
-			events = [];
+			events = [],
+		    $navTriggers = $('[data-section]' ),
+			current = $( $navTriggers[0] ),
+		    scrolling = false,
+		    timeout;
 
-		function ScrollEvt(){}
-		ScrollEvt.prototype = {};
+		function NavEvt( params ){
+			extend( this, params );
+		}
+		NavEvt.prototype = {};
 
 		function SpyEvt( params ){
 			extend( this, params );
 		}
+
+		$navTriggers.on('click', function( e ){
+
+			var
+				$this   = $( e.target ),
+			    section = $this.data( 'section' );
+
+			$( section ).scrollTo();
+
+		});
+
+
 
 		extend( SpyEvt.prototype, {
 
 			update: function( offset ){
 
 				if( offset > this.offset && this.persist === false ){
+
+//					if( this.el instanceof gQuery && current !== this.el[ 0 ] ){
+//
+//					}
 
 					this.cb.call( this.el, this.el, offset );
 					return false;
@@ -290,14 +313,19 @@
 
 		});
 
-		function Paralax( params ){
-			extend( this, params );
-		}
-
-		extend(Paralax.prototype, {
+		extend( NavEvt.prototype, {
 
 			update: function( offset ){
-				return this.cb.call( this.el, this.curr, this.offset, offset );
+
+				if( offset > this.offset - 100 && offset < this.offset + this.height - 100 ){
+					current.removeClass( 'active' );
+					current = this.button;
+					console.log( 'changed current', current );
+					current.addClass( 'active' );
+				}
+
+				return true;
+
 			}
 
 		});
@@ -343,7 +371,7 @@
 					el     : el,
 					cb     : cb,
 					offset : offset,
-					persist: true
+					height : el.css('height')
 				}));
 
 
@@ -375,6 +403,27 @@
 					this.run();
 				}
 
+			},
+
+			navigation: function( selector, dataId ){
+
+				$( selector ).each(( el ) => {
+
+					var $el = $( el ),
+					    section = $el.data( dataId || 'section' ),
+					    $section = $( section ),
+					    offset = $section.offset( null );
+
+					events.push(new NavEvt({
+						el: $section,
+						button: $el,
+						offset: offset,
+						height: $section.css('height'),
+						persist: true
+					}));
+
+				});
+
 			}
 
 		}
@@ -385,6 +434,7 @@
 	var paralax = (function(){
 
 		var events = [],
+		    animations = [ 1 ],
 		    scrolling = false,
 		    timeout = null;
 
@@ -409,6 +459,20 @@
 			}, 80 );
 		} );
 
+		function _render(){
+
+			events = events.filter( function( event ){
+
+				return event.update( Date.now() );
+			} );
+
+			if( events.length && scrolling ){
+				window.requestAnimationFrame( _render );
+			}
+
+		}
+
+
 		function Paralax( params ){
 			extend( this, params );
 		}
@@ -420,7 +484,6 @@
 				    heightOffset = window.innerHeight * 1;
 
 				this.height = this.el.css( 'height' );
-
 				this.curr = offset - this.offset;
 				this.bottom = this.curr + heightOffset;
 
@@ -456,8 +519,41 @@
 					curr: offset,
 					cb: cb
 				}));
+			},
+			calc: function( p, el ){
+
+				var pageOffset      = window.clientY,
+				    $el             = $(el),
+				    elHeight        = $el.css('height'),
+					height          = p.end - p.start,
+				    parentOffset    = $el.offset( p.el );
+
+				return {
+					start : {
+						top   : p.bottom - parentOffset,
+						bottom: p.bottom - parentOffset + elHeight
+					},
+					end   : {
+						top   : null,
+						bottom: null
+					},
+					parent: {
+						top   : parentOffset,
+						bottom: parentOffset + elHeight
+					},
+					page: {
+						top   : parentOffset,
+						bottom: parentOffset + elHeight
+					},
+					height: elHeight
+				};
+
 			}
 		};
+
+		var startPos = paralax.calc('start');
+
+		startPos.top();
 
 		function _render(){
 
@@ -465,8 +561,6 @@
 
 				return event.update( Date.now() );
 			});
-
-			console.log( 'animating' );
 
 			if( events.length && scrolling ){
 				window.requestAnimationFrame(_render);
@@ -478,23 +572,15 @@
 
 	paralax.add( '#output-frameworks', function( progress, para ){
 
-		var elOffsets = [],
-		    offset = window.scrollY;
-
+		var elOffsets = [];
 
 		this.el.find('.framework' ).each(function( el ){
-			var $el = $(el);
-
-			elOffsets.push( para.bottom - el.offsetTop );
+			elOffsets.push( para.bottom - el.offsetTop, paralax.calc( para, el ) );
 		});
 
-//		console.log( 'progress', elOffsets, para );
+		console.log( 'progress', elOffsets, para );
 		return true;
 
-	});
-
-	scrollSpy.bind(200, function(){
-		$('header' ).removeClass('attached');
 	});
 
 	scrollSpy.bind('#output-personal', function( el, offset ){
@@ -506,6 +592,8 @@
 		//$('.personal__attribute-item' ).animateFrom([200,200], {}, 2000);
 
 	});
+
+	scrollSpy.navigation('[data-section]', 'section');
 
 	scrollSpy.bind('#output-languages', function( $el, offset ){
 
@@ -702,31 +790,9 @@
         });
     });
 
-
-	$('#navigation')
-		.find('li' )
-		.on('click', function( e ){
-
-			var $this = $(this),
-			    section = $this.data('section');
-
-			$(section ).scrollTo();
-
-		});
-
 	function rand(){
 		return (Math.random() * 2) - 1;
 	}
-
-//	$(window ).on('scroll', function( e ){
-//
-//		console.log( e );
-//
-//	});
-
-//    console.clear();
-//    c.title('Awesome you must like seeing how things work too');
-//    c.list('I live in here, so maybe I should tell you what\'s happening behind the scenes');
 
 </script>
 

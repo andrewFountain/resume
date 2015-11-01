@@ -22,18 +22,19 @@
 (function () {
 	'use strict';
 	window.$ = selector;
+	window.gQuery = gQuery;
 
 	/**
-  * selector
-  *
-  * this function will create a new gQuery instance using the selector
-  * or passed elements
-  *
-  * @param   {String|HTMLElement|NodeList|window|document}    selector   selector to wrap with gQuery
-  * @param   {HTMLElement}   context     optional: parent element to select from
-  *
-  * @returns {gQuery}
-  */
+ * selector
+ *
+ * this function will create a new gQuery instance using the selector
+ * or passed elements
+ *
+ * @param   {String|HTMLElement|NodeList|window|document}    selector   selector to wrap with gQuery
+ * @param   {HTMLElement}   context     optional: parent element to select from
+ *
+ * @returns {gQuery}
+ */
 	function selector(selector /*, context */) {
 		if (selector === window || selector === document || selector instanceof HTMLElement) {
 			return new gQuery('object', [selector]);
@@ -150,6 +151,14 @@
 			for ( /*let*/var ii = 0, ll = this.length; ii < ll; ii++) {
 				fn.call(this[ii], this[ii], ii, this);
 			}
+		}),
+
+		map: fluent(function (fn) {
+			return Array.prototype.map.apply(this, arguments);
+		}),
+
+		reduce: fluent(function (fn, initial) {
+			return Array.prototype.reduce.apply(this, arguments);
 		}),
 
 		/**
@@ -376,19 +385,34 @@
 			return notUndefined(key) ? this[0].dataset[key] : this[0].dataset;
 		},
 
+		dataAll: function dataAll(key) {
+			var ret;
+			if (notDefined) {}
+
+			return notUndefined(key) ? this[0].dataset[key] : this[0].dataset;
+		},
+
 		/**
    * $.prototype.offset
    *
    * this method will find the top offset from the provided parent
    * or the body element.
    *
-   * @param   {HTMLElement}   parent      optional: parent element to get offset from.
+   * @param   {*}         parent    optional: parent element to get offset from. selector, gQuery, HTMLElement
    *
-   * @returns {Number}                    total affset in px;
+   * @returns {Number}              total affset in px;
    */
 		offset: function offset(parent) {
 
-			parent = parent || document.body;
+			if (parent) {
+				// set the parent. can accept selector, gQuery instance or element,
+				// will set parent to HTMLElement for comparison.
+				parent = isString(parent) // it's a selector
+				? document.querySelector(parent) : parent instanceof gQuery ? parent[0] // only the first element
+				: parent; // it must me an element
+			} else {
+					parent = document.body;
+				}
 
 			return _offset(0, this[0]);
 

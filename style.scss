@@ -382,9 +382,7 @@ header#site-header {
 	width: 100%;
 	z-index: 9999;
 
-	&.attached {
-		padding: 2em 0;
-	}
+	// padding: 2em 0;
 
 	nav {
 
@@ -394,7 +392,7 @@ header#site-header {
 		ul {
 			display: flex;
 			flex-wrap : wrap;
-			flex-basis : 40%;
+			flex-basis : 60%;
 			text-align : center;
 
 			@include breakpoint('medium'){
@@ -404,6 +402,7 @@ header#site-header {
 			li {
 				color: $color-heading;
 				flex: 1 1 auto;
+				cursor: pointer;
 
 				&.active {
 					border-bottom: ems(3) solid white;

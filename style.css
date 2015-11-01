@@ -326,22 +326,21 @@ header#site-header {
   left: 0;
   width: 100%;
   z-index: 9999; }
-  header#site-header.attached {
-    padding: 2em 0; }
   header#site-header nav {
     display: flex;
     justify-content: center; }
     header#site-header nav ul {
       display: flex;
       flex-wrap: wrap;
-      flex-basis: 40%;
+      flex-basis: 60%;
       text-align: center; }
       @media screen and (max-width: 56.25em) {
         header#site-header nav ul {
           flex-basis: 90%; } }
       header#site-header nav ul li {
         color: #fff;
-        flex: 1 1 auto; }
+        flex: 1 1 auto;
+        cursor: pointer; }
         header#site-header nav ul li.active {
           border-bottom: 0.1875em solid white; }
 
