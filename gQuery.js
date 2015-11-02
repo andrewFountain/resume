@@ -536,6 +536,21 @@
 
 		},
 
+		staggerFrom: function( delay, xy, styles, time, cb, ease ){
+
+			this.each(( el, ii ) => {
+
+				var timeout = isFunction( delay )
+					? delay.call( el, ii )
+					: ii * delay;
+
+				return window.setTimeout( () => {
+					_addAnimation( el, xy, styles, time, cb, ease, true );
+				}, timeout );
+			});
+
+		},
+
 
 		/**
 		 * $.prototype.spy
@@ -694,19 +709,23 @@
 		}
 	});
 
-	function StyleProperty( el, key, prop, time, cb, ease ){
+	function StyleProperty( el, key, prop, time, cb, ease, isFrom ){
 
 		prop = valueAndUnit( prop );
 
-		var initial = cssProp( el, key, true );
+		var start = cssProp( el, key, true );
+
+		var
+			initial = isFrom ? prop.value : start,
+		    to      = isFrom ? start : prop.value;
 
 		this.el         = el;
 		this.prop       = key;
 		this.unit       = prop.unit;
 		this.initial    = initial;
 		this.curr       = initial;
-		this.to         = prop.value;
-		this.diff       = diff( initial, prop.value );
+		this.to         = to;
+		this.diff       = diff( initial, to );
 		this.easing     = easing[ ease || 'easeIn' ];
 		this.time       = time;
 		this.progress   = 0;

@@ -183,9 +183,12 @@ section .slideshow {
 	width: 100%;
 	overflow-x: hidden;
 	background: #eee;
-	background      : url('./images/background.png');
+	//background      : url('./images/background.png');
+	background      : url('./vectors/scenery.svg');
 	background-size : cover;
 	background-attachment: fixed;
+	background-position-y : 327px;
+	//background-position-x : 600px;
 
 	.slideshow-nav {
 		position: absolute;
@@ -230,14 +233,25 @@ section .slideshow {
 		flex: 0 1 auto;
 		flex-basis: (100 / 6) * 1%;
 		min-width : ems(200);
-		max-width : ems(1000);
+		max-width : ems(1200);
+
+		h3 {
+			font-size: 2em;
+			font-weight: 700;
+			transform: matrix(1, 0, 0, 1 ,0, 0);
+		}
 
 		.job {
 			//box-shadow : $box-shadow;
 		}
 
 		.details {
-			background : $transparent;
+			background : rgba(255,255,255,0.7);
+		}
+
+		.job__details li {
+			transform: matrix(1,0,0,1,50,50);
+			opacity: 0;
 		}
 	}
 }

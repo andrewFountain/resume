@@ -270,6 +270,7 @@
 			events = [],
 		    $navTriggers = $('[data-section]' ),
 			current = $( $navTriggers[0] ),
+			currentSection = [0],
 		    scrolling = false,
 		    timeout;
 
@@ -317,10 +318,11 @@
 
 			update: function( offset ){
 
-				if( offset > this.offset - 100 && offset < this.offset + this.height - 100 ){
+				if( currentSection[0] !== this.el[0] && offset > this.offset - 100 && offset < this.offset + this.height - 100 ){
 					current.removeClass( 'active' );
 					current = this.button;
-					console.log( 'changed current', current );
+					currentSection = this.el;
+					// console.log( 'changed current', current );
 					current.addClass( 'active' );
 				}
 
@@ -578,7 +580,7 @@
 			elOffsets.push( para.bottom - el.offsetTop, paralax.calc( para, el ) );
 		});
 
-		console.log( 'progress', elOffsets, para );
+		// console.log( 'progress', elOffsets, para );
 		return true;
 
 	});
@@ -694,9 +696,17 @@
 
 			this.width = width;
 
-			this.wrapper.animate( [val, 0], null, 1000, function(){
+			var $slide = $( this.slides[ this.currentSlide ] ),
+			    $heading = $slide.find('h3' ),
+			    $headingLink = $heading.find('a');
 
-			});
+			$heading.animateFrom( [-200,-200], {opacity: 0}, 1000);
+			$headingLink.animate( null, { color: '#f02673' }, 2000);
+
+			$slide.find('.job__details li' ).stagger( 250, [0,0], { opacity:1 }, 500);
+			$slide.find('.job__details li' ).stagger( 509, null, { color: '#f02673' }, 2000);
+
+			this.wrapper.animate( [val, 0], null, 1000 );
 		}
 
 	});
@@ -949,7 +959,7 @@ I hid the contact details on the site, you can send me an email using the functi
 			    markdownToConsole( '#scene-' + scene );
 		    }
 
-		  //_show('intro');
+		  _show('intro');
 
 	    })();
 
