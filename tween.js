@@ -122,9 +122,10 @@
 	}
 	extendProto( Tween.prototype, {
 
-		to: fluent(function( selector, properties, time ){
+		to: fluent(function( selector, properties, time = 2000 ){
 
-			properties.time = properties.time || time + this.delay;
+			properties.time = ( properties.time || time );
+			properties.delay = this.delay;
 
 			properties = sortProperties.call( this, properties );
 
@@ -221,6 +222,7 @@
 		this.diff     = diffArray( initial, value );
 		this.easing   = easing[ timing.ease || 'easeIn' ];
 		this.time     = timing.time;
+		this.delay    = timing.delay;
 		this.progress = 0;
 	}
 
@@ -233,8 +235,12 @@
 			this.start = this.start || Date.now();
 			this.progress = now - this.start;
 
+			if( this.progress < this.delay ){
+				return true;
+			}
+
 			for( let ii = 0, ll = this.curr.length; ii < ll; ii++ ) {
-				newCurr[ ii ] = this.easing( this.progress, this.initial[ ii ], this.diff[ ii ], this.time );
+				newCurr[ ii ] = this.easing( this.progress - this.delay, this.initial[ ii ], this.diff[ ii ], this.time );
 			}
 
 			this.curr = parseIntMap( newCurr );
@@ -246,7 +252,7 @@
 
 			console.log( 'color update', this );
 
-			return this.progress < this.time;
+			return this.progress < this.time + this.delay;
 		}
 	});
 
@@ -258,9 +264,9 @@
 		this.to      = value.length == 2 ? [ 1, 0, 0, 1 ].concat( value ) : value;
 		this.diff    = diffArray( this.initial, this.to );
 		this.time    = timing.time;
+		this.delay   = timing.delay;
 		this.timing  = timing;
 		this.stagger = stagger;
-		this.start   = Date.now();
 		this.easing  = easing[ timing.easing || 'easeIn' ];
 	}
 
@@ -270,10 +276,15 @@
 
 			let newCurr = [];
 
+			this.start = this.start || Date.now();
 			this.progress = now - this.start;
 
+			if( this.progress < this.delay ){
+				return true;
+			}
+
 			for( var ii = 0, ll = this.curr.length; ii < ll; ii++ ) {
-				newCurr[ ii ] = this.easing( this.progress, this.initial[ ii ], this.diff[ ii ], this.time );
+				newCurr[ ii ] = this.easing( this.progress - this.delay, this.initial[ ii ], this.diff[ ii ], this.time );
 			}
 
 			this.curr = newCurr;
@@ -281,6 +292,8 @@
 			this.$el.matrix( this.curr );
 
 			console.log( 'matrix update', this );
+
+			return this.progress < this.time + this.delay;
 		}
 	} );
 
@@ -537,7 +550,20 @@ let
 scene1
 	.to('.something', {
 		background: '#3cf',
-		time: 400
+		pos: [200, 200],
+		time: 600
+	})
+	.wait(100)
+	.to('.another', {
+		background: '#fc3',
+		pos: [400, 200],
+		time: 600
+	})
+	.wait(400)
+	.to('.things', {
+		background: '#c3f',
+		pos: [600, 200],
+		time: 600
 	})
 	.on('complete', function( tween ){
 		console.log( 'it\'s blue', tween );
