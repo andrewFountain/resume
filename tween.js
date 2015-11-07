@@ -10,12 +10,35 @@
 	    start           = 0;
 
 
+	const
+		/**
+		 * easing
+		 *
+		 * this object will hold the easing functions for animations
+		 *
+		 * @type {{easeIn: Function, linear: Function}}
+		 */
+		easing = {
+			easeIn: function easeIn( time, begin, change, duration ){
+				return -change * (time /= duration) * (time - 2) + begin;
+			},
+			linear: function linear( progress, begin, change, duration ){
+				return progress < duration
+					? property.begin + (progress / time) * change
+					: begin + change;
+			}
+		};
+
+
 	function render(){
 
-		SCENES[ CURRENT_SCENE ]._update();
-
 		if( CURRENT_SCENE > -1 && SCENES.length ){
-			window.requestAnimationFrame( render );
+
+			if( SCENES[ CURRENT_SCENE ]._update() ){
+				window.requestAnimationFrame( render );
+			}
+
+
 		}
 	}
 
@@ -71,7 +94,9 @@
 		 */
 		play  : fluent( function(){
 
+			CURRENT_SCENE = 0;
 			this.start = start = Date.now();
+			render();
 
 		}),
 
@@ -82,6 +107,7 @@
 		 */
 		pause : fluent(function(){
 
+			CURRENT_SCENE = -1;
 
 		})
 	});
@@ -91,13 +117,14 @@
 		this.name = name;
 		this.events = {};
 		this.animations = [];
+		this.currentAnimations = [];
 		this.delay = 0;
 	}
 	extendProto( Tween.prototype, {
 
 		to: fluent(function( selector, properties, time ){
 
-			properties.time = time + this.delay;
+			properties.time = properties.time || time + this.delay;
 
 			properties = sortProperties.call( this, properties );
 
@@ -130,6 +157,7 @@
 
 		_add: function( animation ){
 			this.animations.push( animation );
+			this.currentAnimations.push( animation );
 		},
 
 		_update: function(){
@@ -140,18 +168,19 @@
 
 			this.currentAnimations = this.currentAnimations.filter( updateAnimationFilter );
 
-			if( currentAnimations.length === 0 ){
+			if( this.currentAnimations.length === 0 ){
 
 				this.events.complete.call( this, this );
+				return false
 
 			}
+			return true;
 		}
 
 	});
 
 	function updateAnimationFilter( animation ){
-		animation._update();
-		return false;
+		return animation._update( Date.now() );
 	}
 
 	function Animation(){}
@@ -176,31 +205,81 @@
 
 
 	function StyleColor( $el, key, value, timing, stagger ){
-		this.$el     = $el;
-		this.key     = key;
-		this.value   = value;
-		this.timing  = timing;
-		this.stagger = stagger;
+
+		let initial = $el.css( key );
+
+		initial = colorToArray( initial );
+		value   = colorToArray( value );
+
+		this.$el      = $el;
+		this.timing   = timing;
+		this.stagger  = stagger;
+		this.prop     = key;
+		this.initial  = initial;
+		this.curr     = initial.slice();
+		this.to       = value;
+		this.diff     = diffArray( initial, value );
+		this.easing   = easing[ timing.ease || 'easeIn' ];
+		this.time     = timing.time;
+		this.progress = 0;
 	}
 
 	StyleColor.prototype = new Animation;
 	extendProto( StyleColor.prototype, {
-		_update: function(){
+		_update: function( now ){
+
+			let newCurr = [];
+
+			this.start = this.start || Date.now();
+			this.progress = now - this.start;
+
+			for( let ii = 0, ll = this.curr.length; ii < ll; ii++ ) {
+				newCurr[ ii ] = this.easing( this.progress, this.initial[ ii ], this.diff[ ii ], this.time );
+			}
+
+			this.curr = parseIntMap( newCurr );
+
+			let styleProp = {};
+			styleProp[ this.prop ] = 'rgb(' + this.curr.join( ',' ) + ')';
+
+			this.$el.css( styleProp );
+
 			console.log( 'color update', this );
+
+			return this.progress < this.time;
 		}
 	});
 
 	function Matrix( $el, key, value, timing, stagger ){
 		this.$el     = $el;
 		this.key     = key;
-		this.value   = value;
+		this.initial = $el.matrix();
+		this.curr    = this.initial.slice( 0 );
+		this.to      = value.length == 2 ? [ 1, 0, 0, 1 ].concat( value ) : value;
+		this.diff    = diffArray( this.initial, this.to );
+		this.time    = timing.time;
 		this.timing  = timing;
 		this.stagger = stagger;
+		this.start   = Date.now();
+		this.easing  = easing[ timing.easing || 'easeIn' ];
 	}
 
 	Matrix.prototype = new Animation;
 	extendProto( Matrix.prototype, {
-		_update: function(){
+		_update: function( now ){
+
+			let newCurr = [];
+
+			this.progress = now - this.start;
+
+			for( var ii = 0, ll = this.curr.length; ii < ll; ii++ ) {
+				newCurr[ ii ] = this.easing( this.progress, this.initial[ ii ], this.diff[ ii ], this.time );
+			}
+
+			this.curr = newCurr;
+
+			this.$el.matrix( this.curr );
+
 			console.log( 'matrix update', this );
 		}
 	} );
@@ -320,6 +399,109 @@
 
 	}
 
+	/**
+	 * cssProp
+	 *
+	 * this function will return a css property. if property cannot be found on the
+	 * element, getComputedStyle will be used and cause a ui reflow.
+	 *
+	 * @param   {HTMLElement}   el      element to get style from
+	 * @param   {String}        prop    property value to retrieve
+	 * @param   {bool}          parse   if value is an integer parse it
+	 *
+	 * @returns {Number}
+	 */
+	function cssProp( el, prop, parse ){
+		prop = el.style[ prop ] || window.getComputedStyle( el, null )[ prop ];
+		return parse
+			? parseFloat( prop )
+			: prop;
+	}
+
+	function isColorProperty( prop ){
+		return [ 'color', 'background', 'background-color', 'border-color' ].indexOf( prop ) > -1
+	}
+
+	function colorToArray( color ){
+
+		let
+			match = null;
+
+		const
+			hexReg = /\#([0-9a-z]+)/,
+			rgbReg = /\(([0-9 ,.]+)\)/;
+
+		if( Array.isArray( color ) ){
+
+			return color;
+
+		} else if( ( match = color.match( hexReg ) ) ){
+
+			if( match[ 1 ].length === 3 ){
+				color = mapWith( ( ii ) => (ii + 1) * 16 )( hexToDecMap( match[ 1 ].split( '' ) ) );
+			} else {
+				color = hexToDecMap( match[ 1 ].match( /.{2}/g ) );
+			}
+
+		} else if( match = color.match( rgbReg ) ){
+
+			color = parseIntMap( match[ 1 ].split( /,\s*/ ) );
+
+		}
+
+		return color;
+
+	}
+
+	/**
+	 * set or get the transform translation property
+	 */
+	function matrix( el, xy ){
+
+		if( xy ){
+
+			if( xy.length === 2 ){
+				xy = [ 1, 0, 0, 1 ].concat( xy );
+			}
+			el.style.transform = 'matrix(' + xy.join() + ')';
+
+		} else {
+
+			const
+				curr = el.style[ 'transform' ] || window.getComputedStyle( el, null )[ 'transform' ],
+				match = curr.match( /matrix\(([^)]+)\)/ );
+
+			return match
+				? parseIntMap( match[ 1 ].split( /,/ ) )
+				: [ 1, 0, 0, 1, 0, 0 ];
+		}
+	}
+
+	function valueAndUnit( value ){
+
+		let
+			unit,
+			match,
+			type;
+
+		if( isString( value ) ){
+			if( ( match = value.match( /([-\.0-9]+)(px|%|em)*/ ) ) ){
+				value = parseFloat( match[ 1 ] );
+				unit  = match[ 2 ] || 'px';
+				type  = Number
+			} else {
+				type = String
+			}
+		}
+
+		return {
+			value: value,
+			unit : unit,
+			type : type || Number
+		};
+
+	}
+
 })();
 
 let
@@ -327,29 +509,38 @@ let
 	scene1      = timeline.add('scene-1', 2000);
     //scene2      = timeline.add('scene-2');
 
+//scene1
+//	.to('.something', {
+//		pos: [0,0],
+//		rotateZ: 360,
+//		background: '#faa',
+//		easing: 'easeIn'
+//	}, 200 )
+//	.wait( 400 )
+//	.to('.another', {
+//		pos: [0,0],
+//		scale: [100,100],
+//		color: [20,31.66],
+//		delay: 400
+//	}, 400)
+//	.stagger('.things', 200, {
+//		pos: [ 0, 0 ],
+//		scale: [ 100, 100 ],
+//		color: [ 20, 31.66 ],
+//		delay: 400,
+//		width: 400
+//	})
+//	.on('complete', function( tween ){
+//		console.log('complete tweening');
+//	});
+
 scene1
 	.to('.something', {
-		pos: [0,0],
-		rotateZ: 360,
-		background: '#faa',
-		easing: 'easeInOut'
-	}, 200 )
-	.wait( 400 )
-	.to('.another', {
-		pos: [0,0],
-		scale: [100,100],
-		color: [20,31.66],
-		delay: 400
-	}, 400)
-	.stagger('.things', 200, {
-		pos: [ 0, 0 ],
-		scale: [ 100, 100 ],
-		color: [ 20, 31.66 ],
-		delay: 400,
-		width: 400
+		background: '#3cf',
+		time: 400
 	})
 	.on('complete', function( tween ){
-		console.log('complete tweening');
+		console.log( 'it\'s blue', tween );
 	});
 
 //timeline.play();        // will play all the tweens in order

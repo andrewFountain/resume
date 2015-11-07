@@ -47,6 +47,13 @@
 			margin: 0;
 		}
 
+		.something, .another, .things {
+			height: 200px;
+			width: 200px;
+			background: #f00;
+			transform: matrix(-1,0,0,-1,200,200);
+			margin: 2em;
+		}
 	</style>
 </head>
 <div id="output">
@@ -316,6 +323,7 @@
 
 <div class="something">something</div>
 <div class="another">another</div>
+<div class="things">things</div>
 <script src="functional-compiled.js"></script>
 <script src="gQuery-compiled.js"></script>
 <script src="tween-compiled.js"></script>
