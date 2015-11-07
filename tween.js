@@ -207,18 +207,52 @@
 	});
 
 	function StyleNumber( $el, key, value, timing, stagger ){
+
 		this.$el        = $el;
 		this.key        = key;
 		this.value      = value;
 		this.timing     = timing;
 		this.stagger    = stagger;
+
+		this.easing   = easing[ timing.ease || 'easeIn' ];
+		this.time     = timing.time;
+		this.delay    = timing.delay;
+		this.timing   = timing;
+		this.progress = 0;
 	}
 	StyleNumber.prototype = new Animation;
 	extendProto( StyleNumber.prototype, {
-		_update: function(){
+		_update: function( now ){
 			console.log( 'number update', this );
+
+			this.start    = this.start || now;
+			this.progress = now - this.start;
+
+			this.curr = this.easing( this.progress, this.initial, this.diff, this.time );
+
+			let styleProp = {};
+			styleProp[ this.key ] = this.curr + ( this.unit || 0 );
+
+			this.$el.css(styleProp);
+
+			return this.progress < this.time + this.delay
+				? true
+				: (this.start = false);
 		},
 		_init: function(){
+
+			const
+				start = parseFloat(this.$el.css( this.key)),
+				prop = valueAndUnit( this.value ),
+				initial = start,
+				to = prop.value;
+
+			this.unit    = prop.unit;
+			this.initial = initial;
+			this.curr    = initial;
+			this.to      = to;
+			this.diff    = diff( initial, to );
+
 			this.start    = 0;
 			this.progress = 0;
 		}
@@ -561,7 +595,8 @@
 let
 	timeline    = new Timeline(),
 	scene1      = timeline.add('scene-1', 2000 ),
-    scene2      = timeline.add('scene-2', 2000);
+    scene2      = timeline.add('scene-2', 2000 ),
+    scene3      = timeline.add('scene-3', 2000 );
 
 //scene1
 //	.to('.something', {
@@ -618,14 +653,38 @@ scene2
 	})
 	.wait(100)
 	.to('.another', {
-		background: '#fc3',
+		background: '#c3f',
 		pos: [300, 0],
+		borderRadius: '50%',
 		time: 600
 	})
 	.wait(100)
 	.to('.things', {
-		background: '#c3f',
+		background: '#fc3',
 		pos: [300, 0],
+		time: 600
+	})
+	.on('complete', function( tween ){
+		console.log( 'it\'s blue', tween );
+	});
+
+scene3
+	.to('.something', {
+		background: '#c3f',
+		pos: [0, 0],
+		time: 600
+	})
+	.wait(100)
+	.to('.another', {
+		background: '#fc3',
+		borderRadius: '0%',
+		pos: [0, 0],
+		time: 600
+	})
+	.wait(100)
+	.to('.things', {
+		background: '#3cf',
+		pos: [0, 0],
 		time: 600
 	})
 	.on('complete', function( tween ){
