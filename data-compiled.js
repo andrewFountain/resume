@@ -7,19 +7,19 @@ var resume = {
 		suburb: 'Moonee Ponds VIC 3039',
 		phone: '0416 006 176',
 		email: 'founts24@gmail.com',
-		description: 'A full stack developer, focused mainly on javascript and asynchronous engineering seeking new opportunities to develop my skills.',
+		description: 'A full stack developer, focused mainly on javascript and asynchronous engineering seeking new opportunities to develop my skills. I made this site as a way to show my skill level and my coding style, there is a combination of everything that I know in relation to Web Programming used in this site. Everything is 100% original excluding a couple of algorithms for easing. I would consider it over the top for production work, but for a portfolio I believe it will give you a good indication of where I\'m at. I\'m always excited to learn new things and share knowledge',
 		attributes: ['Obsessed with clean code.', 'Driven to simplify complex problems', 'Always finding new and interesting ways reach a solutions.', 'Always reading up on all the latest advances in coding standards.', 'Currently developing a Node JS framework to really grok node.', 'Learning all the time. all my spare time is spent coding... seriously', 'Proficient in elegant javascript, HTML, CSS, sass, less.', 'Can understand and use jQuery, Node, PHP, MySQL, MongoDB, DynamoDB.', 'Played with Angular, famous, laravel, express, mongoose, backbone, bootstrap, foundation.', 'Competent with Git.']
 	},
 	languages: [{
 		name: 'Javascript',
 		level: 'Advanced',
-		desc: 'I have spent most of my time developing in javascript. It had the lowest point of entry, but the more I learn the more I like about the possibilities that can be achieved with such a simple language. When I started to play with Node, It gave me everything I needed to make js my focus for a language.',
+		desc: 'I have spent most of my time developing in javascript and it has become like a second language to me. It had the lowest point of entry, but the more I learn the more I like about the possibilities that can be achieved with such a simple language. I have a solid understanding of classical, and functional programming concepts, and know the language fluently. When I started to play with Node, It gave me everything I needed to make javascript my focus for a language.',
 		score: 8,
 		time: 2
 	}, {
 		name: 'PHP',
 		level: 'Intermediate',
-		desc: 'I understand basic native php dealing with the language itself, but still need to reference the documetation when using newer api\'s',
+		desc: 'I understand basic native php dealing with the language itself, but still need to reference the documentation when using more specific api\'s, but have no issue reading technical documentation or stack overflow to solve problems that arise naturally when developing applications.',
 		score: 4,
 		time: .5
 	}, {
@@ -34,6 +34,12 @@ var resume = {
 		desc: 'I am good with css, I know what floating is, what positioning is, and generally need to reference the docs only sometimes. I need to work on the structure of my css and standardise to make it easier to work with',
 		score: 6,
 		time: 1
+	}, {
+		name: 'MySQL',
+		level: 'Beginner',
+		desc: 'I understand MySQL at an intermediate level, If I am given a database I can make queries and join relations to output. To learn BySQL I made a little php framework with models that abstracts the queries into an active record type of system, this presented me with lots of different queries I need to understand to make the api usable and efficient. I am not confident in my ability to know how to solve difficult problems off the top of my head, but have the confidence and the experience to know where to look to solve issues that may arise.',
+		score: 3,
+		time: .5
 	}],
 	frameworks: [{
 		name: 'jQuery',

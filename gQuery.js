@@ -146,10 +146,10 @@
 		 *
 		 * `gQuery.each(( element ) => { ...do something })`
 		 *
-		 * @param   {Function}  fn      callback function
+		 * @param   {Functio'n}  fn      callback function
 		 */
 		each: fluent( function( fn ){
-			for( /*let*/ var ii = 0, ll = this.length; ii < ll; ii++ ) {
+			for( let ii = 0, ll = this.length; ii < ll; ii++ ) {
 				fn.call( this[ ii ], this[ ii ], ii, this );
 			}
 		} ),
@@ -175,8 +175,8 @@
 		 * @fluent
 		 */
 		add: fluent( function( els ){
-			/*let*/
-			var
+
+			let
 				ii = this.length || 0,
 			    el = els.length,
 			    ll = ii + el;
@@ -255,12 +255,15 @@
 
 			time = time || 2000;
 
-			var to = this.offset() - (4 * 16),
-			    curr = window.pageYOffset || document.documentElement.scrollTop,
+			const
+				to = this.offset() - (4 * 16),
 			    start = Date.now(),
-			    progress,
 			    initial = curr,
 			    difference = diff( initial, to );
+
+			let
+				curr = window.pageYOffset || document.documentElement.scrollTop,
+				progress;
 
 			//var scroller = new Scroller( to, time, ease );
 			//
@@ -273,9 +276,9 @@
 
 			function _scrollTo(){
 
-				progress = Date.now() - start;
+				progress    = Date.now() - start;
 
-				curr              = easing[ easeFn || 'easeIn' ]( progress, initial, difference, time );
+				curr        = easing[ easeFn || 'easeIn' ]( progress, initial, difference, time );
 				window.scrollTo(0, curr);
 
 				if( progress < time ){
@@ -305,7 +308,7 @@
 		 * @returns {gQuery}                    new instance with child nodes
 		 */
 		find: function( selector ){
-			/*let*/ var ret = [];
+			let ret = [];
 			this.each( function( el ){
 				/*const*/ var children = slice( el.querySelectorAll( selector ) );
 				Array.prototype.splice.apply( ret, [ ret.length, 0 ].concat( children ) );
@@ -356,7 +359,7 @@
 		}),
 
 		classes: function( ...classes ){
-			var classez = [];
+			let classez = [];
 			this.each(function( el ){
 				classez.concat( slice( el.classList ) );
 			});
@@ -378,7 +381,7 @@
 		},
 
 		dataAll: function( key ){
-			var ret
+
 			if( notDefined ){
 
 			}
@@ -431,11 +434,11 @@
 		 */
 		translateX: (function(){
 
-			var translations = {};
+			let translations = {};
 
 			return function( val ){
 
-				var ii = xx++;
+				let ii = xx++;
 
 				if( val ){
 
@@ -445,7 +448,7 @@
 
 				} else {
 					/*let*/
-					var
+					const
 						transform = this[ 0 ].style.transform,
 						match     = transform.match( /translateX\(([0-9-.]+)(px|em|%)*\)/ );
 
@@ -489,7 +492,7 @@
 		 * @returns void 0;
 		 */
 		animate: function( xy, styles, time, cb, ease ){
-			/*const*/ var self = this;
+			const self = this;
 
 			// build the animation queue
 			this.each( ( el ) =>
@@ -498,7 +501,7 @@
 
 
 		animateFrom: function( xy, styles, time, cb, ease ){
-			/*const*/ var self = this;
+			const self = this;
 
 			// build the animation queue
 			this.each( ( el ) =>
@@ -525,7 +528,7 @@
 
 			this.each(( el, ii ) => {
 
-				var timeout = isFunction( delay )
+				let timeout = isFunction( delay )
 					? delay.call( el, ii )
 					: ii * delay;
 
@@ -540,7 +543,7 @@
 
 			this.each(( el, ii ) => {
 
-				var timeout = isFunction( delay )
+				let timeout = isFunction( delay )
 					? delay.call( el, ii )
 					: ii * delay;
 
@@ -567,7 +570,7 @@
 		 */
         spy: (function () {
 
-            var
+            let
                 stopped = true,
                 offset = 0,
                 events = [];
@@ -576,7 +579,7 @@
 
                 this.each(function( el ){
 
-                    var
+                    let
                         elOrOffset = null;
 
                     if (!offset) {
@@ -713,9 +716,8 @@
 
 		prop = valueAndUnit( prop );
 
-		var start = cssProp( el, key, true );
-
-		var
+		const
+			start   = cssProp( el, key, true ),
 			initial = isFrom ? prop.value : start,
 		    to      = isFrom ? start : prop.value;
 
@@ -750,7 +752,7 @@
 
 	function StyleColor( el, key, value, time, cb, ease ){
 
-		var initial = cssProp( el, key );
+		let initial = cssProp( el, key );
 
 		initial = colorToArray(initial);
 		value   = colorToArray(value);
@@ -774,11 +776,11 @@
 
 		update: fluent( function( now ){
 
-			var newCurr = [];
+			let newCurr = [];
 
 			this.progress = now - this.start;
 
-			for( var ii = 0, ll = this.curr.length; ii < ll; ii++ ) {
+			for( let ii = 0, ll = this.curr.length; ii < ll; ii++ ) {
 				newCurr[ ii ] = this.easing( this.progress, this.initial[ ii ], this.diff[ ii ], this.time );
 			}
 
@@ -791,13 +793,13 @@
 
 	function Vector( el, xy, time, cb, ease, isFrom ){
 
-		var _matrix = matrix( el );
+		const _matrix = matrix( el );
 
 		xy = xy.length === 2
 			? [ 1, 0, 0, 1 ].concat( xy )
 			: xy;
 
-		var
+		const
 			initial = isFrom ? xy : _matrix,
 		    to      = isFrom ? _matrix : xy,
 		    diff    = diffArray( initial, to );
@@ -820,7 +822,7 @@
 
 		update: fluent( function( now ){
 
-			var newCurr = [];
+			let newCurr = [];
 
 			this.progress = now - this.start;
 
@@ -837,7 +839,7 @@
 
 	function Scroller( to, time, ease ){
 
-		var initial = window.scrollY;
+		const initial = window.scrollY;
 
 		this.initial  = initial;
 		this.curr     = initial;
@@ -878,7 +880,7 @@
 
 		tweens.push( tweenArr.map(function( tween ){
 
-			var _tween =  {
+			const _tween =  {
 				el: tween.el,
 				initial: _matrix,
 				curr   : _matrix,
@@ -918,17 +920,17 @@
 	function _addAnimation( el, xy, styles, time, cb, ease, isFrom ){
 
 		if( xy ){
-			var animation = new Vector( el, xy, time, cb, ease, isFrom );
+			const animation = new Vector( el, xy, time, cb, ease, isFrom );
 			animations.push( animation );
 		}
 
 		if( styles ){
 			/*let*/
-			var key;
+			let key;
 
 			for( key in styles ) {
 
-				var animation;
+				let animation;
 
 				if( isColorProperty( key ) ){
 					animation = new StyleColor( el, key, styles[ key ], time, cb, ease, isFrom );
@@ -1006,7 +1008,10 @@
 
 	function colorToArray( color ){
 
-		var match  = null,
+		let
+			match = null;
+
+		const
 		    hexReg = /\#([0-9a-z]+)/,
 		    rgbReg = /\(([0-9 ,.]+)\)/;
 
@@ -1046,7 +1051,7 @@
 
 		} else {
 
-			var
+			const
 				curr = el.style['transform'] || window.getComputedStyle( el, null )['transform'],
 				match = curr.match( /matrix\(([^)]+)\)/ );
 
@@ -1058,7 +1063,7 @@
 
 	function valueAndUnit( value ){
 
-		var
+		let
 			unit,
 			match,
 			type;
@@ -1083,9 +1088,10 @@
 
 	function every( method ){
 		return function( fn, ...args ){
-			/*const*/ var self = this,
+			const
+				self = this,
 			    ll   = this.length;
-			for(/*let*/ var ii = 0; ii < ll; ii++ ){
+			for(let ii = 0; ii < ll; ii++ ){
 				fn.apply( self[ii], [ self[ii] ].concat( args ) );
 			}
 		}

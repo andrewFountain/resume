@@ -52,7 +52,7 @@
         <section id="output-blogs" class="blogs__group"></section>
 
         <footer>
-            <a href="http://www.bmspares.com.au/best-parts/">http://www.bmspares.com.au/best-parts/</a>
+
         </footer>
 
     </main>
@@ -68,20 +68,24 @@
 	<div class="wrapper">
         <h2>About Me</h2>
 	<div class="personal">
-		<h3>{{name}}</h3>
 		<div class="details">
-			<ul class="personal__info">
-				<li>{{address}}</li>
-				<li>{{suburb}}</li>
-				<li><a href="tel:{{phone}}">{{phone}}</a></li>
-				<li><a href="mailto:{{email}}">{{email}}</a></li>
-			</ul>
-			<p>{{description}}</p>
-			<ul class="personal__attributes tick-list">
-				{{foreach attributes as attribute}}
-					<li class="personal__attribute-item"><span>{{attribute}}</span></li>
-				{{/foreach}}
-			</ul>
+			<div class="personal-left">
+				<h3>{{name}}</h3>
+				<ul class="personal__info">
+					<li>{{address}}</li>
+					<li>{{suburb}}</li>
+					<li><a href="tel:{{phone}}">{{phone}}</a></li>
+					<li><a href="mailto:{{email}}">{{email}}</a></li>
+				</ul>
+				<p>{{description}}</p>
+			</div>
+			<div class="personal-right">
+				<ul class="personal__attributes tick-list">
+					{{foreach attributes as attribute}}
+						<li class="personal__attribute-item"><span>{{attribute}}</span></li>
+					{{/foreach}}
+				</ul>
+			</div>
 		</div>
 	</div>
 	</div>
@@ -104,7 +108,7 @@
 							<h4>Responsibilities</h4>
 							<ul class="job__details">
 								{{foreach job.responsibilities as responsibility}}
-								<li>{{responsibility}}</li>
+								<li><span class="list-tick"></span><span class="list-content">{{responsibility}}</span></li>
 								{{/foreach}}
 							</ul>
 						</div>
@@ -236,9 +240,9 @@
 		personalTemplate    = template('personal'),
 		jobTemplate         = template('job' ),
 		booksTemplate       = template('books'),
-		blogsTemplate       = template('blogs' ),
-		languagesTemplate   = template('languages' ),
-		frameworksTemplate  = template('frameworks' ),
+		blogsTemplate       = template('blogs'),
+		languagesTemplate   = template('languages'),
+		frameworksTemplate  = template('frameworks'),
 		educationTemplate   = template('education');
 
 
@@ -254,21 +258,13 @@
 		educationTemplate({course: course});
 	});
 
-	function Slideshow(){
-
-		this.currentSlide = 0;
-		this.length = 0;
-		this.width = 0;
-
-	}
-
 	var scrollSpy = (function(){
 
 		var
 			stopped = true,
 			offset = 0,
 			events = [],
-		    $navTriggers = $('[data-section]' ),
+		    $navTriggers = $('[data-section]'),
 			current = $( $navTriggers[0] ),
 			currentSection = [0],
 		    scrolling = false,
@@ -322,6 +318,8 @@
 					current.removeClass( 'active' );
 					current = this.button;
 					currentSection = this.el;
+					window.history.pushState({hash: this.el.selector}, 'Resume', this.el.selector);
+//					window.location.hash = this.el.selector;
 					// console.log( 'changed current', current );
 					current.addClass( 'active' );
 				}
@@ -364,13 +362,14 @@
 
 				if( isElement( el ) || isString( el ) ){
 					el = $(el);
-					offset = el.offset()
+					offset = el.offset( null );
 				} else {
 					offset = window.scrollY;
 				}
 
 				events.push( new Paralax({
 					el     : el,
+					id     : el.selector,
 					cb     : cb,
 					offset : offset,
 					height : el.css('height')
@@ -599,6 +598,8 @@
 
 	scrollSpy.bind('#output-languages', function( $el, offset ){
 
+		$el.find('.framework').animate( [ 1, 0, 0, 1, 0, 0 ], null, 1000 );
+
 		$el.find('.framework').each( function( el, ii ){
 
 			var $this     = $( this ),
@@ -622,14 +623,16 @@
 
 	scrollSpy.bind( '#output-frameworks', function( $el, offset ){
 
+		$el.find( '.framework' ).animate( [ 1, 0, 0, 1, 0, 0 ], null, 1000 );
+
         $el.find('.framework').each(function (el, ii) {
 
-            var $this = $(this),
-                $progress = $this.find('.progress'),
-                $header = $this.find( 'header' ),
-                width = parseInt($progress.css('width')),
-                $inner = $this.find('.progress-inner'),
-                progress = parseInt($progress.data('score')) / 10;
+            var $this       = $(this),
+                $progress   = $this.find('.progress'),
+                $header     = $this.find( 'header' ),
+                width       = parseInt($progress.css('width')),
+                $inner      = $this.find('.progress-inner'),
+                progress    = parseInt($progress.data('score')) / 10;
 
             $inner.animate( null, {
 	            width: ((width * progress / width) * 100) + '%'
@@ -637,6 +640,16 @@
 
         });
 	});
+
+
+	function Slideshow(){
+
+		this.currentSlide = 0;
+		this.length       = 0;
+		this.width        = 0;
+
+	}
+
 
 	extend(Slideshow.prototype, {
 		init: fluent(function(){
@@ -707,6 +720,7 @@
 			$slide.find('.job__details li' ).stagger( 509, null, { color: '#f02673' }, 2000);
 
 			this.wrapper.animate( [val, 0], null, 1000 );
+			this.slideshow.animate(null, {backgroundPositionX: (val / 2 * -1) + 'px'}, 1000);
 		}
 
 	});
@@ -817,37 +831,56 @@ you can more forward or backwards with `prev() || next()` or go directly to a sc
 I live in here most of the time, so maybe I should tell you what's happening behind the scenes. eol
 I want to show that I really understand all the languages that I listed, so knocked this up from scratch in my spare time after work. eol
 
-All the js is vanilla flavoured... although it will look strangely like jQuery, but that's because I understand how jQuery was built, and what purpose it serves. eol
+All the js is vanilla flavoured... although some of it will look a lot like jQuery, I asure you it is not. That's because I understand how jQuery was built, and what purpose it serves. With this knowledge and the ability to understand patterns and native javascript, creating a clone is relatively easy. I hope this will show you that I can not only understand jQuery, but can read the source
+ and extend the library with new functionality if I wanted to. eol
 </script>
 
 <script type="text/x-markdown" id="scene-utilities">
 # utilities
 ### dom library
 I use jQuery every day, but only use a few methods generally so this contains only the functionality I required to put this demo site together. Unfortunately I'm not very creative when it comes to naming things so I called it gQuery lol. eol
+The gQuery module is built around a closure with directly setting the constructor to the window. I chose this pattern as I needed to expose 2 objects.
 
 ### animations
-All the animation is done through an animation stack, similar to jQuery animate or greensock, it's pretty basic at the moment and doesn't use the more efficient css matrix, but I hope you can
-forgive me. eol
+All the animation is done through a single animation stack, I employed duck punching to help keep everything on that stack, This is a really useful pattern as the calculations and the modifications
+ are different for different types of animations, The api is similar to jQuery animate or greensock, it's pretty basic at the moment, If I were wanting to take it further I would create timelines that can animate many different elements at different times in the timeline. eol
 
 ### utilities
 I have included a functional library based on everything I learnt in allonge. I mentioned it in the books section. Seriously if you haven't yet read it, do yourself a favor. It really changed everything for me, although I have been re-reading it over and over to grok the shit out of it. eol
 </script>
 
+<script type="text/x-markdown" id="scene-components">
+# ui components
+### slideshowa
+the slideshow I built for this site is very simple, but with the use of flexbox and a minimal amount of javascript smooth animations were possible. As the animationn library was used the possibility for more complicated animations is within reach. The slideshow employs the module pattern as It only really requires an init method to bind all the events. eol
+
+### scrollspy
+the scroll spy components will poll the page on the window scroll event. I was able to make the events as efficient as possible by only running the request animation frame loop run when the window was scrolled, and dormant the rest of the time. eol
+this component uses the module pattten to hide the internals from the global state of the page, classical inheritance for the different types of animations to have a single parent with shared methods, and duck punching to have a single api but different functionality when it comes to calculating the new position while the request animation frame loop is running. All of these patters combined make the scrollspy module capable of expansion with more functionality as required eol
+
+### markdown to console
+This was just a cool idea to present the information you are reading now so I didn't have to write hundreds of console logs. I think Regex is such a powerful part of programing and this was a chance to use it in a meaningful way. The full markdown syntax has not been used due to only need a limited amount of tags to display in the console. This is it's own little utility, so I again used the module pattern to hide it's internal state. eol
+</script>
+
 <script type="text/x-markdown" id="scene-templates">
 # templates
 ### template engine - template.js & template-factory.js
-The crowning Jewell in this site and something I am really proud of is the templating engine. I have never seen anything that precompiles templates to a function that just returns a string. Doing templates this way means they are transportable between node and the frontend, easy to include in a website, and have no dependencies, plus it's a few orders of magnitudes faster to get another template. I do need to look into security risks associated with doing things this way, but that will come later. eol
+The crowning Jewell in this site and something I am really proud of is the templating engine. I have never seen anything that precompiles templates to a function that just returns a string simply concatinating template variables with basic javascript. Doing templates this way means they are transportable between node and the frontend, easy to include in a website, and have no dependencies, plus it's a few orders of magnitudes faster to get another template. For this site I put the logic on the front end, but I would keep it on the server. In my node framework the templates are built on init, and checked to see if their template file has changed before sending. I do need to look into security risks associated with doing things this way, but that will come later. eol
 
 ### a little more about it:
-+ is able to loop through an array
++ is able to loop through an array of variables
 + saves the current scope of the variables
++ caches templates in memory
++ concatinates templates and variables with basic javascript
++ can be compiled on the backend and included with script tags or an amd library already precompiled for deployment
++ private instance and static methods employed in the api
 </script>
 
 <script type="text/x-markdown" id="scene-style">
 # style
 
 ### scss
-Styling was done in scss, and the grid was in flexbox, I'm still getting my head around flexbox it's use, but seems to be working well. eol
+Styling was done in scss, and the grid was in flexbox, I'm still getting my head around flexbox and it's use, but seems to be working well. eol
 
 ### clipart
 The clipart is all canvas. The only thing I didn't write for this site is the canvas library. It's pretty cool, I started just as I was nearing the end of TAFE, but got a job so ran out of time. It's purpose was to teach me how to use Objects in Javascript while reading Addy Osmani's book. The idea behind the library, is you can create an svg in illustrator, then use the co-ordinates to create assets. The next step was to use ajax to pull in an svg and read the file to generate the assets, then add animation. eol
@@ -855,7 +888,7 @@ The clipart is all canvas. The only thing I didn't write for this site is the ca
 
 <script type="text/x-markdown" id="scene-about">
 # about me.
-I love this stuff, I spend all my time developing, but I'm a bit of a programming cowboy, a Junior - Mid developer with a lot of passion. I have little concept of time, like a beer and a laugh, but sometimes need to be on my own, I try not to take life too seriously, because when I do shit get's real. eol
+I love this stuff, I spend all my time developing, I'm between a junior and a mid level developer with a lot of passion. I have little concept of time, like a beer and a laugh,, I try not to take life too seriously, because when I do shit get's real. eol
 
 ### cool story bro, but why do you want another job
 My current work doesn't really appreciate what javascript can offer, and doesn't have any senior developers who are capable of teaching me anything about scaleable rock solid front and back end architecture, so I am really looking for a company that has seasoned developers who's brains I can pick and learn something from, I don't need my hand held, but would like the oportunity to discuss the application architecture with experienced professionals before begining a task. eol
@@ -865,7 +898,7 @@ I unfortunately have not been on any projects while in my current role as they h
 <script type="text/x-markdown" id="scene-contact">
 # if you still wanna have a chat
 I hid the contact details on the site, you can send me an email using the function eol
-`contact( name, company, email, phone, text )` and through the magic of ajax I'll get the notification, you're in the console now so you may aswell send it off ;-) eol
+`contact( name, company, email, phone, text )` and through the magic of ajax I'll get the notification, you're in the console now so you may as well send it off ;-) eol
 </script>
 
 
@@ -878,6 +911,7 @@ I hid the contact details on the site, you can send me an email using the functi
 		        scenes = [
 			        'intro',
 			        'utilities',
+			        'components',
 			        'templates',
 			        'style',
 			        'about',

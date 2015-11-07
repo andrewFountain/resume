@@ -22,8 +22,6 @@ var Template = (function(){
 	 * Template.
 	 *
 	 * @param   {Function}  templateFn  function to compile a template
-	 * @param   {Request}   req         node js server request object
-	 * @param   {Response}  res         node js server response object
 	 *
 	 * @constructor
 	 */

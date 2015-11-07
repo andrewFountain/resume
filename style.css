@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,300");
 @font-face {
   font-family: 'fontello';
   src: url("./font/fontello.eot?41696033");
@@ -109,7 +109,7 @@ html, body {
   font-family: 'proxima', 'Roboto', sans-serif;
   font-weight: 300;
   background: #fff;
-  color: #493e45;
+  color: rgba(0, 0, 0, 0.87);
   line-height: 200%;
   height: 100%;
   width: 100%;
@@ -228,10 +228,30 @@ section .slideshow {
       font-weight: 700;
       transform: matrix(1, 0, 0, 1, 0, 0); }
     section .slideshow li.slide .details {
-      background: rgba(255, 255, 255, 0.7); }
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0.3em 1.2em rgba(0, 0, 0, 0.3);
+      transition: .3s box-shadow, .3s transform; }
+      section .slideshow li.slide .details:hover {
+        box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3);
+        transform: matrix(1, 0, 0, 1, 0, -2); }
     section .slideshow li.slide .job__details li {
       transform: matrix(1, 0, 0, 1, 50, 50);
       opacity: 0; }
+      section .slideshow li.slide .job__details li::before, section .slideshow li.slide .job__details li::after {
+        content: " ";
+        display: block;
+        clear: both; }
+      section .slideshow li.slide .job__details li span.list-tick {
+        width: 5%;
+        float: left; }
+      section .slideshow li.slide .job__details li span.list-tick:before {
+        content: '\e800';
+        font-family: "fontello";
+        height: 100%;
+        float: left; }
+      section .slideshow li.slide .job__details li span.list-content {
+        width: 95%;
+        float: left; }
 
 section div.details {
   padding: 1em; }
@@ -245,7 +265,7 @@ a {
 
 section h1 a, section h2 a, section h3 a, section h4 a, section h5 a {
   text-decoration: none;
-  color: #493e45; }
+  color: rgba(0, 0, 0, 0.87); }
 
 ul {
   list-style-type: none;
@@ -310,7 +330,12 @@ ul.tick-list {
   flex: 0 1 auto;
   width: 21%;
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+  box-shadow: 0 0.3em 1.2em rgba(0, 0, 0, 0.3);
+  transition: .3s box-shadow, .3s transform; }
+  .books__group .book:hover {
+    box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3);
+    transform: matrix(1, 0, 0, 1, 0, -2); }
 .books__group .book__heading {
   flex: 1;
   background: #f02673; }
@@ -371,7 +396,12 @@ div.hero {
     flex-basis: 50%;
     text-align: center;
     background: rgba(240, 240, 240, 0.4);
-    border: 1px solid rgba(240, 240, 240, 0.8); }
+    border: 1px solid rgba(240, 240, 240, 0.8);
+    box-shadow: 0 0.3em 1.2em rgba(0, 0, 0, 0.3);
+    transition: .3s box-shadow, .3s transform; }
+    div.hero .hero-inner:hover {
+      box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3);
+      transform: matrix(1, 0, 0, 1, 0, -2); }
   div.hero #word {
     font-weight: bold;
     color: #f02673; }
@@ -384,7 +414,15 @@ div.hero {
   display: flex;
   background: #fff;
   margin-bottom: 1em;
-  position: relative; }
+  position: relative;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+  box-shadow: 0 0.3em 1.2em rgba(0, 0, 0, 0.3);
+  transition: .3s box-shadow, .3s transform; }
+  #output-frameworks .framework:hover, #output-languages .framework:hover {
+    box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3);
+    transform: matrix(1, 0, 0, 1, 0, -2); }
+  #output-frameworks .framework:hover, #output-languages .framework:hover {
+    box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3); }
   #output-frameworks .framework header, #output-languages .framework header {
     flex: 1;
     background: #f02673;
@@ -428,5 +466,15 @@ div.hero {
 .scenery {
   position: absolute;
   width: 300%; }
+
+.personal-left {
+  width: 50%;
+  float: left; }
+  .personal-left p {
+    max-width: 30em; }
+
+.personal-right {
+  width: 50%;
+  float: left; }
 
 /*# sourceMappingURL=style.css.map */

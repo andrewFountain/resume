@@ -145,10 +145,10 @@
    *
    * `gQuery.each(( element ) => { ...do something })`
    *
-   * @param   {Function}  fn      callback function
+   * @param   {Functio'n}  fn      callback function
    */
 		each: fluent(function (fn) {
-			for ( /*let*/var ii = 0, ll = this.length; ii < ll; ii++) {
+			for (var ii = 0, ll = this.length; ii < ll; ii++) {
 				fn.call(this[ii], this[ii], ii, this);
 			}
 		}),
@@ -174,7 +174,7 @@
    * @fluent
    */
 		add: fluent(function (els) {
-			/*let*/
+
 			var ii = this.length || 0,
 			    el = els.length,
 			    ll = ii + el;
@@ -254,11 +254,12 @@
 			time = time || 2000;
 
 			var to = this.offset() - 4 * 16,
-			    curr = window.pageYOffset || document.documentElement.scrollTop,
 			    start = Date.now(),
-			    progress,
 			    initial = curr,
 			    difference = diff(initial, to);
+
+			var curr = window.pageYOffset || document.documentElement.scrollTop,
+			    progress = undefined;
 
 			//var scroller = new Scroller( to, time, ease );
 			//
@@ -303,7 +304,7 @@
    * @returns {gQuery}                    new instance with child nodes
    */
 		find: function find(selector) {
-			/*let*/var ret = [];
+			var ret = [];
 			this.each(function (el) {
 				/*const*/var children = slice(el.querySelectorAll(selector));
 				Array.prototype.splice.apply(ret, [ret.length, 0].concat(children));
@@ -386,7 +387,7 @@
 		},
 
 		dataAll: function dataAll(key) {
-			var ret;
+
 			if (notDefined) {}
 
 			return notUndefined(key) ? this[0].dataset[key] : this[0].dataset;
@@ -499,7 +500,7 @@
    * @returns void 0;
    */
 		animate: function animate(xy, styles, time, cb, ease) {
-			/*const*/var self = this;
+			var self = this;
 
 			// build the animation queue
 			this.each(function (el) {
@@ -508,7 +509,7 @@
 		},
 
 		animateFrom: function animateFrom(xy, styles, time, cb, ease) {
-			/*const*/var self = this;
+			var self = this;
 
 			// build the animation queue
 			this.each(function (el) {
@@ -706,9 +707,8 @@
 
 		prop = valueAndUnit(prop);
 
-		var start = cssProp(el, key, true);
-
-		var initial = isFrom ? prop.value : start,
+		var start = cssProp(el, key, true),
+		    initial = isFrom ? prop.value : start,
 		    to = isFrom ? start : prop.value;
 
 		this.el = el;
@@ -905,11 +905,11 @@
 
 		if (styles) {
 			/*let*/
-			var key;
+			var key = undefined;
 
 			for (key in styles) {
 
-				var animation;
+				var animation = undefined;
 
 				if (isColorProperty(key)) {
 					animation = new StyleColor(el, key, styles[key], time, cb, ease, isFrom);
@@ -982,8 +982,9 @@
 
 	function colorToArray(color) {
 
-		var match = null,
-		    hexReg = /\#([0-9a-z]+)/,
+		var match = null;
+
+		var hexReg = /\#([0-9a-z]+)/,
 		    rgbReg = /\(([0-9 ,.]+)\)/;
 
 		if (Array.isArray(color)) {
@@ -1028,7 +1029,9 @@
 
 	function valueAndUnit(value) {
 
-		var unit, match, type;
+		var unit = undefined,
+		    match = undefined,
+		    type = undefined;
 
 		if (isString(value)) {
 			if (match = value.match(/([-\.0-9]+)(px|%|em)*/)) {
@@ -1049,14 +1052,14 @@
 
 	function every(method) {
 		return function (fn) {
-			/*const*/var self = this,
+			var self = this,
 			    ll = this.length;
 
 			for (var _len4 = arguments.length, args = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
 				args[_key4 - 1] = arguments[_key4];
 			}
 
-			for ( /*let*/var ii = 0; ii < ll; ii++) {
+			for (var ii = 0; ii < ll; ii++) {
 				fn.apply(self[ii], [self[ii]].concat(args));
 			}
 		};

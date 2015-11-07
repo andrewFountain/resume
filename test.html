@@ -1,37 +1,317 @@
-<div class="row">
-	<div class="large-12 columns">
-		<{if $search_results|count}>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
 
-			<h2>Search results for: <{$searchline}></h2>
+		.container {
+			background: #eee;
+			display: flex;
+			padding: 2em;
+			height: 100%;
+		}
 
-			<ul class="large-block-grid-3 medium-block-grid-2 small-block-grid-1 load-more-container">
+		.column {
+			flex: 1;
+			height: 100%;
+			background: #aaa;
+			min-height: 200px;
+			padding: 1em;
+			margin: 1em;
 
-				<{foreach $search_results as $article}>
+			-moz-user-select    : none;
+			-khtml-user-select  : none;
+			-webkit-user-select : none;
+			user-select         : none;
+			/* Required to make elements draggable in old WebKit */
+			-khtml-user-drag    : element;
+			-webkit-user-drag   : element;
+			transition: .5s background, .5s box-shadow;
+		}
 
-					<{$blogUrl = "/blogs/<{$article.blogs_content_url_name}>"}>
-					<{$blogTitle = $article.blogs_content_title|escape}>
-					<{$blogImage = "/web_images/blogs/`$article.blogs_content_bid`/`$article.blogs_content_id`/`$article.blogs_content_image`"}>
-					<li>
-						<div class="post-item">
-							<div class="post-img">
+		.column.over {
+			background : #84c6d2;
+			box-shadow: 0 0 1em #1ba4d2 inset;
+		}
 
-								<a href="<{$blogUrl}>" title="<{$blogTitle}>">
-									<img src="<{$blogImage}>" alt="<{$blogTitle}>">
-								</a>
-							</div>
-							<br>
+		.panel {
+			display : block;
+			width: 100%;
+			background: #41b0d2;
+			min-height: 200px;
+			margin-bottom : 1em;
+		}
 
-							<a href="<{$blogUrl}>" title="<{$blogTitle}>" class="title"><{$blogTitle}></a>
+		.panel:last-of-type {
+			margin: 0;
+		}
 
-							<p><{$article.blogs_content_text|strip_tags|truncate:120}></p>
+	</style>
+</head>
+<div id="output">
 
-							<a href="<{$blogUrl}>" title="Read more" class="readmore">Read More</a>
-						</div>
-					</li>
-				<{/foreach}>
-			</ul>
-		<{else}>
-			<p>sorry there were no results for <{$searchline}></p>
-		<{/if}>
-	</div>
 </div>
+<body>
+<script>
+	(function(){
+
+		window.Container    = Container;
+		window.Column       = Column;
+		window.Panel        = Panel;
+
+		var
+			output      = document.querySelector('#output');
+
+		var
+			dragEl      = null,
+			dragObj     = null,
+			_COLUMNS_   = {},
+		    _PANELS_    = {};
+
+		function Container( name ){
+			this.columns = [];
+			this.name = name;
+			createElement.call( this, 'container' );
+
+			output.appendChild( this.el );
+		}
+
+		Container.prototype = {
+
+			init: function(){
+
+			},
+			get: function( id ){
+				return this.columns.reduce( function( ret, column ){
+					return column.name === id
+						? column
+						: ret;
+				}, null );
+			},
+			add: fluent(function( name ){
+
+				var column = new Column( name, this );
+				this.el.appendChild( column.el );
+				this.columns.push( column );
+			}),
+			remove: function( name ){
+				this.columns = this.columns.filter(function( column ){
+					return column.name !== name;
+				});
+			}
+		};
+
+		function Column( name, __super__ ){
+
+			this.name = name;
+			this.panels = [];
+
+			createElement.call(this, 'column');
+
+			addEvent.call(this, 'drop');
+			addEvent.call(this, 'dragenter');
+			addEvent.call(this, 'dragleave');
+			addEvent.call(this, 'dragover');
+
+			_COLUMNS_[ name ] = this;
+
+			__super__.el.appendChild( this.el );
+		}
+
+		Column.prototype = {
+
+			add: fluent(function( panel ){
+
+				if( panel instanceof Panel === false ){
+					panel = new Panel( panel, {}, this );
+				} else {
+					this.el.appendChild( panel.el );
+					panel.column = this.name;
+				}
+				this.panels.push( panel );
+
+
+			}),
+
+			remove: function( panel ){
+
+				var index = this.panels.indexOf( panel );
+				this.panels.splice( index, 1 );
+				this.el.removeChild( panel.el );
+
+				return panel;
+			},
+
+			get: function( id ){
+				return this.panels.reduce(function(ret, column){
+					return column.name === id
+						? column
+						: ret;
+				}, null);
+			},
+
+			toString: function(){
+				return JSON.stringify( this );
+			},
+
+			drop: function( e ){
+
+				var
+					dt          = e.dataTransfer,
+					panel       = _PANELS_[ dt.getData( 'panel' ) ],
+					columnStart = _COLUMNS_[ dt.getData( 'column' ) ],
+				    columnEnd;
+
+				panel && columnStart.remove( panel );
+				this.add( panel );
+
+				this.el.classList.remove('over');
+				console.log( 'height', e.offsetY );
+
+				columnEnd   = this;
+
+				console.log('dropped', {
+					e: e,
+					dt: dt,
+					start: columnStart,
+					end: columnEnd,
+					panel: panel
+				});
+			},
+
+			dragenter: function( e ){
+				this.el.classList.add( 'over' );
+			},
+			dragleave: function( e ){
+				this.el.classList.remove( 'over' );
+				// console.log( 'dragleave', e, this );
+			},
+			dragover : function( e ){
+				e.preventDefault();
+				e.dataTransfer.dropEffect = 'move';
+				// console.log( 'height', e.offsetY );
+			}
+
+		};
+
+		function Panel( name, params, __super__ ){
+
+			this.name       = name;
+			this.column     = __super__.name;
+			this.params     = params;
+
+			createElement.call(this, 'panel');
+
+			addEvent.call(this, 'drag');
+			addEvent.call(this, 'dragstart');
+			addEvent.call(this, 'dragend');
+			addEvent.call(this, 'dragover');
+
+			this.el.innerHTML = 'this is panel ' + name;
+
+			_PANELS_[ name ] = this;
+
+			__super__.el.appendChild( this.el );
+		}
+
+		Panel.prototype = {
+
+			toString: function(){
+				return JSON.stringify(this);
+			},
+
+			dragstart: function( e ){
+
+				console.log( 'dragstart', e, this );
+
+				dragObj = this;
+				dragEl = this.el;
+
+				var dt = e.dataTransfer;
+				dt.effectAllowed = 'move';
+				dt.setData( "panel", this.name );
+				dt.setData( "column", this.column );
+			},
+			drag: function( e ){
+				// console.log( 'dragstart', e, this );
+
+			},
+			dragend: function( e ){
+				// console.log( 'dragend', e, this );
+			},
+			dragover: function( e ){
+				e.preventDefault();
+				e.dataTransfer.dropEffect = 'move';
+				console.log( 'panel dragover', e.offsetY );
+			}
+
+		};
+
+
+		/**
+		 * helper functions
+		 */
+
+		/**
+		 * createElement
+		 *
+		 * this function will create an element and set it to the this object.
+		 * must be called or applied
+		 * @param   {String}    type   element type
+		 */
+		function createElement( type ){
+
+			var el       = document.createElement( 'div' );
+			el.id        = this.name;
+			el.className = type;
+
+			if( type === 'panel' ){
+				el.draggable = true;
+			}
+
+			this.el = el;
+		}
+
+		function addEvent(evt){
+			this.el.addEventListener(evt, this[evt].bind(this), false);
+		}
+
+		function noBubble(e){
+			e = e || window.event;
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			e.stopPropagation();
+
+			return e;
+		}
+
+		function fluent( fn ){
+			return function(){
+				var res = fn.apply( this, arguments );
+				return res != null
+					? res
+					: this;
+			}
+		}
+
+		function jsonParse( json ){
+			return JSON.parse( json ) || json;
+		}
+
+	})();
+
+	var container = new Container('dashboard')
+		.add( 'left' )
+		.add( 'right' );
+
+	var left = container.get('left');
+
+	left
+		.add('widget-1')
+		.add('widget-2')
+		.add('widget-3')
+		.add('widget-4');
+</script>
+</body>
+</html>

@@ -3,6 +3,8 @@ $grey: #999;
 $mid-grey: #999;
 $dark-grey: #444;
 $color-text: #493e45;
+$text-primary: rgba(0,0,0,0.87);
+$text-secondary: rgba(0,0,0,0.53);
 $color-highlight: #87d9fc;
 $color-heading: #fff;
 $background: #fff;
@@ -14,6 +16,11 @@ $background-heading: #f02673;
 $transparent: rgba(220,220,220, 0.4);
 $box-shadow: .3em .3em 1em #222;
 
+$shadow-low: 0 0.2em .7em rgba(0, 0, 0, .3);
+$shadow-mid: 0 0.3em 1.2em rgba(0, 0, 0, .3);
+$shadow-high: 0 0.6em 1.7em rgba(0, 0, 0, .3);
+$shadow-high: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em .7em rgba(0, 0, 0, 0.3);
+
 @function ems($px) {
 	@return ($px / 16) + 0em;
 }
@@ -23,6 +30,15 @@ $box-shadow: .3em .3em 1em #222;
 		content : " ";
 		display : block;
 		clear   : both;
+	}
+}
+
+@mixin paper {
+	box-shadow : $shadow-mid;
+	transition : .3s box-shadow, .3s transform;
+	&:hover {
+		box-shadow : $shadow-high;
+		transform: matrix(1,0,0,1,0,-2);
 	}
 }
 
@@ -82,13 +98,13 @@ $box-shadow: .3em .3em 1em #222;
 	src: url('font/Proxima%20Nova%20Bold.otf');
 }
 
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,300");
 
 html, body {
 	font-family : 'proxima', 'Roboto', sans-serif;
 	font-weight: 300;
 	background: $background;
-	color: $color-text;
+	color: $text-primary;
 	line-height: 200%;
 	height: 100%;
 	width: 100%;
@@ -223,9 +239,9 @@ section .slideshow {
 		width           : 500%;
 		overflow        : hidden;
 		display         : flex;
-		align-content: center;
-		align-items : center;
-		justify-content: space-around;
+		align-content   : center;
+		align-items     : center;
+		justify-content : space-around;
 
 	}
 
@@ -247,11 +263,30 @@ section .slideshow {
 
 		.details {
 			background : rgba(255,255,255,0.7);
+			@include paper;
 		}
 
 		.job__details li {
 			transform: matrix(1,0,0,1,50,50);
 			opacity: 0;
+			@include clear;
+
+			span.list-tick {
+				width: 5%;
+				float: left;
+			}
+
+			span.list-tick:before {
+				content     : '\e800';
+				font-family : "fontello";
+				height: 100%;
+				float: left;
+			}
+
+			span.list-content {
+				width: 95%;
+				float: left;
+			}
 		}
 	}
 }
@@ -271,7 +306,7 @@ section {
 
 		a {
 			text-decoration: none;
-			color: $color-text;
+			color: $text-primary;
 		}
 
 	}
@@ -355,6 +390,7 @@ ul.tick-list {
 		width: 21%;
 		display: flex;
 		flex-direction: column;
+		@include paper;
 	}
 
 	.book__heading {
@@ -454,6 +490,7 @@ div.hero {
 		text-align : center;
 		background: rgba(240,240,240,.4);
 		border: 1px solid rgba(240, 240, 240, .8);
+		@include paper;
 	}
 
 	#word {
@@ -475,6 +512,12 @@ div.hero {
 		background: #fff;
 		margin-bottom: 1em;
 		position: relative;
+		transform: matrix(1,0,0,1,0,0);
+		@include paper;
+
+		&:hover {
+			box-shadow: $shadow-high;
+		}
 		// color: #fff;
 
 		header {
@@ -532,7 +575,7 @@ div.hero {
 	.progress-inner {
 		width: 0%;
 		height: 100%;
-		background: $background-heading; //t
+		background: $background-heading;
 	}
 }
 
@@ -550,4 +593,18 @@ div.hero {
 	position  : absolute;
 	width: 300%;
 
+}
+
+.personal-left {
+
+	p {
+		max-width: 30em;
+	}
+	width: 50%;
+	float: left;
+}
+
+.personal-right {
+	width : 50%;
+	float : left;
 }
