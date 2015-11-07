@@ -34,11 +34,17 @@
 
 		if( CURRENT_SCENE > -1 && SCENES.length ){
 
-			if( SCENES[ CURRENT_SCENE ]._update() ){
+			if( ! SCENES[ CURRENT_SCENE ]._update() ){
+				// if scene has ended increment the timeline
+				if( ++CURRENT_SCENE < SCENES.length ){
+					SCENES[ CURRENT_SCENE ]._init();
+					window.requestAnimationFrame( render );
+				} else {
+					CURRENT_SCENE = -1;
+				}
+			} else {
 				window.requestAnimationFrame( render );
 			}
-
-
 		}
 	}
 
@@ -55,12 +61,12 @@
 		 * this method will add a new tween to the timeline
 		 *
 		 * @param   {String}    name        name of the tween (scene)
-		 *
+		 *'
 		 * @return {Tween}                  tween attach animations to
 		 */
-		add   : fluent( function( name ){
+		add   : fluent( function( name, time ){
 			// push to animations and index on tweens object at the same time
-			return SCENES[ name ] = SCENES[ SCENES.push( new Tween( name ) ) - 1 ];
+			return SCENES[ name ] = SCENES[ SCENES.push( new Tween( name, time ) ) - 1 ];
 		}),
 
 		/**
@@ -95,6 +101,7 @@
 		play  : fluent( function(){
 
 			CURRENT_SCENE = 0;
+			SCENES[ 0 ]._init();
 			this.start = start = Date.now();
 			render();
 
@@ -113,12 +120,13 @@
 	});
 
 
-	function Tween( name ){
+	function Tween( name, time ){
 		this.name = name;
 		this.events = {};
 		this.animations = [];
 		this.currentAnimations = [];
 		this.delay = 0;
+		this.time = time || 1000;
 	}
 	extendProto( Tween.prototype, {
 
@@ -154,6 +162,10 @@
 
 		_init: function( animation ){
 			this.currentAnimations = this.animations.slice( 0 );
+			this.currentAnimations.forEach(function(animation){
+				animation._init();
+			});
+			this.start = 0;
 		},
 
 		_add: function( animation ){
@@ -165,7 +177,10 @@
 
 			console.log( 'tween update', this );
 
-			this.now = Date.now();
+			let now = Date.now();
+
+			this.start = this.start || now;
+			this.progress = this.start - now;
 
 			this.currentAnimations = this.currentAnimations.filter( updateAnimationFilter );
 
@@ -175,7 +190,8 @@
 				return false
 
 			}
-			return true;
+			// remove from the timeline if progress is less than total time
+			return this.progress < this.time;
 		}
 
 	});
@@ -201,25 +217,23 @@
 	extendProto( StyleNumber.prototype, {
 		_update: function(){
 			console.log( 'number update', this );
+		},
+		_init: function(){
+			this.start    = 0;
+			this.progress = 0;
 		}
 	});
 
 
 	function StyleColor( $el, key, value, timing, stagger ){
 
-		let initial = $el.css( key );
 
-		initial = colorToArray( initial );
-		value   = colorToArray( value );
 
 		this.$el      = $el;
 		this.timing   = timing;
 		this.stagger  = stagger;
 		this.prop     = key;
-		this.initial  = initial;
-		this.curr     = initial.slice();
-		this.to       = value;
-		this.diff     = diffArray( initial, value );
+		this.value    = value;
 		this.easing   = easing[ timing.ease || 'easeIn' ];
 		this.time     = timing.time;
 		this.delay    = timing.delay;
@@ -228,6 +242,21 @@
 
 	StyleColor.prototype = new Animation;
 	extendProto( StyleColor.prototype, {
+		_init: function(){
+
+			let initial = this.$el.css( this.prop ),
+			    value;
+
+			initial = colorToArray( initial );
+			value   = colorToArray( this.value );
+
+			this.start      = 0;
+			this.progress   = 0;
+			this.initial    = initial;
+			this.curr       = initial.slice();
+			this.to         = value;
+			this.diff       = diffArray( initial, value );
+		},
 		_update: function( now ){
 
 			let newCurr = [];
@@ -252,17 +281,16 @@
 
 			console.log( 'color update', this );
 
-			return this.progress < this.time + this.delay;
+			return this.progress < this.time + this.delay
+				? true
+				: (this.start = false);
 		}
 	});
 
 	function Matrix( $el, key, value, timing, stagger ){
 		this.$el     = $el;
 		this.key     = key;
-		this.initial = $el.matrix();
-		this.curr    = this.initial.slice( 0 );
-		this.to      = value.length == 2 ? [ 1, 0, 0, 1 ].concat( value ) : value;
-		this.diff    = diffArray( this.initial, this.to );
+		this.value   = value;
 		this.time    = timing.time;
 		this.delay   = timing.delay;
 		this.timing  = timing;
@@ -293,7 +321,20 @@
 
 			console.log( 'matrix update', this );
 
-			return this.progress < this.time + this.delay;
+			return this.progress < this.time + this.delay
+				? true
+				: (this.start = false);
+		},
+		_init: function(){
+
+			this.start = 0;
+			this.progress = 0;
+			this.initial = this.$el.matrix();
+			this.curr    = this.initial.slice( 0 );
+			this.to      = this.value.length == 2
+				? [ 1, 0, 0, 1 ].concat( this.value )
+				: value;
+			this.diff    = diffArray( this.initial, this.to );
 		}
 	} );
 
@@ -519,8 +560,8 @@
 
 let
 	timeline    = new Timeline(),
-	scene1      = timeline.add('scene-1', 2000);
-    //scene2      = timeline.add('scene-2');
+	scene1      = timeline.add('scene-1', 2000 ),
+    scene2      = timeline.add('scene-2', 2000);
 
 //scene1
 //	.to('.something', {
@@ -559,10 +600,32 @@ scene1
 		pos: [400, 200],
 		time: 600
 	})
-	.wait(400)
+	.wait(100)
 	.to('.things', {
 		background: '#c3f',
 		pos: [600, 200],
+		time: 600
+	})
+	.on('complete', function( tween ){
+		console.log( 'it\'s blue', tween );
+	});
+
+scene2
+	.to('.something', {
+		background: '#3cf',
+		pos: [300, 0],
+		time: 600
+	})
+	.wait(100)
+	.to('.another', {
+		background: '#fc3',
+		pos: [300, 0],
+		time: 600
+	})
+	.wait(100)
+	.to('.things', {
+		background: '#c3f',
+		pos: [300, 0],
 		time: 600
 	})
 	.on('complete', function( tween ){
