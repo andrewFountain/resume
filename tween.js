@@ -493,7 +493,13 @@
 		this.delay   = timing.delay;
 		this.timing  = timing;
 		this.stagger = stagger;
-		this.easing  = easing[ timing.easing || 'easeInOutQuad' ];
+		if( timing.easing && Array.isArray( timing.easing ) ){
+			this.dualEase = timing.easing.reverse().map( ( ease ) => easing[ ease || 'easeInOutQuad' ] );
+			this.easing = easing[ timing.easing[0] || 'easeInOutQuad' ];
+		} else {
+			this.dualEase = false;
+			this.easing = easing[ timing.easing || 'easeInOutQuad' ];
+		}
 	}
 
 	Matrix.prototype = new Animation;
@@ -510,7 +516,12 @@
 			}
 
 			for( var ii = 0, ll = this.curr.length; ii < ll; ii++ ) {
-				newCurr[ ii ] = this.easing( this.progress - this.delay, this.initial[ ii ], this.diff[ ii ], this.time );
+				// allow different easings for x and y
+				if( this.dualEase && ii > ll - 2 ){
+					newCurr[ ii ] = this.dualEase[ ii % 2 ]( this.progress - this.delay, this.initial[ ii ], this.diff[ ii ], this.time );
+				} else {
+					newCurr[ ii ] = this.easing( this.progress - this.delay, this.initial[ ii ], this.diff[ ii ], this.time );
+				}
 			}
 
 			this.curr = newCurr;
@@ -786,22 +797,25 @@ let
 //	});
 
 scene1
-	.to( '.something', {
-		background: '#3cf',
-		pos       : [ 200, 200 ],
-		time      : 600
-	} )
-	.wait( 100 )
-	.to( '.another', {
-		background: '#fc3',
-		pos       : [ 400, 200 ],
-		time      : 600
-	} )
-	.wait( 100 )
 	.to( '.things', {
 		background: '#c3f',
 		pos       : [ 600, 200 ],
-		time      : 600
+		time      : 600,
+		easing: [  'easeInOutQuad','easeOutCirc' ]
+	} )
+
+	.to( '.another', {
+		background: '#fc3',
+		pos       : [ 0,.7,.7,0,400, 200 ],
+		time      : 600,
+		easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
+	} )
+
+	.to( '.something', {
+		background: '#3cf',
+		pos       : [ 200, 200 ],
+		time      : 600,
+		easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
 	} )
 	.on( 'complete', function( tween ){
 		console.log( 'it\'s blue', tween );
@@ -817,7 +831,7 @@ scene2
 	.wait( 100 )
 	.to( '.another', {
 		background  : '#c3f',
-		pos       : [300, 0 ],
+		pos       : [ 300, 0 ],
 		borderRadius: '50%',
 		time        : 600
 	} )
