@@ -4,10 +4,11 @@
 	window.Timeline = Timeline;
 
 	let
-		SCENES        = [],
-		TWEENS = [],
-		CURRENT_SCENE = -1,
-		start         = 0;
+		SCENES          = [],
+		TWEENS          = [],
+		CURRENT_SCENE   = -1,
+		LAST_SCENE      = 0,
+		START           = 0;
 
 
 	/**
@@ -37,6 +38,9 @@
 		swing           : function( t, b, c, d ){
 			//alert(easing.default);
 			return easing[ easing.def ]( t, b, c, d );
+		},
+		linear: function( t, b, c, d ){
+			return c * t / d + b;
 		},
 		easeInQuad      : function( t, b, c, d ){
 			return c * (t /= d) * t + b;
@@ -192,7 +196,7 @@
 
 	function render(){
 
-		if( CURRENT_SCENE > -1 && SCENES.length ){
+		if( CURRENT_SCENE > -1 && SCENES.length && CURRENT_SCENE < LAST_SCENE ){
 
 			if( !SCENES[ CURRENT_SCENE ]._update() ){
 				// if scene has ended increment the timeline
@@ -236,10 +240,30 @@
 		 *
 		 * @param   {String}    scene       scene to animate to
 		 */
-		to: fluent( function( scene ){
+		to: fluent( function( end ){
 
-
+			LAST_SCENE    = end;
+			CURRENT_SCENE = CURRENT_SCENE > -1 ? CURRENT_SCENE : 0;
+			SCENES[ CURRENT_SCENE ]._init();
+			this.start = START = Date.now();
+			render();
 		} ),
+
+		from: fluent(function( start ){
+			CURRENT_SCENE = start;
+			LAST_SCENE    = SCENES.length;
+			SCENES[ CURRENT_SCENE ]._init();
+			this.start = START = Date.now();
+			render();
+		}),
+
+		between: fluent(function( start, end ){
+			CURRENT_SCENE = start;
+			LAST_SCENE    = end;
+			SCENES[ CURRENT_SCENE ]._init();
+			this.start = START = Date.now();
+			render();
+		}),
 
 		/**
 		 * go
@@ -248,8 +272,13 @@
 		 *
 		 * @param   {String}    scene       scene to animate to
 		 */
-		go: fluent( function( scene ){
+		go: fluent( function( start ){
 
+			CURRENT_SCENE = start - 1;
+			LAST_SCENE    = start;
+			SCENES[ CURRENT_SCENE ]._init();
+			this.start = START = Date.now();
+			render();
 
 		} ),
 
@@ -261,8 +290,9 @@
 		play: fluent( function(){
 
 			CURRENT_SCENE = 0;
-			SCENES[ 0 ]._init();
-			this.start = start = Date.now();
+			LAST_SCENE = SCENES.length;
+			SCENES[ CURRENT_SCENE ]._init();
+			this.start = START = Date.now();
 			render();
 
 		} ),
@@ -405,9 +435,8 @@
 		_init  : function(){
 
 			const
-				start   = parseFloat( this.$el.css( this.key ) ),
-				prop  = valueAndUnit( this.value ),
-				initial = start,
+				initial = parseFloat( this.$el.css( this.key ) ),
+				prop    = valueAndUnit( this.value ),
 				to      = prop.value;
 
 			this.unit    = prop.unit;
@@ -799,23 +828,23 @@ let
 scene1
 	.to( '.things', {
 		background: '#c3f',
-		pos       : [ 600, 200 ],
-		time      : 600,
-		easing: [  'easeInOutQuad','easeOutCirc' ]
+		pos       : [ 600, -464 ],
+		time      : 800,
+		easing: [  'linear', 'easeOutCirc' ]
 	} )
 
 	.to( '.another', {
 		background: '#fc3',
-		pos       : [ 0,.7,.7,0,400, 200 ],
-		time      : 600,
-		easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
+		pos       : [ 0,.7,.7,0,400, -232 ],
+		time      : 800,
+		easing    : [ 'linear', 'easeOutCirc' ]
 	} )
 
 	.to( '.something', {
 		background: '#3cf',
-		pos       : [ 200, 200 ],
-		time      : 600,
-		easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
+		pos       : [ 200, 0 ],
+		time      : 800,
+		easing    : [ 'linear', 'easeOutCirc' ]
 	} )
 	.on( 'complete', function( tween ){
 		console.log( 'it\'s blue', tween );
