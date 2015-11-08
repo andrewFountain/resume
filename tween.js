@@ -4,37 +4,197 @@
 	window.Timeline = Timeline;
 
 	let
-		SCENES          = [],
-	    TWEENS          = [],
-	    CURRENT_SCENE   = -1,
-	    start           = 0;
+		SCENES        = [],
+		TWEENS = [],
+		CURRENT_SCENE = -1,
+		start         = 0;
 
 
-	const
-		/**
-		 * easing
-		 *
-		 * this object will hold the easing functions for animations
-		 *
-		 * @type {{easeIn: Function, linear: Function}}
-		 */
-		easing = {
-			easeIn: function easeIn( time, begin, change, duration ){
-				return -change * (time /= duration) * (time - 2) + begin;
-			},
-			linear: function linear( progress, begin, change, duration ){
-				return progress < duration
-					? property.begin + (progress / time) * change
-					: begin + change;
+	/**
+	 * easing
+	 *
+	 * this object will hold the easing functions for animations
+	 *
+	 * http://robertpenner.com/easing/
+	 * http://gizma.com/easing/
+	 *
+	 * @type {{easeIn: Function, linear: Function}}
+	 */
+
+		// --------------------------------------------------
+		// easing.js v0.5.4
+		// Generic set of easing functions with AMD support
+		// https://github.com/danro/easing-js
+		// This code may be freely distributed under the MIT license
+		// http://danro.mit-license.org/
+		// --------------------------------------------------
+		// All functions adapted from Thomas Fuchs & Jeremy Kahn
+		// Easing Equations (c) 2003 Robert Penner, BSD license
+		// https://raw.github.com/danro/easing-js/master/LICENSE
+		// --------------------------------------------------
+	const easing = {
+		def: 'easeOutQuad',
+		swing           : function( t, b, c, d ){
+			//alert(easing.default);
+			return easing[ easing.def ]( t, b, c, d );
+		},
+		easeInQuad      : function( t, b, c, d ){
+			return c * (t /= d) * t + b;
+		},
+		easeOutQuad     : function( t, b, c, d ){
+			return -c * (t /= d) * (t - 2) + b;
+		},
+		easeInOutQuad   : function( t, b, c, d ){
+			if( (t /= d / 2) < 1 ) return c / 2 * t * t + b;
+			return -c / 2 * ((--t) * (t - 2) - 1) + b;
+		},
+		easeInCubic     : function( t, b, c, d ){
+			return c * (t /= d) * t * t + b;
+		},
+		easeOutCubic    : function( t, b, c, d ){
+			return c * ((t = t / d - 1) * t * t + 1) + b;
+		},
+		easeInOutCubic  : function( t, b, c, d ){
+			if( (t /= d / 2) < 1 ) return c / 2 * t * t * t + b;
+			return c / 2 * ((t -= 2) * t * t + 2) + b;
+		},
+		easeInQuart     : function( t, b, c, d ){
+			return c * (t /= d) * t * t * t + b;
+		},
+		easeOutQuart    : function( t, b, c, d ){
+			return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+		},
+		easeInOutQuart  : function( t, b, c, d ){
+			if( (t /= d / 2) < 1 ) return c / 2 * t * t * t * t + b;
+			return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+		},
+		easeInQuint     : function( t, b, c, d ){
+			return c * (t /= d) * t * t * t * t + b;
+		},
+		easeOutQuint    : function( t, b, c, d ){
+			return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+		},
+		easeInOutQuint  : function( t, b, c, d ){
+			if( (t /= d / 2) < 1 ) return c / 2 * t * t * t * t * t + b;
+			return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
+		},
+		easeInSine      : function( t, b, c, d ){
+			return -c * Math.cos( t / d * (Math.PI / 2) ) + c + b;
+		},
+		easeOutSine     : function( t, b, c, d ){
+			return c * Math.sin( t / d * (Math.PI / 2) ) + b;
+		},
+		easeInOutSine   : function( t, b, c, d ){
+			return -c / 2 * (Math.cos( Math.PI * t / d ) - 1) + b;
+		},
+		easeInExpo      : function( t, b, c, d ){
+			return (t == 0)
+				? b
+				: c * Math.pow( 2, 10 * (t / d - 1) ) + b;
+		},
+		easeOutExpo     : function( t, b, c, d ){
+			return (t == d)
+				? b + c
+				: c * (-Math.pow( 2, -10 * t / d ) + 1) + b;
+		},
+		easeInOutExpo   : function( t, b, c, d ){
+			if( t == 0 ) return b;
+			if( t == d ) return b + c;
+			if( (t /= d / 2) < 1 ) return c / 2 * Math.pow( 2, 10 * (t - 1) ) + b;
+			return c / 2 * (-Math.pow( 2, -10 * --t ) + 2) + b;
+		},
+		easeInCirc      : function( t, b, c, d ){
+			return -c * (Math.sqrt( 1 - (t /= d) * t ) - 1) + b;
+		},
+		easeOutCirc     : function( t, b, c, d ){
+			return c * Math.sqrt( 1 - (t = t / d - 1) * t ) + b;
+		},
+		easeInOutCirc   : function( t, b, c, d ){
+			if( (t /= d / 2) < 1 ) return -c / 2 * (Math.sqrt( 1 - t * t ) - 1) + b;
+			return c / 2 * (Math.sqrt( 1 - (t -= 2) * t ) + 1) + b;
+		},
+		easeInElastic   : function( t, b, c, d ){
+			var s = 1.70158;
+			var p = 0;
+			var a = c;
+			if( t == 0 ) return b;
+			if( (t /= d) == 1 ) return b + c;
+			if( !p ) p = d * .3;
+			if( a < Math.abs( c ) ){
+				a     = c;
+				var s = p / 4;
 			}
-		};
+			else var s = p / (2 * Math.PI) * Math.asin ( c / a );
+			return -(a * Math.pow( 2, 10 * (t -= 1) ) * Math.sin( (t * d - s) * (2 * Math.PI) / p )) + b;
+		},
+		easeOutElastic  : function( t, b, c, d ){
+			var s = 1.70158;
+			var p = 0;
+			var a = c;
+			if( t == 0 ) return b;
+			if( (t /= d) == 1 ) return b + c;
+			if( !p ) p = d * .3;
+			if( a < Math.abs( c ) ){
+				a     = c;
+				var s = p / 4;
+			}
+			else var s = p / (2 * Math.PI) * Math.asin ( c / a );
+			return a * Math.pow( 2, -10 * t ) * Math.sin( (t * d - s) * (2 * Math.PI) / p ) + c + b;
+		},
+		easeInOutElastic: function( t, b, c, d ){
+			var s = 1.70158;
+			var p = 0;
+			var a = c;
+			if( t == 0 ) return b;
+			if( (t /= d / 2) == 2 ) return b + c;
+			if( !p ) p = d * (.3 * 1.5);
+			if( a < Math.abs( c ) ){
+				a     = c;
+				var s = p / 4;
+			}
+			else var s = p / (2 * Math.PI) * Math.asin ( c / a );
+			if( t < 1 ) return -.5 * (a * Math.pow( 2, 10 * (t -= 1) ) * Math.sin( (t * d - s) * (2 * Math.PI) / p )) + b;
+			return a * Math.pow( 2, -10 * (t -= 1) ) * Math.sin( (t * d - s) * (2 * Math.PI) / p ) * .5 + c + b;
+		},
+		easeInBack      : function( t, b, c, d, s ){
+			if( s == undefined ) s = 1.70158;
+			return c * (t /= d) * t * ((s + 1) * t - s) + b;
+		},
+		easeOutBack     : function( t, b, c, d, s ){
+			if( s == undefined ) s = 1.70158;
+			return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+		},
+		easeInOutBack   : function( t, b, c, d, s ){
+			if( s == undefined ) s = 1.70158;
+			if( (t /= d / 2) < 1 ) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
+			return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+		},
+		easeInBounce    : function( t, b, c, d ){
+			return c - easing.easeOutBounce ( d - t, 0, c, d ) + b;
+		},
+		easeOutBounce   : function( t, b, c, d ){
+			if( (t /= d) < (1 / 2.75) ){
+				return c * (7.5625 * t * t) + b;
+			} else if( t < (2 / 2.75) ){
+				return c * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + b;
+			} else if( t < (2.5 / 2.75) ){
+				return c * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + b;
+			} else {
+				return c * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + b;
+			}
+		},
+		easeInOutBounce : function( t, b, c, d ){
+			if( t < d / 2 ) return easing.easeInBounce ( t * 2, 0, c, d ) * .5 + b;
+			return easing.easeOutBounce ( t * 2 - d, 0, c, d ) * .5 + c * .5 + b;
+		}
+	};
 
 
 	function render(){
 
 		if( CURRENT_SCENE > -1 && SCENES.length ){
 
-			if( ! SCENES[ CURRENT_SCENE ]._update() ){
+			if( !SCENES[ CURRENT_SCENE ]._update() ){
 				// if scene has ended increment the timeline
 				if( ++CURRENT_SCENE < SCENES.length ){
 					SCENES[ CURRENT_SCENE ]._init();
@@ -53,7 +213,7 @@
 		this.start = 0;
 	}
 
-	extendProto(Timeline.prototype, {
+	extendProto( Timeline.prototype, {
 
 		/**
 		 * add
@@ -64,10 +224,10 @@
 		 *'
 		 * @return {Tween}                  tween attach animations to
 		 */
-		add   : fluent( function( name, time ){
+		add: fluent( function( name, time ){
 			// push to animations and index on tweens object at the same time
 			return SCENES[ name ] = SCENES[ SCENES.push( new Tween( name, time ) ) - 1 ];
-		}),
+		} ),
 
 		/**
 		 * to
@@ -76,10 +236,10 @@
 		 *
 		 * @param   {String}    scene       scene to animate to
 		 */
-		to: fluent(function( scene ){
+		to: fluent( function( scene ){
 
 
-		}),
+		} ),
 
 		/**
 		 * go
@@ -88,83 +248,84 @@
 		 *
 		 * @param   {String}    scene       scene to animate to
 		 */
-		go: fluent(function( scene ){
+		go: fluent( function( scene ){
 
 
-		}),
+		} ),
 
 		/**
 		 * play
 		 *
 		 * this method will play all the tweens for the timeline
 		 */
-		play  : fluent( function(){
+		play: fluent( function(){
 
 			CURRENT_SCENE = 0;
 			SCENES[ 0 ]._init();
 			this.start = start = Date.now();
 			render();
 
-		}),
+		} ),
 
 		/**
 		 * pause
 		 *
 		 * this method will pause the timeline
 		 */
-		pause : fluent(function(){
+		pause: fluent( function(){
 
 			CURRENT_SCENE = -1;
 
-		})
-	});
+		} )
+	} );
 
 
 	function Tween( name, time ){
-		this.name = name;
-		this.events = {};
-		this.animations = [];
+		this.name              = name;
+		this.events            = {};
+		this.animations        = [];
 		this.currentAnimations = [];
-		this.delay = 0;
-		this.time = time || 1000;
+		this.delay             = 0;
+		this.time              = time || 1000;
 	}
+
 	extendProto( Tween.prototype, {
 
-		to: fluent(function( selector, properties, time = 2000 ){
+		to: fluent( function( selector, properties, time = 2000 ){
 
-			properties.time = ( properties.time || time );
+			properties.time  = ( properties.time || time );
 			properties.delay = this.delay;
 
 			properties = sortProperties.call( this, properties );
 
 			addAnimations.call( this, selector, properties );
-		}),
+		} ),
 
-		wait: fluent(function( delay ){
+		wait: fluent( function( delay ){
 
 			this.delay += delay;
 
-		}),
+		} ),
 
-		stagger: fluent(function( selector, stagger, properties ){
+		stagger: fluent( function( selector, stagger, properties ){
 
 			properties = sortProperties.call( this, properties );
 
 			addAnimations.call( this, selector, properties, stagger );
 
-		}),
+		} ),
 
-		on: fluent(function( event, cb ){
+		on: fluent( function( event, cb ){
 
 			this.events[ event ] = cb;
 
-		}),
+		} ),
 
 		_init: function( animation ){
 			this.currentAnimations = this.animations.slice( 0 );
-			this.currentAnimations.forEach(function(animation){
+			this.currentAnimations.forEach( function( animation ){
 				animation._init();
-			});
+			} );
 			this.start = 0;
 		},
 
@@ -175,11 +336,9 @@
 
 		_update: function(){
 
-			console.log( 'tween update', this );
-
 			let now = Date.now();
 
-			this.start = this.start || now;
+			this.start    = this.start || now;
 			this.progress = this.start - now;
 
 			this.currentAnimations = this.currentAnimations.filter( updateAnimationFilter );
@@ -194,58 +353,62 @@
 			return this.progress < this.time;
 		}
 
-	});
+	} );
 
 	function updateAnimationFilter( animation ){
 		return animation._update( Date.now() );
 	}
 
 	function Animation(){}
-	Animation.prototype = null;
-	extendProto( Animation.prototype, {
 
-	});
+	Animation.prototype = null;
+	extendProto( Animation.prototype, {} );
 
 	function StyleNumber( $el, key, value, timing, stagger ){
 
-		this.$el        = $el;
-		this.key        = key;
-		this.value      = value;
-		this.timing     = timing;
-		this.stagger    = stagger;
+		this.$el     = $el;
+		this.key     = key;
+		this.value   = value;
+		this.timing  = timing;
+		this.stagger = stagger;
 
-		this.easing   = easing[ timing.ease || 'easeIn' ];
+		this.easing   = easing[ timing.ease || 'easeInOutQuad' ];
 		this.time     = timing.time;
 		this.delay    = timing.delay;
 		this.timing   = timing;
 		this.progress = 0;
 	}
+
 	StyleNumber.prototype = new Animation;
 	extendProto( StyleNumber.prototype, {
 		_update: function( now ){
-			console.log( 'number update', this );
 
 			this.start    = this.start || now;
 			this.progress = now - this.start;
 
 			this.curr = this.easing( this.progress, this.initial, this.diff, this.time );
 
-			let styleProp = {};
+			let styleProp         = {};
 			styleProp[ this.key ] = this.curr + ( this.unit || 0 );
 
-			this.$el.css(styleProp);
+			this.$el.css( styleProp );
 
-			return this.progress < this.time + this.delay
-				? true
-				: (this.start = false);
+			if( this.progress < this.time + this.delay ){
+				return true;
+			} else {
+				this.start             = false;
+				styleProp[ this.key ] = this.curr + ( this.unit || 0 );
+				this.$el.css( styleProp );
+				return false;
+			}
 		},
-		_init: function(){
+		_init  : function(){
 
 			const
-				start = parseFloat(this.$el.css( this.key)),
-				prop = valueAndUnit( this.value ),
+				start   = parseFloat( this.$el.css( this.key ) ),
+				prop  = valueAndUnit( this.value ),
 				initial = start,
-				to = prop.value;
+				to      = prop.value;
 
 			this.unit    = prop.unit;
 			this.initial = initial;
@@ -256,11 +419,10 @@
 			this.start    = 0;
 			this.progress = 0;
 		}
-	});
+	} );
 
 
 	function StyleColor( $el, key, value, timing, stagger ){
-
 
 
 		this.$el      = $el;
@@ -268,7 +430,7 @@
 		this.stagger  = stagger;
 		this.prop     = key;
 		this.value    = value;
-		this.easing   = easing[ timing.ease || 'easeIn' ];
+		this.easing   = easing[ timing.ease || 'easeInOutQuad' ];
 		this.time     = timing.time;
 		this.delay    = timing.delay;
 		this.progress = 0;
@@ -276,7 +438,7 @@
 
 	StyleColor.prototype = new Animation;
 	extendProto( StyleColor.prototype, {
-		_init: function(){
+		_init  : function(){
 
 			let initial = this.$el.css( this.prop ),
 			    value;
@@ -284,18 +446,18 @@
 			initial = colorToArray( initial );
 			value   = colorToArray( this.value );
 
-			this.start      = 0;
-			this.progress   = 0;
-			this.initial    = initial;
-			this.curr       = initial.slice();
-			this.to         = value;
-			this.diff       = diffArray( initial, value );
+			this.start    = 0;
+			this.progress = 0;
+			this.initial  = initial;
+			this.curr     = initial.slice();
+			this.to       = value;
+			this.diff     = diffArray( initial, value );
 		},
 		_update: function( now ){
 
 			let newCurr = [];
 
-			this.start = this.start || Date.now();
+			this.start    = this.start || Date.now();
 			this.progress = now - this.start;
 
 			if( this.progress < this.delay ){
@@ -308,18 +470,20 @@
 
 			this.curr = parseIntMap( newCurr );
 
-			let styleProp = {};
+			let styleProp          = {};
 			styleProp[ this.prop ] = 'rgb(' + this.curr.join( ',' ) + ')';
 
 			this.$el.css( styleProp );
 
-			console.log( 'color update', this );
-
-			return this.progress < this.time + this.delay
-				? true
-				: (this.start = false);
+			if( this.progress < this.time + this.delay ){
+				return true;
+			} else {
+				this.start = false;
+				styleProp[ this.prop ] = 'rgb(' + this.to.join( ',' ) + ')';
+				return false;
+			}
 		}
-	});
+	} );
 
 	function Matrix( $el, key, value, timing, stagger ){
 		this.$el     = $el;
@@ -329,7 +493,7 @@
 		this.delay   = timing.delay;
 		this.timing  = timing;
 		this.stagger = stagger;
-		this.easing  = easing[ timing.easing || 'easeIn' ];
+		this.easing  = easing[ timing.easing || 'easeInOutQuad' ];
 	}
 
 	Matrix.prototype = new Animation;
@@ -338,7 +502,7 @@
 
 			let newCurr = [];
 
-			this.start = this.start || Date.now();
+			this.start    = this.start || Date.now();
 			this.progress = now - this.start;
 
 			if( this.progress < this.delay ){
@@ -353,22 +517,20 @@
 
 			this.$el.matrix( this.curr );
 
-			console.log( 'matrix update', this );
-
 			return this.progress < this.time + this.delay
 				? true
-				: (this.start = false);
+				: (this.$el.matrix( this.to ), this.start = false);
 		},
-		_init: function(){
+		_init  : function(){
 
-			this.start = 0;
+			this.start    = 0;
 			this.progress = 0;
-			this.initial = this.$el.matrix();
-			this.curr    = this.initial.slice( 0 );
-			this.to      = this.value.length == 2
+			this.initial  = this.$el.matrix();
+			this.curr     = this.initial.slice( 0 );
+			this.to       = this.value.length == 2
 				? [ 1, 0, 0, 1 ].concat( this.value )
-				: value;
-			this.diff    = diffArray( this.initial, this.to );
+				: this.value;
+			this.diff     = diffArray( this.initial, this.to );
 		}
 	} );
 
@@ -377,7 +539,7 @@
 
 		let $el = $( selector );
 
-		for( let key in properties.matrix ){
+		for( let key in properties.matrix ) {
 			let matrix = properties.matrix[ key ];
 			this._add( new Matrix( $el, key, matrix, properties.timing, stagger ) );
 		}
@@ -410,27 +572,27 @@
 	let sortProperties = (function(){
 
 		const
-			timing  = new Set([ 'time', 'delay', 'speed', 'easing' ]),
-			matrix  = new Set([ 'pos', 'top', 'left', 'bottom', 'right', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 'scale' ]),
-			colors  = new Set([ 'background', 'color', 'background-color', 'border-color' ]);
+			timing = new Set( [ 'time', 'delay', 'speed', 'easing' ] ),
+			matrix = new Set( [ 'pos', 'top', 'left', 'bottom', 'right', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 'scale' ] ),
+			colors = new Set( [ 'background', 'color', 'background-color', 'border-color' ] );
 
 		return function( properties ){
 
 			let
-				ret       = {
-					timing: {},
+				ret = {
+					timing     : {},
 					matrix: {},
 					styleNumber: {},
-					styleColor: {}
+					styleColor : {}
 				};
 
 			for( let key in properties ) {
 
-				if( ! properties.hasOwnProperty( key ) ){
+				if( !properties.hasOwnProperty( key ) ){
 					continue;
 				}
 
-				let  prop = properties[ key ];
+				let prop = properties[ key ];
 
 				if( timing.has( key ) ){
 
@@ -460,21 +622,21 @@
 
 		let ret = {};
 
-		for( let key in giver ){
+		for( let key in giver ) {
 			let value = giver[ key ];
 
 			if( isPrivate( key ) ){
 				Object.defineProperty( reciever, key, {
-					value: value,
-					writable: false,
+					value     : value,
+					writable  : false,
 					enumerable: false
-				});
+				} );
 			} else {
 				Object.defineProperty( reciever, key, {
 					value     : value,
 					writable  : false,
 					enumerable: true
-				});
+				} );
 			}
 
 		}
@@ -482,7 +644,7 @@
 		return reciever;
 
 		function isPrivate( key ){
-			return key.charAt(0) === '_';
+			return key.charAt( 0 ) === '_';
 		}
 
 	}
@@ -556,7 +718,7 @@
 		} else {
 
 			const
-				curr = el.style[ 'transform' ] || window.getComputedStyle( el, null )[ 'transform' ],
+				curr  = el.style[ 'transform' ] || window.getComputedStyle( el, null )[ 'transform' ],
 				match = curr.match( /matrix\(([^)]+)\)/ );
 
 			return match
@@ -593,10 +755,10 @@
 })();
 
 let
-	timeline    = new Timeline(),
-	scene1      = timeline.add('scene-1', 2000 ),
-    scene2      = timeline.add('scene-2', 2000 ),
-    scene3      = timeline.add('scene-3', 2000 );
+	timeline = new Timeline(),
+	scene1   = timeline.add( 'scene-1', 2000 ),
+	scene2   = timeline.add( 'scene-2', 2000 ),
+	scene3   = timeline.add( 'scene-3', 2000 );
 
 //scene1
 //	.to('.something', {
@@ -624,72 +786,79 @@ let
 //	});
 
 scene1
-	.to('.something', {
+	.to( '.something', {
 		background: '#3cf',
-		pos: [200, 200],
-		time: 600
-	})
-	.wait(100)
-	.to('.another', {
+		pos       : [ 200, 200 ],
+		time      : 600
+	} )
+	.wait( 100 )
+	.to( '.another', {
 		background: '#fc3',
-		pos: [400, 200],
-		time: 600
-	})
-	.wait(100)
-	.to('.things', {
+		pos       : [ 400, 200 ],
+		time      : 600
+	} )
+	.wait( 100 )
+	.to( '.things', {
 		background: '#c3f',
-		pos: [600, 200],
-		time: 600
-	})
-	.on('complete', function( tween ){
+		pos       : [ 600, 200 ],
+		time      : 600
+	} )
+	.on( 'complete', function( tween ){
 		console.log( 'it\'s blue', tween );
-	});
+	} );
 
 scene2
-	.to('.something', {
+	.to( '.something', {
 		background: '#3cf',
-		pos: [300, 0],
-		time: 600
-	})
-	.wait(100)
-	.to('.another', {
-		background: '#c3f',
-		pos: [300, 0],
+		pos       : [ 300, 0 ],
 		borderRadius: '50%',
-		time: 600
-	})
-	.wait(100)
-	.to('.things', {
+		time      : 600
+	} )
+	.wait( 100 )
+	.to( '.another', {
+		background  : '#c3f',
+		pos       : [300, 0 ],
+		borderRadius: '50%',
+		time        : 600
+	} )
+	.wait( 100 )
+	.to( '.things', {
 		background: '#fc3',
-		pos: [300, 0],
-		time: 600
-	})
-	.on('complete', function( tween ){
-		console.log( 'it\'s blue', tween );
-	});
+		pos       : [ 300, 0 ],
+		borderRadius: '50%',
+		time      : 600,
+	} )
+	.on( 'complete', function( tween ){
+		console.log( 'No it\'s a circle', tween );
+	} );
 
 scene3
-	.to('.something', {
+	.to( '.something', {
 		background: '#c3f',
-		pos: [0, 0],
-		time: 600
-	})
-	.wait(100)
-	.to('.another', {
-		background: '#fc3',
+		pos       : [ 0, 0 ],
+		time      : 1000,
 		borderRadius: '0%',
-		pos: [0, 0],
-		time: 600
-	})
-	.wait(100)
-	.to('.things', {
+		easing: 'easeOutBounce'
+	} )
+	.wait( 100 )
+	.to( '.another', {
+		background  : '#fc3',
+		borderRadius: '0%',
+		pos         : [ 0, 0 ],
+		time        : 1000,
+		easing: 'easeOutBounce'
+	} )
+	.wait( 100 )
+	.to( '.things', {
 		background: '#3cf',
-		pos: [0, 0],
-		time: 600
-	})
-	.on('complete', function( tween ){
-		console.log( 'it\'s blue', tween );
-	});
+		pos       : [ 0, 0 ],
+		time      : 1000,
+		borderRadius: '0%',
+		easing: 'easeOutBounce'
+	} )
+	.on( 'complete', function( tween ){
+		console.log( 'hangon a sec', tween );
+	} );
 
 //timeline.play();        // will play all the tweens in order
 //timeline.to('scene');   // will play all tweens up to provided scene
