@@ -1,5 +1,3 @@
-'use strict';
-
 var resume = {
 	personal: {
 		name: 'Andrew Fountain',
@@ -37,7 +35,7 @@ var resume = {
 	}, {
 		name: 'MySQL',
 		level: 'Beginner',
-		desc: 'I understand MySQL at an intermediate level, If I am given a database I can make queries and join relations to output. To learn BySQL I made a little php framework with models that abstracts the queries into an active record type of system, this presented me with lots of different queries I need to understand to make the api usable and efficient. I am not confident in my ability to know how to solve difficult problems off the top of my head, but have the confidence and the experience to know where to look to solve issues that may arise.',
+		desc: 'I understand MySQL at an intermediate level, If I am given a database I can make queries and join relations to output. To learn MySQL I made a little php framework with models that abstracts the queries into an active record type of system, this presented me with lots of different queries I need to understand to make the api usable and efficient. I am not confident in my ability to know how to solve difficult problems off the top of my head, but have the confidence and the experience to know where to look to solve issues that may arise.',
 		score: 3,
 		time: .5
 	}],
@@ -70,25 +68,26 @@ var resume = {
 		level: 'familiar',
 		language: 'javascript',
 		url: 'polymer.io',
-		desc: 'I have played with Polymer enough to be able to be familiar with it, however it has since been changed and released as a 1.0, so would need to look at it again to be confident',
+		desc: 'I have played with Polymer enough to be able to be familiar with it, I really like how everything is contained within it\'s own html module neatly placed in the shadow dom template tags, and the open source community surrounding the framework is amazing. I am torn between Polymer and React. I think in the end Polymer will become standard so will keep my eye on the framework oot stay up to date with it\'s advances',
 		score: 2,
-		time: .25
-	}, {
-		name: 'Famous',
-		level: 'beginner',
-		language: 'javascript',
-		url: 'famo.us',
-		desc: 'I awaited the arival of famous for all that it promised in bridging the gap between mobile and desktop, as well as having an incredible physics engine behind the scenes. Unfortunately I have not had a lot of time with this framework since it\'s release.',
-		score: 1,
 		time: .25
 	}, {
 		name: 'React',
 		level: 'beginner',
 		language: 'javascript',
 		url: 'facebook.github.io/react/',
-		desc: 'React is the new kid on the block, so i have had a look at the docs, and read some articles, I intend to set some time aside to learn more about it, but understand the concept of having a virtual DOM, what jsx does, although this is the main reason I have non dug deeper.',
+		descold: 'React is the new kid on the block, so i have had a look at the docs, and read some articles, I intend to set some time aside to learn more about it, but understand the concept of having a virtual DOM, what jsx does, although this is the main reason I have non dug deeper.',
+		desc: 'React is the new kid on the block, I have done all the hello world stuff, read the source, understand the concept of having a virtual DOM managed in javascript to increase efficiency, what JSX does and how it compiles, but I\'m still tossing up between react and Polymer to devote more time to. At the moment React is winning due to the one way data flow and the functional nature of the framework.',
 		score: 1,
 		time: .125
+	}, {
+		name: 'Famous',
+		level: 'beginner',
+		language: 'javascript',
+		url: 'famo.us',
+		desc: 'I awaited the arrival of famous for all that it promised in bridging the gap between mobile and desktop, as well as having an incredible physics engine behind the scenes. Unfortunately I have not had a lot of time with this framework since it\'s release.',
+		score: 1,
+		time: .25
 	}, {
 		name: 'scss',
 		level: 'intermediate',

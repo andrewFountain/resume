@@ -5,7 +5,7 @@
 
 	let
 		SCENES          = [],
-		TWEENS          = [],
+		TWEENS          = {},
 		CURRENT_SCENE   = -1,
 		LAST_SCENE      = 0,
 		START           = 0;
@@ -225,45 +225,59 @@
 		 * this method will add a new tween to the timeline
 		 *
 		 * @param   {String}    name        name of the tween (scene)
+		 * @param   {Number}    time        optional: total time for the tween to run.
 		 *'
-		 * @return {Tween}                  tween attach animations to
+		 * @return {Tween}                  tween to attach animations to
 		 */
-		add: fluent( function( name, time ){
+		add: function( name, time ){
 			// push to animations and index on tweens object at the same time
-			return SCENES[ name ] = SCENES[ SCENES.push( new Tween( name, time ) ) - 1 ];
-		} ),
+			let index = SCENES.push( new Tween( name, time ) );
+			TWEENS[ name ] = {
+				index: index - 1,
+				scene: SCENES[ index - 1 ]
+			};
+			return SCENES[ index - 1 ];
+		},
+
+		/**
+		 * play
+		 *
+		 * this method will play all the tweens for the timeline, if no arguments
+		 * are provided, entire animation will play.
+		 *
+		 * @param   {String|Number}     start       optional: scene to start animation from
+		 * @param   {String|Number}     end         optional: scene to end animation
+		 */
+		play: fluent( playTween ),
 
 		/**
 		 * to
 		 *
 		 * this method will animate to the scene, running all animations until that scene
 		 *
-		 * @param   {String}    scene       scene to animate to
+		 * @param   {String|Number}    end       scene to animate to
 		 */
-		to: fluent( function( end ){
+		to: fluent(callSecord( playTween )),
 
-			LAST_SCENE    = end;
-			CURRENT_SCENE = CURRENT_SCENE > -1 ? CURRENT_SCENE : 0;
-			SCENES[ CURRENT_SCENE ]._init();
-			this.start = START = Date.now();
-			render();
-		} ),
+		/**
+		 * from
+		 *
+		 * this method will play from the specified tween
+		 *
+		 * @param   {String|Number}    start       scene to animate from
+		 */
+		from: fluent(callfirst( playTween )),
 
-		from: fluent(function( start ){
-			CURRENT_SCENE = start;
-			LAST_SCENE    = SCENES.length;
-			SCENES[ CURRENT_SCENE ]._init();
-			this.start = START = Date.now();
-			render();
-		}),
-
-		between: fluent(function( start, end ){
-			CURRENT_SCENE = start;
-			LAST_SCENE    = end;
-			SCENES[ CURRENT_SCENE ]._init();
-			this.start = START = Date.now();
-			render();
-		}),
+		/**
+		 * between
+		 *
+		 * this method will play all tweens from the first to the second tween.
+		 * alias for Timeline.play
+		 *
+		 * @param   {String|Number}     start       scene to start animation from
+		 * @param   {String|Number}     end         scene to end animation
+		 */
+		between: fluent( playTween ),
 
 		/**
 		 * go
@@ -272,30 +286,14 @@
 		 *
 		 * @param   {String}    scene       scene to animate to
 		 */
-		go: fluent( function( start ){
+		go: function( start ){
 
-			CURRENT_SCENE = start - 1;
-			LAST_SCENE    = start;
-			SCENES[ CURRENT_SCENE ]._init();
-			this.start = START = Date.now();
-			render();
+			if( isString( start ) ){
+				start = TWEENS[ start ].index;
+			}
 
-		} ),
-
-		/**
-		 * play
-		 *
-		 * this method will play all the tweens for the timeline
-		 */
-		play: fluent( function(){
-
-			CURRENT_SCENE = 0;
-			LAST_SCENE = SCENES.length;
-			SCENES[ CURRENT_SCENE ]._init();
-			this.start = START = Date.now();
-			render();
-
-		} ),
+			return playTween( start, start+1 );
+		},
 
 		/**
 		 * pause
@@ -309,6 +307,66 @@
 		} )
 	} );
 
+	/**
+	 * callFirst
+	 *
+	 * apply the first argument only
+	 *
+	 * @param   {Function}  fn      function to decorate
+	 *
+	 * @returns {Function}
+	 *      @param  {*}     first      first argument of decorated function
+	 */
+	function callfirst(fn){
+		return function( first ){
+			return fn.call( this, first, null );
+		}
+	}
+
+	/**
+	 * callLast
+	 *
+	 * apply as second argument, passing null as the first
+	 *
+	 * @param   {Function}  fn      function to decorate
+	 *
+	 * @returns {Function}
+	 *      @param  {*}     second      last argument of decorated function
+	 */
+	function callSecord(fn){
+		return function( second ){
+			return fn.call(this, null, second );
+		}
+	}
+
+	/**
+	 * playTween
+	 *
+	 * this function is used to set the start and end tweens and start
+	 * the animation loop. It is used for all the timeline methods, but decorated
+	 * to modify to required functionality.
+	 *
+	 * @param   {String|Number}     start       optional: tween to start animation from
+	 * @param   {String|Number}     end         optional: tween to end animation on
+	 */
+	function playTween( start, end ){
+
+		if( isString( start ) ){
+			start = TWEENS[ start ].index;
+		}
+
+		if( isString( end ) ){
+			end = TWEENS[ end ].index;
+		}
+
+		CURRENT_SCENE   = start && start > -1 ? start : 0;
+		LAST_SCENE      = end && end > -1 ? end : SCENES.length;
+		this.start      = START = Date.now();
+
+		SCENES[ CURRENT_SCENE ]._init();
+		render();
+	}
+
 
 	function Tween( name, time ){
 		this.name              = name;
@@ -316,7 +374,7 @@
 		this.animations        = [];
 		this.currentAnimations = [];
 		this.delay             = 0;
-		this.time              = time || 1000;
+		this.time              = time;
 	}
 
 	extendProto( Tween.prototype, {
@@ -328,7 +386,7 @@
 
 			properties = sortProperties.call( this, properties );
 
-			addAnimations.call( this, selector, properties );
+			addAnimation.call( this, selector, properties );
 		} ),
 
 		wait: fluent( function( delay ){
@@ -337,9 +395,12 @@
 
 		} ),
 
-		stagger: fluent( function( selector, stagger, properties ){
+		stagger: fluent( function( selector, stagger, properties, time = 1000 ){
 
 			properties = sortProperties.call( this, properties );
+
+			properties.time  = ( properties.time || time );
+			properties.delay = this.delay;
 
 			addAnimations.call( this, selector, properties, stagger );
 
@@ -369,18 +430,20 @@
 			let now = Date.now();
 
 			this.start    = this.start || now;
-			this.progress = this.start - now;
+			this.progress = now - this.start;
 
 			this.currentAnimations = this.currentAnimations.filter( updateAnimationFilter );
 
-			if( this.currentAnimations.length === 0 ){
+			let incomplete = this.time == null
+				? this.currentAnimations.length
+				: this. progress < this.time + this.delay;
 
+			if( incomplete ){
+				return true;
+			} else {
 				this.events.complete.call( this, this );
-				return false
-
+				return false;
 			}
-			// remove from the timeline if progress is less than total time
-			return this.progress < this.time;
 		}
 
 	} );
@@ -391,8 +454,29 @@
 
 	function Animation(){}
 
-	Animation.prototype = null;
-	extendProto( Animation.prototype, {} );
+	extendProto( Animation.prototype, {
+		_finished: function( type ){
+
+			if( this.progress < this.time + this.delay ){
+				return true;
+			}
+
+			let styleProp = {};
+
+			if( type === 'StyleNumber'){
+				styleProp[ this.key ] = this.to + ( this.unit || 0 );
+				this.$el.css( styleProp );
+			}
+			else if ( type === 'StyleColor' ){
+				styleProp[ this.prop ] = 'rgb(' + this.to.join( ',' ) + ')';
+				this.$el.css( styleProp );
+			}
+			else if( type === 'Matrix'){
+				this.$el.matrix( this.to );
+			}
+			return false;
+		}
+	} );
 
 	function StyleNumber( $el, key, value, timing, stagger ){
 
@@ -403,8 +487,8 @@
 		this.stagger = stagger;
 
 		this.easing   = easing[ timing.ease || 'easeInOutQuad' ];
-		this.time     = timing.time;
-		this.delay    = timing.delay;
+		this.time     = ( timing.time || 0 ) + ( stagger || 0 );
+		this.delay    = ( timing.delay || 0 ) + ( stagger || 0 );
 		this.timing   = timing;
 		this.progress = 0;
 	}
@@ -412,9 +496,13 @@
 	StyleNumber.prototype = new Animation;
 	extendProto( StyleNumber.prototype, {
 		_update: function( now ){
-
+			now = Date.now();
 			this.start    = this.start || now;
 			this.progress = now - this.start;
+
+			if( this.progress < this.delay ){
+				return true;
+			}
 
 			this.curr = this.easing( this.progress, this.initial, this.diff, this.time );
 
@@ -423,14 +511,7 @@
 
 			this.$el.css( styleProp );
 
-			if( this.progress < this.time + this.delay ){
-				return true;
-			} else {
-				this.start             = false;
-				styleProp[ this.key ] = this.curr + ( this.unit || 0 );
-				this.$el.css( styleProp );
-				return false;
-			}
+			return this._finished('StyleNumber');
 		},
 		_init  : function(){
 
@@ -460,8 +541,8 @@
 		this.prop     = key;
 		this.value    = value;
 		this.easing   = easing[ timing.ease || 'easeInOutQuad' ];
-		this.time     = timing.time;
-		this.delay    = timing.delay;
+		this.time     = (timing.time || 0) + (stagger || 0);
+		this.delay    = (timing.delay || 0) + (stagger || 0);
 		this.progress = 0;
 	}
 
@@ -504,22 +585,16 @@
 
 			this.$el.css( styleProp );
 
-			if( this.progress < this.time + this.delay ){
-				return true;
-			} else {
-				this.start = false;
-				styleProp[ this.prop ] = 'rgb(' + this.to.join( ',' ) + ')';
-				return false;
-			}
+			return this._finished( 'StyleColor' );
 		}
 	} );
 
-	function Matrix( $el, key, value, timing, stagger ){
+	function Matrix( $el, key, value, timing, stagger){
 		this.$el     = $el;
 		this.key     = key;
 		this.value   = value;
-		this.time    = timing.time;
-		this.delay   = timing.delay;
+		this.time    = timing.time + (stagger || 0);
+		this.delay   = (timing.delay || 0) + (stagger || 0);
 		this.timing  = timing;
 		this.stagger = stagger;
 		if( timing.easing && Array.isArray( timing.easing ) ){
@@ -557,9 +632,7 @@
 
 			this.$el.matrix( this.curr );
 
-			return this.progress < this.time + this.delay
-				? true
-				: (this.$el.matrix( this.to ), this.start = false);
+			return this._finished( 'Matrix' );
 		},
 		_init  : function(){
 
@@ -575,7 +648,7 @@
 	} );
 
 
-	function addAnimations( selector, properties, stagger = 0 ){
+	function addAnimation( selector, properties, stagger = 0 ){
 
 		let $el = $( selector );
 
@@ -594,6 +667,49 @@
 			let styleNumber = properties.styleNumber[ key ];
 
 			this._add( new StyleNumber( $el, key, styleNumber, properties.timing, stagger ) );
+		}
+
+	}
+
+	function addAnimations( selector, properties, stagger = 0, time = 0 ){
+
+		let
+			animation = this,
+			$els = $( selector ),
+		    delay =  0,
+		    elProperties = $els.map(( el ) => extend({}, properties));
+
+		for( let key in properties.matrix ) {
+			let matrix = properties.matrix[ key ];
+
+			$els.each( function( el, ii ){
+				delay += stagger;
+				animation._add( new Matrix( $(el), key, matrix, properties.timing, delay ) );
+			});
+		}
+
+		delay = properties.delay || 0;
+
+		for( let key in properties.styleColor ) {
+			let styleColor = properties.styleColor[ key ];
+
+			$els.each( function( el ){
+				delay += stagger;
+				let styleColorObj = new StyleColor( $( el ), key, styleColor, properties.timing, delay );
+				console.log( delay, styleColorObj );
+				animation._add( styleColorObj );
+			});
+		}
+
+		delay = properties.delay || 0;
+
+		for( let key in properties.styleNumber ) {
+			let styleNumber = properties.styleNumber[ key ];
+
+			$els.each( function( el ){
+				delay += stagger;
+				animation._add( new StyleNumber( $(el), key, styleNumber, properties.timing, delay ) );
+			});
 		}
 
 	}
@@ -793,116 +909,3 @@
 	}
 
 })();
-
-let
-	timeline = new Timeline(),
-	scene1   = timeline.add( 'scene-1', 2000 ),
-	scene2   = timeline.add( 'scene-2', 2000 ),
-	scene3   = timeline.add( 'scene-3', 2000 );
-
-//scene1
-//	.to('.something', {
-//		pos: [0,0],
-//		rotateZ: 360,
-//		background: '#faa',
-//		easing: 'easeIn'
-//	}, 200 )
-//	.wait( 400 )
-//	.to('.another', {
-//		pos: [0,0],
-//		scale: [100,100],
-//		color: [20,31.66],
-//		delay: 400
-//	}, 400)
-//	.stagger('.things', 200, {
-//		pos: [ 0, 0 ],
-//		scale: [ 100, 100 ],
-//		color: [ 20, 31.66 ],
-//		delay: 400,
-//		width: 400
-//	})
-//	.on('complete', function( tween ){
-//		console.log('complete tweening');
-//	});
-
-scene1
-	.to( '.things', {
-		background: '#c3f',
-		pos       : [ 600, -464 ],
-		time      : 800,
-		easing: [  'linear', 'easeOutCirc' ]
-	} )
-
-	.to( '.another', {
-		background: '#fc3',
-		pos       : [ 0,.7,.7,0,400, -232 ],
-		time      : 800,
-		easing    : [ 'linear', 'easeOutCirc' ]
-	} )
-
-	.to( '.something', {
-		background: '#3cf',
-		pos       : [ 200, 0 ],
-		time      : 800,
-		easing    : [ 'linear', 'easeOutCirc' ]
-	} )
-	.on( 'complete', function( tween ){
-		console.log( 'it\'s blue', tween );
-	} );
-
-scene2
-	.to( '.something', {
-		background: '#3cf',
-		pos       : [ 300, 0 ],
-		borderRadius: '50%',
-		time      : 600
-	} )
-	.wait( 100 )
-	.to( '.another', {
-		background  : '#c3f',
-		pos       : [ 300, 0 ],
-		borderRadius: '50%',
-		time        : 600
-	} )
-	.wait( 100 )
-	.to( '.things', {
-		background: '#fc3',
-		pos       : [ 300, 0 ],
-		borderRadius: '50%',
-		time      : 600,
-	} )
-	.on( 'complete', function( tween ){
-		console.log( 'No it\'s a circle', tween );
-	} );
-
-scene3
-	.to( '.something', {
-		background: '#c3f',
-		pos       : [ 0, 0 ],
-		time      : 1000,
-		borderRadius: '0%',
-		easing: 'easeOutBounce'
-	} )
-	.wait( 100 )
-	.to( '.another', {
-		background  : '#fc3',
-		borderRadius: '0%',
-		pos         : [ 0, 0 ],
-		time        : 1000,
-		easing: 'easeOutBounce'
-	} )
-	.wait( 100 )
-	.to( '.things', {
-		background: '#3cf',
-		pos       : [ 0, 0 ],
-		time      : 1000,
-		borderRadius: '0%',
-		easing: 'easeOutBounce'
-	} )
-	.on( 'complete', function( tween ){
-		console.log( 'hangon a sec', tween );
-	} );
-
-//timeline.play();        // will play all the tweens in order
-//timeline.to('scene');   // will play all tweens up to provided scene
-//timeline.go('scene');   // tween directly to a scene

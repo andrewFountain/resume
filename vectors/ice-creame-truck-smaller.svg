@@ -4,7 +4,7 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 1332.1 844.6" enable-background="new 0 0 1332.1 844.6" xml:space="preserve">
 <g id="Layer_1" display="none">
-	
+
 		<image display="inline" overflow="visible" width="450" height="259" xlink:href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEP
 ERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4e
 Hh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAEDAcIDAREA
@@ -308,7 +308,7 @@ EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQf//Z" transform="matrix(
 	</image>
 </g>
 <g id="shadow">
-	<path id="body_3_" fill="#DAD8D2" d="M254.3,321.7c1.3-5.7,36.1-18.7,46.7-18.7s985.9,4.2,985.9,4.2l2.2,485.4L1108,809
+	<path id="body_3_" fill="#000000" opacity=".3" d="M254.3,321.7c1.3-5.7,36.1-18.7,46.7-18.7s985.9,4.2,985.9,4.2l2.2,485.4L1108,809
 		c0,0-4.7-52.7-26.7-75.3c-23.3-24-46.1-29.3-74.3-29.7c-20.3-0.3-37.2,7.4-56,16.5c-8.8,4.3-30.8,27.6-32.5,31.6
 		c-12,27.4-22.9,54.7-22.9,54.7l-543.9,2.8c0,0-19.3-47.7-43.9-75.8s-42.1-35.3-84.2-33.5c-42.1,1.8-59.6,17.8-73.7,40.6
 		S127.2,778,121.9,792c-14,0-92.9,0-92.9,0l8.7-184.6l157.9-72.1C195.6,535.3,251.5,333.9,254.3,321.7z"/>

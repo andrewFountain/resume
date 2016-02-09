@@ -185,7 +185,7 @@ section .slideshow {
   width: 100%;
   overflow-x: hidden;
   background: #eee;
-  background: url("./vectors/scenery.svg");
+  background: url("./vectors/scenery-no-truck.svg");
   background-size: cover;
   background-attachment: fixed;
   background-position-y: 327px; }
@@ -300,6 +300,12 @@ ul.tick-list {
     padding: .5em 1em;
     margin: 0 1em 0 0; }
 
+.education__title {
+  margin: 0;
+  padding: 0; }
+.education__details {
+  padding: 0; }
+
 .language {
   padding: 1em; }
   .language::before, .language::after {
@@ -324,8 +330,11 @@ ul.tick-list {
 .books__group .books {
   display: flex;
   align-content: flex-start;
-  align-items: flex-start;
-  justify-content: space-between; }
+  justify-content: space-between;
+  width: 100%; }
+  @media screen and (max-width: 56.25em) {
+    .books__group .books {
+      display: block; } }
 .books__group .book {
   flex: 0 1 auto;
   width: 21%;
@@ -336,13 +345,20 @@ ul.tick-list {
   .books__group .book:hover {
     box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3);
     transform: matrix(1, 0, 0, 1, 0, -2); }
+  @media screen and (max-width: 56.25em) {
+    .books__group .book {
+      width: 100%; } }
 .books__group .book__heading {
   flex: 1;
-  background: #f02673; }
+  background: #f02673;
+  padding: 0 1em;
+  height: 4em;
+  }
   .books__group .book__heading a {
     color: #fff; }
 .books__group .book__details {
-  flex: 4; }
+  flex: 4;
+  padding: 0 1em; }
 
 #output-languages .wrapper {
   display: flex;
@@ -385,8 +401,11 @@ div.hero {
   align-content: center;
   flex-basis: 50%;
   justify-content: center;
+  background-origin: content-box;
+  background-image: url("images/computer-background.jpg");
   background-size: cover;
-  background-origin: content-box; }
+  background-position: center;
+  background-attachment: fixed; }
   div.hero .hero-inner {
     margin: 0;
     padding: 2em;
@@ -476,5 +495,37 @@ div.hero {
 .personal-right {
   width: 50%;
   float: left; }
+
+body {
+  background: #eeeded; }
+
+.card {
+  background: #ffffff;
+  border-radius: 2px;
+  display: block;
+  float: left;
+  height: 300px;
+  margin: 1rem;
+  position: relative;
+  width: 300px; }
+
+.card-1 {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.2s ease-in-out; }
+
+.card-1:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23); }
+
+.card-2 {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+
+.card-3 {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23); }
+
+.card-4 {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); }
+
+.card-5 {
+  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22); }
 
 /*# sourceMappingURL=style.css.map */

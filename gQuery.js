@@ -241,6 +241,14 @@
 			return new gQuery( this.selector, ret );
 		},
 
+
+		next: function(){
+			return $( this[ 0 ].nextElementSibling );
+		},
+
+		prev: function(){
+			return $( this[ 0 ].previousElementSibling );
+		},
 		/**
 		* $.prototype.scrollTo
 		 *
@@ -255,15 +263,13 @@
 
 			time = time || 2000;
 
-			const
+			let
 				to = this.offset() - (4 * 16),
 			    start = Date.now(),
+				curr = window.pageYOffset || document.documentElement.scrollTop,
+				progress,
 			    initial = curr,
 			    difference = diff( initial, to );
-
-			let
-				curr = window.pageYOffset || document.documentElement.scrollTop,
-				progress;
 
 			//var scroller = new Scroller( to, time, ease );
 			//
@@ -279,6 +285,7 @@
 				progress    = Date.now() - start;
 
 				curr        = easing[ easeFn || 'easeIn' ]( progress, initial, difference, time );
+				console.log( curr );
 				window.scrollTo(0, curr);
 
 				if( progress < time ){
@@ -469,7 +476,7 @@
 		 * @returns {gQuery|Array}          this or array representing current matrix, [a,b,c,d,x,y]
 		 */
 		matrix: fluent( function( matrixArr ){
-			if( matrixArr ){
+			if( matrixArr && matrixArr.constructor === Array ){
 				this.each( function( el ){
 					matrix( el, matrixArr );
 				} )

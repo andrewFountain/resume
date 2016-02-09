@@ -2,15 +2,19 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/functional-compiled.js" />
         <item url="file://$PROJECT_DIR$/data-compiled.js" />
         <item url="file://$PROJECT_DIR$/gQuery-compiled.js" />
+        <item url="file://$PROJECT_DIR$/global-compiled.js" />
+        <item url="file://$PROJECT_DIR$/functional-compiled.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/functional-compiled.js" />
+      <root url="file://$PROJECT_DIR$/tween-compiled-compiled.js" />
+      <root url="file://$PROJECT_DIR$/functional-compiled-compiled-compiled.js" />
       <root url="file://$PROJECT_DIR$/data-compiled.js" />
       <root url="file://$PROJECT_DIR$/gQuery-compiled.js" />
+      <root url="file://$PROJECT_DIR$/global-compiled.js" />
+      <root url="file://$PROJECT_DIR$/functional-compiled.js" />
     </CLASSES>
     <SOURCES />
   </library>

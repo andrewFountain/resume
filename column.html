@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>absolute columns</title>
+</head>
+<style>
+	html, body {
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+	}
+	.container, .resize-handle {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	.column {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+	}
+
+	.column:nth-of-type(1) {
+		left: 0;
+		background: #84c6d2;
+	}
+
+	.column:nth-of-type(2){
+		left: 420px;
+		background: #cc5b4b;
+	}
+
+	.column:nth-of-type(3){
+		left: 840px;
+		background: #84c6d2;
+	}
+
+	.resize-handle {
+		width: 20px;
+		background: #6293BF;
+		cursor : col-resize;
+	}
+
+	.resize-handle:nth-of-type(1){
+		left: 400px;
+	}
+
+	.resize-handle:nth-of-type(2){
+		left: 820px;
+	}
+</style>
+<body>
+	<main>
+		<article class="container">
+
+			<section id="left" class="column"></section>
+			<div class="resize-handle"></div>
+			<section id="middle" class="column"></section>
+			<div class="resize-handle"></div>
+			<section id="right" class="column"></section>
+
+		</article>
+
+	</main>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script>
+
+		var
+			$window = $(window),
+			$container = $('.container' ),
+			$columns = $('.column' ),
+			$handles = $('.resize-handle'),
+			widthTotal = window.innerWidth,
+			resize = {
+				resizing: false,
+				element: null,
+				startX: 0
+			};
+
+
+		$columns.each(function( ii ){
+			var
+				$column = $(this),
+				width = (widthTotal / $columns.length) - 20,
+			    left = (width * ii);
+
+			$column.css({
+				'left': left && (left + (ii * 20)) + 'px',
+				'right': left && (width - left + (ii * 20)) + 'px'
+			});
+		});
+
+		$handles.each(function( ii ){
+			var
+				$handle = $(this),
+				width = (widthTotal / $columns.length),
+			    left = (width * (ii + 1));
+
+			$handle.css('left', (left && (left - 20) + 'px'));
+			$handle.css('right', (left && (width - left - 20) + 'px'));
+		});
+
+		$handles.on('mousedown', mousedown );
+		// $handles.eq(2).on('mousedown', mousedownright );
+		$handles.on('mousedown', mousedown );
+
+		// $window.on('mouseup', mouseup );
+
+		window.addEventListener('mouseup', mouseup, true);
+
+		$window.on('mousemove', mousemove );
+
+		function mouseup( e ){
+			e.stopPropagation();
+			resize.resizing = false;
+			console.log( resize );
+		}
+
+		function mousedown( e ){
+			e.stopPropagation();
+			console.log( 'mousedown', e );
+			var $this = $(this),
+			    offset = $this.offset();
+			resize.resizing = true;
+			resize.element = $this;
+			resize.offsetX = offset.left;
+		}
+
+		function mousedownleft( e ){
+			e.stopPropagation();
+			console.log( 'mousedown', e );
+			var $this = $(this),
+			    offset = $this.offset();
+			resize.resizing = true;
+			resize.element = e.target;
+			resize.offsetX = offset.left;
+		}
+
+		function mousemove( e ){
+			e.stopPropagation();
+			if( resize.resizing ){
+				resize.element.css( 'left',e.clientX + 'px');
+				resize.element.prev().css( 'right', (widthTotal - e.clientX - 20) + 'px');
+				resize.element.next().css( 'left', (e.clientX + 20) + 'px');
+				console.log( 'moving' );
+			}
+		}
+
+
+	</script>
+</body>
+</html>

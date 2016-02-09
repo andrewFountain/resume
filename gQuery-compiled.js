@@ -17,10 +17,9 @@
  *
  */
 
-'use strict';
-
 (function () {
 	'use strict';
+
 	window.$ = selector;
 	window.gQuery = gQuery;
 
@@ -148,7 +147,7 @@
    * @param   {Functio'n}  fn      callback function
    */
 		each: fluent(function (fn) {
-			for (var ii = 0, ll = this.length; ii < ll; ii++) {
+			for (let ii = 0, ll = this.length; ii < ll; ii++) {
 				fn.call(this[ii], this[ii], ii, this);
 			}
 		}),
@@ -175,7 +174,7 @@
    */
 		add: fluent(function (els) {
 
-			var ii = this.length || 0,
+			let ii = this.length || 0,
 			    el = els.length,
 			    ll = ii + el;
 
@@ -230,7 +229,7 @@
    *
    * @returns {gQuery}
    */
-		children: function children() {
+		children: function () {
 			/*let*/var ret = [];
 			this.each(function (el) {
 				/*let*/var children = slice(el.children);
@@ -239,6 +238,13 @@
 			return new gQuery(this.selector, ret);
 		},
 
+		next: function () {
+			return $(this[0].nextElementSibling);
+		},
+
+		prev: function () {
+			return $(this[0].previousElementSibling);
+		},
 		/**
   * $.prototype.scrollTo
    *
@@ -253,13 +259,12 @@
 
 			time = time || 2000;
 
-			var to = this.offset() - 4 * 16,
+			let to = this.offset() - 4 * 16,
 			    start = Date.now(),
+			    curr = window.pageYOffset || document.documentElement.scrollTop,
+			    progress,
 			    initial = curr,
 			    difference = diff(initial, to);
-
-			var curr = window.pageYOffset || document.documentElement.scrollTop,
-			    progress = undefined;
 
 			//var scroller = new Scroller( to, time, ease );
 			//
@@ -275,6 +280,7 @@
 				progress = Date.now() - start;
 
 				curr = easing[easeFn || 'easeIn'](progress, initial, difference, time);
+				console.log(curr);
 				window.scrollTo(0, curr);
 
 				if (progress < time) {
@@ -303,8 +309,8 @@
    *
    * @returns {gQuery}                    new instance with child nodes
    */
-		find: function find(selector) {
-			var ret = [];
+		find: function (selector) {
+			let ret = [];
 			this.each(function (el) {
 				/*const*/var children = slice(el.querySelectorAll(selector));
 				Array.prototype.splice.apply(ret, [ret.length, 0].concat(children));
@@ -320,11 +326,7 @@
    *
    * @param   {Array}     classes     classes to remove from the current selection
    */
-		removeClass: fluent(function () {
-			for (var _len = arguments.length, classes = Array(_len), _key = 0; _key < _len; _key++) {
-				classes[_key] = arguments[_key];
-			}
-
+		removeClass: fluent(function (...classes) {
 			this.each(function (el) {
 				el.classList.remove.apply(el.classList, classes);
 			});
@@ -338,11 +340,7 @@
    *
    * @param   {Array}     classes     classes to remove from the current selection
    */
-		addClass: fluent(function () {
-			for (var _len2 = arguments.length, classes = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-				classes[_key2] = arguments[_key2];
-			}
-
+		addClass: fluent(function (...classes) {
 			this.each(function (el) {
 				el.classList.add.apply(el.classList, classes);
 			});
@@ -356,18 +354,14 @@
    *
    * @param   {Array}     classes     classes to remove from the current selection
    */
-		toggleClass: fluent(function () {
-			for (var _len3 = arguments.length, classes = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-				classes[_key3] = arguments[_key3];
-			}
-
+		toggleClass: fluent(function (...classes) {
 			this.each(function (el) {
 				el.classList.toggle.apply(el.classList, classes);
 			});
 		}),
 
-		classes: function classes() {
-			var classez = [];
+		classes: function (...classes) {
+			let classez = [];
 			this.each(function (el) {
 				classez.concat(slice(el.classList));
 			});
@@ -382,11 +376,11 @@
    *
    * @returns {*}                     dataset value
    */
-		data: function data(key) {
+		data: function (key) {
 			return notUndefined(key) ? this[0].dataset[key] : this[0].dataset;
 		},
 
-		dataAll: function dataAll(key) {
+		dataAll: function (key) {
 
 			if (notDefined) {}
 
@@ -403,7 +397,7 @@
    *
    * @returns {Number}              total affset in px;
    */
-		offset: function offset(parent) {
+		offset: function (parent) {
 
 			if (parent) {
 				// set the parent. can accept selector, gQuery instance or element,
@@ -417,22 +411,8 @@
 
 			return _offset(0, this[0]);
 
-			function _offset(_x, _x2) {
-				var _again = true;
-
-				_function: while (_again) {
-					var offset = _x,
-					    el = _x2;
-					_again = false;
-					if (el !== parent) {
-						_x = offset += el.offsetTop;
-						_x2 = el.parentNode;
-						_again = true;
-						continue _function;
-					} else {
-						return offset;
-					}
-				}
+			function _offset(offset, el) {
+				return el !== parent ? _offset(offset += el.offsetTop, el.parentNode) : offset;
 			}
 		},
 
@@ -444,13 +424,13 @@
    * @param   {String}    val     optional:value to set, with unit
    * @returns {Number}
    */
-		translateX: (function () {
+		translateX: function () {
 
-			var translations = {};
+			let translations = {};
 
 			return function (val) {
 
-				var ii = xx++;
+				let ii = xx++;
 
 				if (val) {
 
@@ -459,13 +439,13 @@
 					});
 				} else {
 					/*let*/
-					var transform = this[0].style.transform,
-					    match = transform.match(/translateX\(([0-9-.]+)(px|em|%)*\)/);
+					const transform = this[0].style.transform,
+					      match = transform.match(/translateX\(([0-9-.]+)(px|em|%)*\)/);
 
 					return parseInt(match[1]);
 				}
 			};
-		})(),
+		}(),
 
 		/**
    * $.prototype.matrix
@@ -477,7 +457,7 @@
    * @returns {gQuery|Array}          this or array representing current matrix, [a,b,c,d,x,y]
    */
 		matrix: fluent(function (matrixArr) {
-			if (matrixArr) {
+			if (matrixArr && matrixArr.constructor === Array) {
 				this.each(function (el) {
 					matrix(el, matrixArr);
 				});
@@ -499,22 +479,18 @@
    *
    * @returns void 0;
    */
-		animate: function animate(xy, styles, time, cb, ease) {
-			var self = this;
+		animate: function (xy, styles, time, cb, ease) {
+			const self = this;
 
 			// build the animation queue
-			this.each(function (el) {
-				return _addAnimation(el, xy, styles, time, cb, ease);
-			});
+			this.each(el => _addAnimation(el, xy, styles, time, cb, ease));
 		},
 
-		animateFrom: function animateFrom(xy, styles, time, cb, ease) {
-			var self = this;
+		animateFrom: function (xy, styles, time, cb, ease) {
+			const self = this;
 
 			// build the animation queue
-			this.each(function (el) {
-				return _addAnimation(el, xy, styles, time, cb, ease, true);
-			});
+			this.each(el => _addAnimation(el, xy, styles, time, cb, ease, true));
 		},
 
 		/**
@@ -533,25 +509,25 @@
    * @param   {Function}          cb          callback when animation of element is complete
    * @param   {String}            ease        easing algorithm
    */
-		stagger: function stagger(delay, xy, styles, time, cb, ease) {
+		stagger: function (delay, xy, styles, time, cb, ease) {
 
-			this.each(function (el, ii) {
+			this.each((el, ii) => {
 
-				var timeout = isFunction(delay) ? delay.call(el, ii) : ii * delay;
+				let timeout = isFunction(delay) ? delay.call(el, ii) : ii * delay;
 
-				return window.setTimeout(function () {
+				return window.setTimeout(() => {
 					_addAnimation(el, xy, styles, time, cb, ease);
 				}, timeout);
 			});
 		},
 
-		staggerFrom: function staggerFrom(delay, xy, styles, time, cb, ease) {
+		staggerFrom: function (delay, xy, styles, time, cb, ease) {
 
-			this.each(function (el, ii) {
+			this.each((el, ii) => {
 
-				var timeout = isFunction(delay) ? delay.call(el, ii) : ii * delay;
+				let timeout = isFunction(delay) ? delay.call(el, ii) : ii * delay;
 
-				return window.setTimeout(function () {
+				return window.setTimeout(() => {
 					_addAnimation(el, xy, styles, time, cb, ease, true);
 				}, timeout);
 			});
@@ -570,9 +546,9 @@
    * TODO: figure out a between method
    * TODO: make permenant events
    */
-		spy: (function () {
+		spy: function () {
 
-			var stopped = true,
+			let stopped = true,
 			    offset = 0,
 			    events = [];
 
@@ -580,7 +556,7 @@
 
 				this.each(function (el) {
 
-					var elOrOffset = null;
+					let elOrOffset = null;
 
 					if (!offset) {
 						offset = $(el).offset();
@@ -641,7 +617,7 @@
 					return true;
 				});
 			}
-		})()
+		}()
 
 	});
 
@@ -650,7 +626,7 @@
   */
 	extend(gQuery, {
 
-		tween: function tween(tweenArr, cb) {
+		tween: function (tweenArr, cb) {
 
 			tweenArr.forEach(function (tween) {
 
@@ -689,7 +665,7 @@
 	function Animation() {}
 	extend(Animation.prototype, {
 
-		alive: function alive() {
+		alive: function () {
 
 			if (this.progress < this.time) {
 				return true;
@@ -707,9 +683,9 @@
 
 		prop = valueAndUnit(prop);
 
-		var start = cssProp(el, key, true),
-		    initial = isFrom ? prop.value : start,
-		    to = isFrom ? start : prop.value;
+		const start = cssProp(el, key, true),
+		      initial = isFrom ? prop.value : start,
+		      to = isFrom ? start : prop.value;
 
 		this.el = el;
 		this.prop = key;
@@ -742,7 +718,7 @@
 
 	function StyleColor(el, key, value, time, cb, ease) {
 
-		var initial = cssProp(el, key);
+		let initial = cssProp(el, key);
 
 		initial = colorToArray(initial);
 		value = colorToArray(value);
@@ -766,11 +742,11 @@
 
 		update: fluent(function (now) {
 
-			var newCurr = [];
+			let newCurr = [];
 
 			this.progress = now - this.start;
 
-			for (var ii = 0, ll = this.curr.length; ii < ll; ii++) {
+			for (let ii = 0, ll = this.curr.length; ii < ll; ii++) {
 				newCurr[ii] = this.easing(this.progress, this.initial[ii], this.diff[ii], this.time);
 			}
 
@@ -783,13 +759,13 @@
 
 	function Vector(el, xy, time, cb, ease, isFrom) {
 
-		var _matrix = matrix(el);
+		const _matrix = matrix(el);
 
 		xy = xy.length === 2 ? [1, 0, 0, 1].concat(xy) : xy;
 
-		var initial = isFrom ? xy : _matrix,
-		    to = isFrom ? _matrix : xy,
-		    diff = diffArray(initial, to);
+		const initial = isFrom ? xy : _matrix,
+		      to = isFrom ? _matrix : xy,
+		      diff = diffArray(initial, to);
 
 		this.el = el;
 		this.initial = initial;
@@ -809,7 +785,7 @@
 
 		update: fluent(function (now) {
 
-			var newCurr = [];
+			let newCurr = [];
 
 			this.progress = now - this.start;
 
@@ -826,7 +802,7 @@
 
 	function Scroller(to, time, ease) {
 
-		var initial = window.scrollY;
+		const initial = window.scrollY;
 
 		this.initial = initial;
 		this.curr = initial;
@@ -852,7 +828,7 @@
 			window.scrollTo = this.curr + (this.unit || 0);
 		}),
 
-		alive: function alive() {}
+		alive: function () {}
 
 	});
 
@@ -860,7 +836,7 @@
 
 		tweens.push(tweenArr.map(function (tween) {
 
-			var _tween = {
+			const _tween = {
 				el: tween.el,
 				initial: _matrix,
 				curr: _matrix,
@@ -899,17 +875,17 @@
 	function _addAnimation(el, xy, styles, time, cb, ease, isFrom) {
 
 		if (xy) {
-			var animation = new Vector(el, xy, time, cb, ease, isFrom);
+			const animation = new Vector(el, xy, time, cb, ease, isFrom);
 			animations.push(animation);
 		}
 
 		if (styles) {
 			/*let*/
-			var key = undefined;
+			let key;
 
 			for (key in styles) {
 
-				var animation = undefined;
+				let animation;
 
 				if (isColorProperty(key)) {
 					animation = new StyleColor(el, key, styles[key], time, cb, ease, isFrom);
@@ -982,10 +958,10 @@
 
 	function colorToArray(color) {
 
-		var match = null;
+		let match = null;
 
-		var hexReg = /\#([0-9a-z]+)/,
-		    rgbReg = /\(([0-9 ,.]+)\)/;
+		const hexReg = /\#([0-9a-z]+)/,
+		      rgbReg = /\(([0-9 ,.]+)\)/;
 
 		if (Array.isArray(color)) {
 
@@ -993,9 +969,7 @@
 		} else if (match = color.match(hexReg)) {
 
 			if (match[1].length === 3) {
-				color = mapWith(function (ii) {
-					return (ii + 1) * 16;
-				})(hexToDecMap(match[1].split('')));
+				color = mapWith(ii => (ii + 1) * 16)(hexToDecMap(match[1].split('')));
 			} else {
 				color = hexToDecMap(match[1].match(/.{2}/g));
 			}
@@ -1020,8 +994,8 @@
 			el.style.transform = 'matrix(' + xy.join() + ')';
 		} else {
 
-			var curr = el.style['transform'] || window.getComputedStyle(el, null)['transform'],
-			    match = curr.match(/matrix\(([^)]+)\)/);
+			const curr = el.style['transform'] || window.getComputedStyle(el, null)['transform'],
+			      match = curr.match(/matrix\(([^)]+)\)/);
 
 			return match ? parseIntMap(match[1].split(/,/)) : [1, 0, 0, 1, 0, 0];
 		}
@@ -1029,9 +1003,7 @@
 
 	function valueAndUnit(value) {
 
-		var unit = undefined,
-		    match = undefined,
-		    type = undefined;
+		let unit, match, type;
 
 		if (isString(value)) {
 			if (match = value.match(/([-\.0-9]+)(px|%|em)*/)) {
@@ -1051,15 +1023,10 @@
 	}
 
 	function every(method) {
-		return function (fn) {
-			var self = this,
-			    ll = this.length;
-
-			for (var _len4 = arguments.length, args = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
-				args[_key4 - 1] = arguments[_key4];
-			}
-
-			for (var ii = 0; ii < ll; ii++) {
+		return function (fn, ...args) {
+			const self = this,
+			      ll = this.length;
+			for (let ii = 0; ii < ll; ii++) {
 				fn.apply(self[ii], [self[ii]].concat(args));
 			}
 		};

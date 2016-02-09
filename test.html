@@ -20,13 +20,6 @@
 			padding: 1em;
 			margin: 1em;
 
-			-moz-user-select    : none;
-			-khtml-user-select  : none;
-			-webkit-user-select : none;
-			user-select         : none;
-			/* Required to make elements draggable in old WebKit */
-			-khtml-user-drag    : element;
-			-webkit-user-drag   : element;
 			transition: .5s background, .5s box-shadow;
 		}
 
@@ -41,6 +34,13 @@
 			background: #41b0d2;
 			min-height: 200px;
 			margin-bottom : 1em;
+			-moz-user-select    : none;
+			-khtml-user-select  : none;
+			-webkit-user-select : none;
+			user-select         : none;
+			/* Required to make elements draggable in old WebKit */
+			-khtml-user-drag    : element;
+			-webkit-user-drag   : element;
 		}
 
 		.panel:last-of-type {
@@ -54,6 +54,10 @@
 			transform: matrix(1,0,0,1,0,0);
 			margin: 2em;
 			perspective-origin: center;
+		}
+
+		.things {
+			/*position: fixed;*/
 		}
 	</style>
 </head>
@@ -75,7 +79,8 @@
 			dragEl      = null,
 			dragObj     = null,
 			_COLUMNS_   = {},
-		    _PANELS_    = {};
+		    _PANELS_    = {},
+		    _offsetX    = 0;
 
 		function Container( name ){
 			this.columns = [];
@@ -114,6 +119,8 @@
 
 			this.name = name;
 			this.panels = [];
+			this.resizing = false;
+			this.offsetY = 0;
 
 			createElement.call(this, 'column');
 
@@ -122,6 +129,7 @@
 			addEvent.call(this, 'dragleave');
 			addEvent.call(this, 'dragover');
 
+			addEvent.call(this, 'mousedown');
 			_COLUMNS_[ name ] = this;
 
 			__super__.el.appendChild( this.el );
@@ -162,6 +170,14 @@
 			toString: function(){
 				return JSON.stringify( this );
 			},
+
+			mousedown: (function(){
+				var offsetY = 0;
+				return ownEvent( function( e ){
+					_offsetX = this.offsetX = e.offsetX;
+					console.log( 'mousey mousey', e ,_offsetX );
+				})
+			})(),
 
 			drop: function( e ){
 
@@ -251,7 +267,7 @@
 			dragover: function( e ){
 				e.preventDefault();
 				e.dataTransfer.dropEffect = 'move';
-				console.log( 'panel dragover', e.offsetY );
+				//console.log( 'panel dragover', e.offsetY );
 			}
 
 		};
@@ -276,6 +292,8 @@
 
 			if( type === 'panel' ){
 				el.draggable = true;
+			} else {
+				el.draggable = false;
 			}
 
 			this.el = el;
@@ -303,6 +321,14 @@
 			}
 		}
 
+		function ownEvent( fn ){
+			return function( e ){
+				if( this.el === e.srcElement ){
+					fn.call(this, e);
+				}
+			}
+		}
+
 		function jsonParse( json ){
 			return JSON.parse( json ) || json;
 		}
@@ -322,12 +348,105 @@
 		.add('widget-4');
 </script>
 
+<button onclick="timeline.play()">play</button>
+<button onclick="timeline.play('scene-1', 'scene-2')">scene 1</button>
+<button onclick="timeline.play('scene-2', 'scene-3')">scene 2</button>
+<button onclick="timeline.play('scene-3')">scene 3</button>
 <div class="something">something</div>
 <div class="another">another</div>
+<div class="things">things</div>
+<div class="things">things</div>
 <div class="things">things</div>
 <script src="functional-compiled.js"></script>
 <script src="gQuery-compiled.js"></script>
 <script src="tween-compiled.js"></script>
+<script>
 
+	var
+		timeline = new Timeline(),
+		scene1 = timeline.add( 'scene-1' ),
+		scene2 = timeline.add( 'scene-2' ),
+		scene3 = timeline.add( 'scene-3' );
+
+	scene1
+		.stagger( '.things', 60, {
+			background: '#c3f',
+			pos       : [ -1,-1, 1, -1, 600, -464 ],
+			time      : 1000,
+			// easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
+			easing: 'easeOutQuad'
+		})
+
+		.to( '.another', {
+			background: '#fc3',
+			pos       : [ 0, .7, .7, 0, 400, -232 ],
+			time      : 800,
+			easing    : [ 'linear', 'easeOutCirc' ]
+		})
+
+		.to( '.something', {
+			background: '#3cf',
+			pos       : [ 200, 0 ],
+			time      : 800,
+			easing    : [ 'linear', 'easeOutCirc' ]
+		})
+		.on( 'complete', function( tween ){
+			console.log( 'it\'s blue', tween );
+		});
+
+	scene2
+		.to( document.querySelector('.something'), {
+			background  : '#3cf',
+			pos       : [ 300, 0 ],
+			borderRadius: '50%',
+			time        : 600
+		})
+		//.wait( 300 )
+		.to( '.another', {
+			background  : '#c3f',
+			pos       : [ 300, 0 ],
+			borderRadius: '50%',
+			time        : 600
+		})
+		//.wait( 300 )
+		.stagger( '.things', 50, {
+			background  : '#fc3',
+			pos       : [ 300, 0 ],
+			borderRadius: '50%',
+			time        : 600
+		})
+		.on( 'complete', function( tween ){
+			console.log( 'No it\'s a circle', tween );
+		});
+
+	scene3
+		.to( '.something', {
+			background  : '#c3f',
+			pos       : [ 0, 0 ],
+			time      : 1000,
+			borderRadius: '0%',
+			easing      : 'easeOutBounce'
+		})
+		.wait( 100 )
+		.to( '.another', {
+			background  : '#fc3',
+			borderRadius: '0%',
+			pos         : [ 0, 0 ],
+			time        : 1000,
+			easing      : 'easeOutBounce'
+		})
+		.wait( 100 )
+		.stagger( '.things', 50, {
+			background  : '#3cf',
+			pos       : [ 0, 0 ],
+			time      : 1000,
+			borderRadius: '0%',
+			easing      : 'easeOutBounce'
+		})
+		.on( 'complete', function( tween ){
+			console.log( 'hangon a sec', tween );
+		});
+
+</script>
 </body>
 </html>
