@@ -1,240 +1,240 @@
 var TemplateFactory = (function(){
 
-	var
-		templates = {},
-		config    = {
-			minify: false,
-			index : 'index'
-		};
+  var
+    templates = {},
+    config    = {
+      minify: false,
+      index : 'index'
+    };
 
-	return TemplateFactory;
+  return TemplateFactory;
 
-	function TemplateFactory( name ){
+  function TemplateFactory( name ){
 
-		var
-			html         = document.getElementById( name ).innerHTML,
-			scope        = [ 'include', 'window', 'global', 'vars' ],
-			structure    = { foreach: [] },
-			templateArr  = execTemplate( createTemplateArray( html ), structure, scope ),
-			templateFn   = createFunction( name, templateArr, html );
+    var
+      html         = document.getElementById( name ).innerHTML,
+      scope        = [ 'include', 'window', 'global', 'vars' ],
+      structure    = { foreach: [] },
+      templateArr  = execTemplate( createTemplateArray( html ), structure, scope ),
+      templateFn   = createFunction( name, templateArr, html );
 
-		return templateFn;
+    return templateFn;
 
-	}
-
-
-	function createTemplateArray( template, minify ){
-
-		return template
-			.split( (config.minify
-				? /[\n\t\r]+/
-				: /[\n\r]+/) )
-			.filter( function( curr ){
-				return curr !== '' && curr !== ' ';
-			});
-	}
+  }
 
 
-	function execTemplate( templateArr, structure, scope ){
+  function createTemplateArray( template, minify ){
 
-		return templateArr.map( function( line, ii ){
+    return template
+      .split( (config.minify
+        ? /[\n\t\r]+/
+        : /[\n\r]+/) )
+      .filter( function( curr ){
+        return curr !== '' && curr !== ' ';
+      });
+  }
 
-			var match;
 
-			// find the mustache brackets'
-			line = line.replace( /(\{\{[^}]+}})/gm, function( matches, match ){
+  function execTemplate( templateArr, structure, scope ){
 
-				match = match.replace( /\{\{foreach\s([^ ]+)\sas\s([^ ]+)}}/gm, function( fematches, from, as ){
+    return templateArr.map( function( line, ii ){
 
-					scope.push( as, config.index ); // add the as property to the scope
+      var match;
 
-					from = setScope( scope, from ); // set the correct scope
+      // find the mustache brackets'
+      line = line.replace( /(\{\{[^}]+}})/gm, function( matches, match ){
 
-					structure.foreach.unshift( {
-						from: from,
-						as  : as
-					} );
+        match = match.replace( /\{\{foreach\s([^ ]+)\sas\s([^ ]+)}}/gm, function( fematches, from, as ){
 
-					return "' + (" + from + ".reduce(function( ret, " + as + ", " + config.index + " ){ ret += '";
+          scope.push( as, config.index ); // add the as property to the scope
 
-				} );
+          from = setScope( scope, from ); // set the correct scope
 
-				match = match.replace( /\{\{(\/|end)foreach}}/gm, function(){
+          structure.foreach.unshift( {
+            from: from,
+            as  : as
+          } );
 
-					var foreach = structure.foreach.pop(); // first in first out
-					scope.splice( scope.indexOf( foreach.as ) );
-					scope.splice( scope.indexOf( config.index ) );
+          return "' + (" + from + ".reduce(function( ret, " + as + ", " + config.index + " ){ ret += '";
 
-					return "'; return ret;}, '')) + '"; // close the reduction
-				} );
+        } );
 
-				// scope variables and functions
-				match = match.replace( /\{\{([^}]+)}}/gm, function( varMatches, varMatch ){
+        match = match.replace( /\{\{(\/|end)foreach}}/gm, function(){
 
-					return "' + " + setScope( scope, varMatch ) + " + '";
+          var foreach = structure.foreach.pop(); // first in first out
+          scope.splice( scope.indexOf( foreach.as ) );
+          scope.splice( scope.indexOf( config.index ) );
 
-				} );
+          return "'; return ret;}, '')) + '"; // close the reduction
+        } );
 
-				return match;
+        // scope variables and functions
+        match = match.replace( /\{\{([^}]+)}}/gm, function( varMatches, varMatch ){
 
-			} );
+          return "' + " + setScope( scope, varMatch ) + " + '";
 
-			return line;
+        } );
 
-		} );
+        return match;
 
-	}
+      } );
 
-	/**
-	 * _createFunction
-	 *
-	 * this helper will convert the string template into an executable
-	 * function
-	 *
-	 * @param   {String}    path            path to the template module
-	 * @param   {Array}     templateArr     template split into an array
-	 * @returns {Function}
-	 */
-	function createFunction( name, templateArr, html ){
+      return line;
 
-		var template = "'" + templateArr.join( "'\n+'" ) + "'",
-		    templateFn;
+    } );
 
-		templateFn = new Function( 'error, include', 'return function( vars ){\n\tvar template;\n\n\ttry{\n\t\ttemplate = \'\'\n+' + template + '\n\t} catch( e ){\n\t\ttemplate =' +
-			' error(e);\n\t}\n\treturn template;\n};' );
+  }
 
-		return templateFn( errorTemplate.bind( this, html ), include );
-	}
+  /**
+   * _createFunction
+   *
+   * this helper will convert the string template into an executable
+   * function
+   *
+   * @param   {String}    path            path to the template module
+   * @param   {Array}     templateArr     template split into an array
+   * @returns {Function}
+   */
+  function createFunction( name, templateArr, html ){
 
-	function include( path ){
-		return function( file ){
-			var inc = fs.readFileSync( path + file ).toString();
-			return inc;
-		}
-	}
+    var template = "'" + templateArr.join( "'\n+'" ) + "'",
+        templateFn;
 
-	/**
-	 * setScope
-	 *
-	 * this function will ensure the variables and functions in the
-	 * template have the correct scope, or prepend the 'vars' global scope
-	 *
-	 * @param   {Array}     scope       current scope of the template
-	 * @param   {String}    str         current var or function string from template
-	 *
-	 * @returns {string}                var or function string with the correct scope
-	 */
-	function setScope( scope, str ){
+    templateFn = new Function( 'error, include', 'return function( vars ){\n\tvar template;\n\n\ttry{\n\t\ttemplate = \'\'\n+' + template + '\n\t} catch( e ){\n\t\ttemplate =' +
+      ' error(e);\n\t}\n\treturn template;\n};' );
 
-		var spl, filtered, parens;
+    return templateFn( errorTemplate.bind( this, html ), include );
+  }
 
-		if( (parens = str.match( /([^\(]+)(\([^\)]*\))/ ) ) ){
-			str    = parens[ 1 ];
-			parens = parens[ 2 ];
-		}
+  function include( path ){
+    return function( file ){
+      var inc = fs.readFileSync( path + file ).toString();
+      return inc;
+    }
+  }
 
-		spl = str.split( '.' );
+  /**
+   * setScope
+   *
+   * this function will ensure the variables and functions in the
+   * template have the correct scope, or prepend the 'vars' global scope
+   *
+   * @param   {Array}     scope       current scope of the template
+   * @param   {String}    str         current var or function string from template
+   *
+   * @returns {string}                var or function string with the correct scope
+   */
+  function setScope( scope, str ){
 
-		filtered = scope.filter( function( key ){
+    var spl, filtered, parens;
 
-			return spl.indexOf( key ) > -1;
+    if( (parens = str.match( /([^\(]+)(\([^\)]*\))/ ) ) ){
+      str    = parens[ 1 ];
+      parens = parens[ 2 ];
+    }
 
-		} ).reverse();
+    spl = str.split( '.' );
 
-		if( !filtered.length ){
-			spl.unshift( 'vars' );
-		}
+    filtered = scope.filter( function( key ){
 
-		return parens
-			? spl.join( '.' ) + parens
-			: spl.join( '.' )
+      return spl.indexOf( key ) > -1;
 
-	}
+    } ).reverse();
 
-	/**
-	 * errorTemplate
-	 *
-	 * this function will return a formatted html page to display the
-	 * error information, if template compilation fails.
-	 *
-	 * @param   {Object}    html    context of this in the template
-	 * @param   {Error}     e       compilation error
-	 *
-	 * @returns {String}            error template html page
-	 */
-	function errorTemplate( html, e ){
+    if( !filtered.length ){
+      spl.unshift( 'vars' );
+    }
 
-		var
-			stackStr = e.stack,
-			stack    = stackStr.split( /\n/ ).join( '</li><li>' ),
-			error    = e.stack.match( /TypeError\:\s(?:Cannot\sread\sproperty\s\'([^']+)|([a-zA-Z0-9_\.]+)\sis\snot\sa\sfunction)/ ),
-			template = html
-				.replace( /</gm, '&lt;' )
-				.replace( /\\n/gm, '' )
-				.replace( /\t/gm, '    ' )
-				.replace( /\&lt\;([a-z._0-9]+|\/[a-z._0-9]+)/gm, '&lt;<b class="t">$1</b>' )
-				.replace( /\{\{([^\}]+)}}/gm, function( matches, match ){
+    return parens
+      ? spl.join( '.' ) + parens
+      : spl.join( '.' )
 
-					match = match.replace( /(\/foreach\b|\bforeach\b|\bas\b)/gmi, function( keywords, keyword ){
-						return '<b class="k">' + keyword + '</b>';
-					} );
+  }
 
-					return '<b class="b">{{' + match + '}}</b>'
-				} );
+  /**
+   * errorTemplate
+   *
+   * this function will return a formatted html page to display the
+   * error information, if template compilation fails.
+   *
+   * @param   {Object}    html    context of this in the template
+   * @param   {Error}     e       compilation error
+   *
+   * @returns {String}            error template html page
+   */
+  function errorTemplate( html, e ){
 
-		error.shift();
-		error        = error.filter( function( err ){ return err != null} );
+    var
+      stackStr = e.stack,
+      stack    = stackStr.split( /\n/ ).join( '</li><li>' ),
+      error    = e.stack.match( /TypeError\:\s(?:Cannot\sread\sproperty\s\'([^']+)|([a-zA-Z0-9_\.]+)\sis\snot\sa\sfunction)/ ),
+      template = html
+        .replace( /</gm, '&lt;' )
+        .replace( /\\n/gm, '' )
+        .replace( /\t/gm, '    ' )
+        .replace( /\&lt\;([a-z._0-9]+|\/[a-z._0-9]+)/gm, '&lt;<b class="t">$1</b>' )
+        .replace( /\{\{([^\}]+)}}/gm, function( matches, match ){
 
-		template = template.replace( new RegExp( "([a-z0-9_\.]+" + error[ 0 ].replace( /[\.]/, '\\$1' ) + ")" ), '<b class="e">$1</b>' );
+          match = match.replace( /(\/foreach\b|\bforeach\b|\bas\b)/gmi, function( keywords, keyword ){
+            return '<b class="k">' + keyword + '</b>';
+          } );
 
-		return ''
-			+ '<section class=="error">'
-			+ '<h2>oops... there was an error</h2>'
-			+ '<ul>'
-			+ '<li>' + stack + '</li>'
-			+ '</ul>'
-			+ '<pre>' + template + '</pre>'
-			+ '</section>';
-	}
+          return '<b class="b">{{' + match + '}}</b>'
+        } );
 
-	function bind( fn /*, boundArgs */ ){
-		var boundArgs = Array.prototype.slice.call( arguments, 1 );
-		return function( /* passed args */ ){
-			var passedArgs = Array.prototype.slice.call( arguments, 0 );
-			return fn.apply( this, boundArgs.concat( passedArgs ) );
-		}
-	}
+    error.shift();
+    error        = error.filter( function( err ){ return err != null} );
 
-	/**
-	 * traverse
-	 *
-	 * this function will either create or return a nested object
-	 * from a dot separated string.
-	 *
-	 * @param   {String}    name        name of the nested property **dot separated**
-	 * @param   {Object}    from        object to nest from
-	 * @param   {*}         value       optional: value to set
-	 *
-	 * @returns {Object}                nested object
-	 */
-	function traverse( name, from, value ){
+    template = template.replace( new RegExp( "([a-z0-9_\.]+" + error[ 0 ].replace( /[\.]/, '\\$1' ) + ")" ), '<b class="e">$1</b>' );
 
-		var path = name.split( '.' );
+    return ''
+      + '<section class=="error">'
+      + '<h2>oops... there was an error</h2>'
+      + '<ul>'
+      + '<li>' + stack + '</li>'
+      + '</ul>'
+      + '<pre>' + template + '</pre>'
+      + '</section>';
+  }
 
-		return path.reduce( function( ret, curr, ii ){
+  function bind( fn /*, boundArgs */ ){
+    var boundArgs = Array.prototype.slice.call( arguments, 1 );
+    return function( /* passed args */ ){
+      var passedArgs = Array.prototype.slice.call( arguments, 0 );
+      return fn.apply( this, boundArgs.concat( passedArgs ) );
+    }
+  }
 
-			if( typeof ret[ curr ] === 'undefined' ){
-				ret[ curr ] = {};
-			}
+  /**
+   * traverse
+   *
+   * this function will either create or return a nested object
+   * from a dot separated string.
+   *
+   * @param   {String}    name        name of the nested property **dot separated**
+   * @param   {Object}    from        object to nest from
+   * @param   {*}         value       optional: value to set
+   *
+   * @returns {Object}                nested object
+   */
+  function traverse( name, from, value ){
 
-			if( ii === path.length - 1 && value ){
-				ret[ curr ] = value;
-			}
+    var path = name.split( '.' );
 
-			return ret[ curr ];
+    return path.reduce( function( ret, curr, ii ){
 
-		}, from );
+      if( typeof ret[ curr ] === 'undefined' ){
+        ret[ curr ] = {};
+      }
 
-	}
+      if( ii === path.length - 1 && value ){
+        ret[ curr ] = value;
+      }
+
+      return ret[ curr ];
+
+    }, from );
+
+  }
 
 })();

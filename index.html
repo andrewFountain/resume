@@ -5,13 +5,14 @@
 	<title>Document</title>
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="style.css?v=0.02">
 
-	<script src="./functional-compiled.js"></script>
-	<script src="template-factory.js"></script>
-	<script src="template.js"></script>
-	<script src="./gQuery-compiled.js"></script>
-	<script src="data.js"></script>
+	<script src="./functional-compiled.js?v=0.02"></script>
+	<script src="template-factory.js?v=0.02"></script>
+	<script src="template.js?v=0.02"></script>
+	<script src="./gQuery-compiled.js?v=0.02"></script>
+	<script src="data.js?v=0.02"></script>
+	<script src="./tween.js?v=0.02"></script>
 </head>
 <body class="hide-form-content">
 	<header class="attached" id="site-header">
@@ -72,10 +73,11 @@
 			<div class="personal-left">
 				<h3>{{name}}</h3>
 				<ul class="personal__info">
-					<li>{{address}}</li>
 					<li>{{suburb}}</li>
-					<li><a href="tel:{{phone}}">{{phone}}</a></li>
 					<li><a href="mailto:{{email}}">{{email}}</a></li>
+					<li><a href="{{github}}">github</a></li>
+					<li><a href="{{stackoverflow}}">stackoverflow</a></li>
+					<li><a href="{{codepen}}">codepen</a></li>
 				</ul>
 				<p>{{description}}</p>
 			</div>
@@ -96,7 +98,7 @@
 		<span class="slideshow-nav" id="slideshow-nav-left"></span>
 		<ul class="slideshow-wrapper">
 			{{foreach jobs as job}}
-				<li class="slide vertical-center-parent">
+				<li class="slide vertical-center-parent" id="slide_{{job.id}}">
 					<div class="job vertical-center-element">
 					<h3><a href="{{job.url}}" target="_blank">{{job.company}}</a></h3>
 						<div class="details">

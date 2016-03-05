@@ -235,7 +235,7 @@ section .slideshow {
         box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3);
         transform: matrix(1, 0, 0, 1, 0, -2); }
     section .slideshow li.slide .job__details li {
-      transform: matrix(1, 0, 0, 1, 50, 50);
+      transform: matrix(1, 0, 0, 1, 0, 0);
       opacity: 0; }
       section .slideshow li.slide .job__details li::before, section .slideshow li.slide .job__details li::after {
         content: " ";
@@ -351,9 +351,7 @@ ul.tick-list {
 .books__group .book__heading {
   flex: 1;
   background: #f02673;
-  padding: 0 1em;
-  height: 4em;
-  }
+  padding: 0 1em; }
   .books__group .book__heading a {
     color: #fff; }
 .books__group .book__details {

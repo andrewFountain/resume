@@ -9,17 +9,17 @@
 		 *
 		 * @returns {Function}              curried function with arguments
 		 */
-		curry       =   ( fn ) =>{
-							var ll = fn.length,
-						    _curry = ( _args_ ) =>
-							    ( ...args ) =>{
-								    var a = _args_.concat( args );
-								    return a.length >= ll
-									    ? fn.apply( this, a )
-									    : _curry( a );
-							    };
-							return _curry( [] );
-					},
+		curry =   ( fn ) =>{
+				var ll = fn.length,
+					_curry = ( _args_ ) =>
+						( ...args ) =>{
+							var a = _args_.concat( args );
+							return a.length >= ll
+								? fn.apply( this, a )
+								: _curry( a );
+						};
+				return _curry( [] );
+		},
 
 		/**
 		 * curryArgs
@@ -345,8 +345,8 @@
 		 *      @returns {*}                    return from curried function
 		 */
 		curryTwo    =   ( fn ) =>
-							( arg ) =>
-								callFirst(fn, arg ),
+              ( arg ) =>
+                callFirst(fn, arg ),
 
 
 		/**

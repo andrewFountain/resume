@@ -266,7 +266,7 @@ section .slideshow {
 		}
 
 		.job__details li {
-			transform: matrix(1,0,0,1,50,50);
+			transform: matrix(1,0,0,1,0,0);
 			opacity: 0;
 			@include clear;
 

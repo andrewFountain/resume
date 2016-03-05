@@ -1,10 +1,12 @@
 var resume = {
 	personal : {
 		name       : 'Andrew Fountain',
-		address    : '157 Pascoe Vale Road',
 		suburb     : 'Moonee Ponds VIC 3039',
 		phone      : '0416 006 176',
 		email      : 'founts24@gmail.com',
+		github     : 'https://github.com/synthet1c',
+		stackoverflow: 'http://stackoverflow.com/users/1733478/synthet1c',
+		codepen: 'http://codepen.io/synthet1c/',
 		description: 'A full stack developer, focused mainly on javascript and asynchronous engineering seeking new opportunities to develop my skills. I made this site as a way to show my skill level and my coding style, there is a combination of everything that I know in relation to Web Programming used in this site. Everything is 100% original excluding a couple of algorithms for easing. I would consider it over the top for production work, but for a portfolio I believe it will give you a good indication of where I\'m at. I\'m always excited to learn new things and share knowledge',
 		attributes : [
 			'Obsessed with clean code.',
@@ -192,6 +194,7 @@ var resume = {
 	work     : [
 		{
 			company         : 'Bwired / Core dna',
+			id              : 'bwired',
 			url             : 'http://bwired.com.au',
 			address         : 'Prahran, VIC, 3181',
 			title           : 'Client Support',
@@ -209,6 +212,7 @@ var resume = {
 		},
 		{
 			company         : '24 Digital',
+			id              : 'twenty4',
 			url             : 'http://24digital.com.au',
 			address         : 'Cremorne, VIC, 3121',
 			title           : 'Intern',
@@ -230,6 +234,7 @@ var resume = {
 		},
 		{
 			company     : 'Commonwealth Bank',
+			id: 'commonwealth',
 			url         : 'http://www.commbank.com.au',
 			address     : 'Melbourne, VIC 3000',
 			title       : 'Customer Service Consultant',
@@ -249,6 +254,7 @@ var resume = {
 		},
 		{
 			company     : 'ANZ Bank, ACC, Melbourne, VIC',
+			id: 'anz',
 			url         : 'http://anz.com',
 			title       : 'Customer Service Consultant',
 			dates       : 'June 2010 - March 2011',
@@ -268,6 +274,7 @@ var resume = {
 		},
 		{
 			company     : 'Hobsons Australia',
+			id: 'hobsons',
 			url         : 'http://www.hobsons.com/apac',
 			address     : 'Melbourne, VIC 3000',
 			title       : 'Account Manager',

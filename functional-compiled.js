@@ -1,5 +1,3 @@
-'use strict';
-
 var
 
 /**
@@ -11,17 +9,11 @@ var
  *
  * @returns {Function}              curried function with arguments
  */
-curry = function curry(fn) {
+curry = fn => {
 	var ll = fn.length,
-	    _curry = function _curry(_args_) {
-		return function () {
-			for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-				args[_key] = arguments[_key];
-			}
-
-			var a = _args_.concat(args);
-			return a.length >= ll ? fn.apply(undefined, a) : _curry(a);
-		};
+	    _curry = _args_ => (...args) => {
+		var a = _args_.concat(args);
+		return a.length >= ll ? fn.apply(this, a) : _curry(a);
 	};
 	return _curry([]);
 },
@@ -36,16 +28,10 @@ curry = function curry(fn) {
  *
  * @returns {Function}              curried function with arguments
  */
-curryArgs = function curryArgs(fn, argLength) {
-	var _curry = function _curry(_args_) {
-		return function () {
-			for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-				args[_key2] = arguments[_key2];
-			}
-
-			var a = _args_.concat(args);
-			return a.length >= argLength ? fn.apply(undefined, a) : _curry(a);
-		};
+curryArgs = (fn, argLength) => {
+	var _curry = _args_ => (...args) => {
+		var a = _args_.concat(args);
+		return a.length >= argLength ? fn.apply(this, a) : _curry(a);
 	};
 	return _curry([]);
 },
@@ -63,15 +49,7 @@ curryArgs = function curryArgs(fn, argLength) {
  *
  *      @param   {*}         [args]      arguments to flip to function
 	 */
-flipAll = function flipAll(fn) {
-	return function () {
-		for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-			args[_key3] = arguments[_key3];
-		}
-
-		return fn.apply(undefined, args.reverse());
-	};
-},
+flipAll = fn => (...args) => fn.apply(this, args.reverse()),
 
 /**
  * flip
@@ -88,13 +66,11 @@ flipAll = function flipAll(fn) {
  *      @param   {*}         first       first argument
  *      @param   {*}         second      second argument
 	 */
-flip = function flip(fn) {
-	return function (first, second) {
-		return second ? _flip(second) : _flip;
-		function _flip(second) {
-			return fn.call(this, second, first);
-		}
-	};
+flip = fn => (first, second) => {
+	return second ? _flip(second) : _flip;
+	function _flip(second) {
+		return fn.call(this, second, first);
+	}
 },
 
 /**
@@ -110,11 +86,7 @@ flip = function flip(fn) {
  *
  *      @param   {*}         first       argument to pass to function
 	 */
-first = function first(fn) {
-	return function (first) {
-		return fn.call(undefined, first);
-	};
-},
+first = fn => first => fn.call(this, first),
 
 /**
  * arrProto
@@ -131,15 +103,9 @@ first = function first(fn) {
  *      @param  {Array}     arr         Array to apply prototype method to
  *      @param  [{*}]       args        arguments to apply to the prototype method
  */
-arrProto = function arrProto(method) {
+arrProto = method => {
 	method = Array.prototype[method];
-	return function (arr) {
-		for (var _len4 = arguments.length, args = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
-			args[_key4 - 1] = arguments[_key4];
-		}
-
-		return method.apply(arr, args);
-	};
+	return (arr, ...args) => method.apply(arr, args);
 },
 
 /**
@@ -190,12 +156,8 @@ map = arrProto('map'),
  */
 mapWith = flip(map),
     parseIntMap = mapWith(first(parseInt)),
-    hexToDecMap = mapWith(function (hex) {
-	return parseInt(hex, 16);
-}),
-    negativeMap = mapWith(function (num) {
-	return num * -1;
-}),
+    hexToDecMap = mapWith(hex => parseInt(hex, 16)),
+    negativeMap = mapWith(num => num * -1),
 
 /**
  * filter
@@ -245,11 +207,7 @@ filterWith = flip(filter),
  *
  *      @returns {*}                    property of object
 	 */
-get = function get(obj) {
-	return function (item) {
-		return obj[item];
-	};
-},
+get = obj => item => obj[item],
 
 /**
  * compase
@@ -266,11 +224,7 @@ get = function get(obj) {
  *
  *      @param  {Function}  c           first function in the chain
  */
-compose = function compose(a, b) {
-	return function (c) {
-		return a(b(c));
-	};
-},
+compose = (a, b) => c => a(b(c)),
 
 /**
  * pipe
@@ -303,15 +257,7 @@ pipe = flipAll(compose),
  *
  *      @param  [{*}]       args        arguments to apply to curried function
 	 */
-callFirst = function callFirst(fn, first) {
-	return function () {
-		for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-			args[_key5] = arguments[_key5];
-		}
-
-		return fn.apply(undefined, [first].concat(args));
-	};
-},
+callFirst = (fn, first) => (...args) => fn.apply(this, [first].concat(args)),
 
 /**
  * callLast
@@ -328,15 +274,7 @@ callFirst = function callFirst(fn, first) {
  *
  *      @param  [{*}]       args        arguments to apply to curried function
  */
-callLast = function callLast(fn, last) {
-	return function () {
-		for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-			args[_key6] = arguments[_key6];
-		}
-
-		return fn.apply(undefined, args.concat([last]));
-	};
-},
+callLast = (fn, last) => (...args) => fn.apply(this, args.concat([last])),
 
 /**
  * curryOne
@@ -353,11 +291,7 @@ callLast = function callLast(fn, last) {
  *
  *      @returns {*}                    return from curried function
 	 */
-curryOne = function curryOne(fn) {
-	return function (arg) {
-		return fn.call(undefined, arg);
-	};
-},
+curryOne = fn => arg => fn.call(this, arg),
 
 /**
  * curryOne
@@ -372,11 +306,7 @@ curryOne = function curryOne(fn) {
  *
  *      @returns {*}                    return from curried function
  */
-curryTwo = function curryTwo(fn) {
-	return function (arg) {
-		return callFirst(fn, arg);
-	};
-},
+curryTwo = fn => arg => callFirst(fn, arg),
 
 /**
  * curryThree
@@ -389,11 +319,7 @@ curryTwo = function curryTwo(fn) {
  *
  * @returns {Function}      curryTwo
 	 */
-curryThree = function curryThree(fn) {
-	return function (arg) {
-		return curryTwo(callFirst(fn, arg));
-	};
-},
+curryThree = fn => arg => curryTwo(callFirst(fn, arg)),
 
 /**
  * fluent
@@ -409,15 +335,9 @@ curryThree = function curryThree(fn) {
  *
  *      @returns    {*}                 value of this abj
 	 */
-fluent = function fluent(method) {
-	return function fluent() {
-		for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-			args[_key7] = arguments[_key7];
-		}
-
-		var ret = method.apply(this, args);
-		return typeof ret !== 'undefined' ? ret : this;
-	};
+fluent = method => function fluent(...args) {
+	var ret = method.apply(this, args);
+	return typeof ret !== 'undefined' ? ret : this;
 },
 
 /**
@@ -426,14 +346,8 @@ fluent = function fluent(method) {
  * this function will only execute the curried function on an object
  * if none of the arguments are nully
 	 */
-maybe = function maybe(fn) {
-	return function maybe() {
-		for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
-			args[_key8] = arguments[_key8];
-		}
-
-		return args.length === 0 || containsNully(args) ? void 0 : fn.apply(this, args);
-	};
+maybe = fn => function maybe(...args) {
+	return args.length === 0 || containsNully(args) ? void 0 : fn.apply(this, args);
 },
     curriedMapWith = curryTwo(flip(map)),
 
@@ -456,14 +370,8 @@ setter = compose(fluent, maybe),
  *
  *      @param  {*}         args        arguments to apply to curried function
 	 */
-not = function not(fn) {
-	return function () {
-		for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
-			args[_key9] = arguments[_key9];
-		}
-
-		return !fn.apply(this, args);
-	};
+not = fn => function (...args) {
+	return !fn.apply(this, args);
 },
 
 /**
@@ -485,20 +393,8 @@ not = function not(fn) {
  *
  *          @returns {*}                    result of curried function
 	 */
-bind = function bind(fn) {
-	return function () {
-		for (var _len10 = arguments.length, bound = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
-			bound[_key10] = arguments[_key10];
-		}
-
-		return function () {
-			for (var _len11 = arguments.length, passed = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
-				passed[_key11] = arguments[_key11];
-			}
-
-			return fn.apply(this, bound.concat(passed));
-		};
-	};
+bind = fn => (...bound) => function (...passed) {
+	return fn.apply(this, bound.concat(passed));
 },
 
 /**
@@ -517,29 +413,17 @@ bind = function bind(fn) {
  *
  *      @returns {Boolean}
 	 */
-typeIs = function typeIs(prop) {
-	return function (val) {
-		return typeof val === prop;
-	};
-},
-    isInstance = function isInstance(instance) {
-	return function (thing) {
-		return thing instanceof instance;
-	};
-},
+typeIs = prop => val => typeof val === prop,
+    isInstance = instance => thing => thing instanceof instance,
     isUndefined = typeIs('undefined'),
     notUndefined = not(isUndefined),
     isFunction = typeIs('function'),
     isElement = isInstance(HTMLElement),
     isNodeList = isInstance(NodeList),
     isString = typeIs('string'),
-    isNully = function isNully(val) {
-	return val == null;
-},
+    isNully = val => val == null,
     nullyFilter = filterWith(not(isNully)),
-    count = function count(thing) {
-	return thing.length;
-},
+    count = thing => thing.length,
     containsNully = compose(count, filterWith(isNully)),
 
 /**
@@ -551,29 +435,13 @@ typeIs = function typeIs(prop) {
  *
  * @returns {Array}     values not in input array
 	 */
-notIn = function notIn(arr) {
-	for (var _len12 = arguments.length, values = Array(_len12 > 1 ? _len12 - 1 : 0), _key12 = 1; _key12 < _len12; _key12++) {
-		values[_key12 - 1] = arguments[_key12];
-	}
-
-	return values.filter(function (item) {
-		return arr.indexOf(item) > -1;
-	});
+notIn = (arr, ...values) => values.filter(item => arr.indexOf(item) > -1),
+    combine = arr => (...values) => {
+	var index = null;
+	values = arr.concat(notIn(arr, values));
 },
-    combine = function combine(arr) {
-	return function () {
-		for (var _len13 = arguments.length, values = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
-			values[_key13] = arguments[_key13];
-		}
-
-		var index = null;
-		values = arr.concat(notIn(arr, values));
-	};
-},
-    diff = function diff(one, two) {
-	return one < two ? two - one : (one - two) * -1;
-},
-    diffArray = function diffArray(left, right) {
+    diff = (one, two) => one < two ? two - one : (one - two) * -1,
+    diffArray = (left, right) => {
 	var ret = [],
 	    ii = 0,
 	    ll = left.length;
@@ -583,7 +451,7 @@ notIn = function notIn(arr) {
 	}
 	return ret;
 },
-    getSet = function getSet(prop, fn) {
+    getSet = (prop, fn) => {
 	return fluent(function (val) {
 		if (isUndefined(val)) {
 			return this[prop];
@@ -591,34 +459,16 @@ notIn = function notIn(arr) {
 		extend(this[prop], val);
 	});
 },
-    capitalize = function capitalize(str) {
-	return str.replace(/(\w)(\w*)/, function (matches, first, rest) {
-		return first.toUpperCase() + rest;
-	});
-},
-    crossBrowser = function crossBrowser() {
-	for (var _len14 = arguments.length, browsers = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
-		browsers[_key14] = arguments[_key14];
-	}
+    capitalize = str => str.replace(/(\w)(\w*)/, (matches, first, rest) => first.toUpperCase() + rest),
+    crossBrowser = (...browsers) => prop => (el, value) => {
+	browsers.forEach(browser => el.style[browser + '-' + capitalize(prop)] = value);
 
-	return function (prop) {
-		return function (el, value) {
-			browsers.forEach(function (browser) {
-				return el.style[browser + '-' + capitalize(prop)] = value;
-			});
-
-			el.style[prop] = value;
-		};
-	};
+	el.style[prop] = value;
 },
     allBrowsers = crossBrowser('webkit', 'moz', 'ms'),
     transform = allBrowsers('transform');
 
-function extend(reciever) {
-	for (var _len15 = arguments.length, givers = Array(_len15 > 1 ? _len15 - 1 : 0), _key15 = 1; _key15 < _len15; _key15++) {
-		givers[_key15 - 1] = arguments[_key15];
-	}
-
+function extend(reciever, ...givers) {
 	return givers.reduce(function (reciever, giver) {
 
 		for (var key in giver) {
@@ -629,11 +479,7 @@ function extend(reciever) {
 	}, reciever);
 }
 
-extend.fluent = function (reciever) {
-	for (var _len16 = arguments.length, givers = Array(_len16 > 1 ? _len16 - 1 : 0), _key16 = 1; _key16 < _len16; _key16++) {
-		givers[_key16 - 1] = arguments[_key16];
-	}
-
+extend.fluent = function (reciever, ...givers) {
 	return givers.reduce(function (reciever, giver) {
 
 		for (var key in giver) {
