@@ -323,13 +323,12 @@
 
       var start;
 
-      if( CURRENT_SCENE - 1 > -1 ){
-        start = CURRENT_SCENE -1;
-      } else {
+      start = CURRENT_SCENE - 2;
+      if( start < 0 ){
         start = SCENES.length - 1;
       }
 
-      return playTween( start, start + 1 );
+      return playTween( start, start );
     },
 
     /**
@@ -426,6 +425,16 @@
       addAnimation.call( this, selector, properties );
     } ),
 
+    from: fluent( function( selector, properties, time = 2000, stagger = 0 ){
+
+      properties.time  = ( properties.time || time );
+      properties.delay = this.delay;
+
+      properties = sortProperties.call( this, properties );
+
+      addAnimations.call( this, selector, properties, stagger, time, true );
+    } ),
+
     wait: fluent( function( delay ){
 
       this.delay += delay;
@@ -489,7 +498,9 @@
       if( incomplete ){
         return true;
       } else {
-        this.events.complete.call( this, this );
+        if( typeof this.events.complete === 'function' ){
+          this.events.complete.call( this, this );
+        }
         return false;
       }
     }
@@ -569,10 +580,11 @@
     },
     _init  : function(){
 
-      const
-        initial = parseFloat( this.$el.css( this.key ) ),
-        prop    = valueAndUnit( this.value ),
-        to      = prop.value;
+      let
+        prop = valueAndUnit( this.value ),
+        start   = cssProp( this.$el[0], this.key, true ),
+        initial = this.isFrom ? prop.value : start,
+        to      = this.isFrom ? start : prop.value;
 
       this.unit    = prop.unit;
       this.initial = initial;
@@ -699,6 +711,23 @@
     },
     _init  : function(){
 
+      var length = this.value.length;
+
+      this.x = valueAndUnit(this.value[ length - 2 ]);
+      this.y = valueAndUnit(this.value[ length - 1 ]);
+
+      this.value[ length - 2 ] = this.x.value;
+      this.value[ length - 1 ] = this.y.value;
+
+      // TODO: move to _update method so animation is responsive
+      if( this.x.unit === '%' ){
+        this.value[ length - 2 ] = (this.x.value / 100) * this.$el.css('width');
+      }
+
+      if( this.y.unit === '%' ){
+        this.value[ length - 1 ] = (this.y.value / 100) * this.$el.css('height');
+      }
+
       var
         _matrix = this.$el.matrix(),
         xy = this.value.length === 2
@@ -716,15 +745,6 @@
       this.curr     = initial;
       this.to       = to;
       this.diff     = diff;
-
-      //this.start    = 0;
-      //this.progress = 0;
-      //this.initial  = this.$el.matrix();
-      //this.curr     = this.initial.slice( 0 );
-      //this.to       = this.value.length == 2
-      //  ? [ 1, 0, 0, 1 ].concat( this.value )
-      //  : this.value;
-      //this.diff     = diffArray( this.initial, this.to );
     }
   } );
 

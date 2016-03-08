@@ -213,7 +213,6 @@ var paralax = function () {
     window.clearTimeout(timeout);
     timeout = window.setTimeout(function () {
       scrolling = false;
-      console.log('stopped scrolling', timeout);
     }, 80);
   });
 
@@ -415,23 +414,15 @@ extend(Slideshow.prototype, {
     this.addScenes();
 
     this.left.on('click', function (e) {
-      // self.setLeft( 'backward' );
       timeline.prev();
     });
 
     this.right.on('click', function (e) {
-      //self.setLeft( 'forward' );
       timeline.next();
     });
 
     scrollSpy.bind('#output-job', function ($el, offset) {
       timeline.go('scene-bwired');
-      //console.log($el);
-      //var $slides = $el.find('.job__details');
-      //var $first = $slides.nth('first');
-      //var $listItems = $first.find( 'li' );
-      //$listItems.stagger( 250, [ 0, 0 ], { opacity: 1 }, 500 );
-      //$listItems.stagger( 509, null, { color: '#f02673' }, 2000 );
     });
 
     $window.on('resize', function (e) {
@@ -447,56 +438,116 @@ extend(Slideshow.prototype, {
 
     var $slideshow = $('.slideshow-wrapper'),
         $background = $('.slideshow'),
-        screenWidth = parseFloat($slideshow.css('width')) / 5;
+        screenWidth = $background.css('width');
 
     this.scenes.bwired = this.timeline.add('scene-bwired');
     this.scenes.twenty4 = this.timeline.add('scene-twenty4');
     this.scenes.commonwealth = this.timeline.add('scene-commonwealth');
+    this.scenes.anz = this.timeline.add('scene-anz');
+    this.scenes.hobsons = this.timeline.add('scene-hobsons');
 
     window.timeline = this.timeline;
 
     this.scenes.bwired.to($slideshow, {
-      pos: [0, 0],
+      pos: ['0%', 0],
       easing: Easing.easeBack(2)
     }).to($background, {
       backgroundPositionX: '500px'
+    }).from('#slide_bwired h3', {
+      pos: [0, 100],
+      opacity: 1,
+      easing: 'easeOutBounce'
     }).staggerFrom('#slide_bwired .job__details li', 60, {
-      pos: [-100, -100],
-      time: 1000,
+      pos: [100, 100],
+      time: 800,
       opacity: 1,
       // easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
       easing: 'easeOutBounce'
     }).on('complete', function (tween) {
-      console.log('No it\'s a circle', tween);
+      $('#slide_bwired em').animate(null, {
+        color: '#f02673'
+      }, 300);
     });
 
     this.scenes.twenty4.to($slideshow, {
-      pos: [-(screenWidth * 1), 0],
+      pos: ['-20%', 0],
       easing: 'easeOutBounce'
     }).to($background, {
       backgroundPositionX: '1000px'
+    }).from('#slide_twenty4 h3', {
+      pos: [0, 100],
+      opacity: 1,
+      easing: 'easeOutBounce'
     }).staggerFrom('#slide_twenty4 .job__details li', 80, {
+      pos: [100, 100],
+      time: 1000,
+      opacity: 1,
+      easing: 'easeOutQuad'
+    }).on('complete', function (tween) {
+      $('#slide_twenty4 em').animate(null, {
+        color: '#f02673'
+      }, 300);
+    });
+
+    this.scenes.commonwealth.to($slideshow, {
+      pos: ['-40%', 0],
+      easing: 'swing'
+    }).to($background, {
+      backgroundPositionX: '1500px'
+    }).from('#slide_commonwealth h3', {
+      pos: [0, 100],
+      opacity: 1,
+      easing: 'easeOutBounce'
+    }).staggerFrom('#slide_commonwealth .job__details li', 60, {
+      pos: [100, 100],
+      time: 1000,
+      opacity: 1,
+      // easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
+      easing: 'easeOutQuad'
+    }).on('complete', function (tween) {
+      $('#slide_commonwealth em').animate(null, {
+        color: '#f02673'
+      }, 300);
+    });
+
+    this.scenes.anz.to($slideshow, {
+      pos: ['-60%', 0],
+      easing: 'swing'
+    }).to($background, {
+      backgroundPositionX: '2000px'
+    }).from('#slide_anz h3', {
+      pos: [0, 100],
+      opacity: 1,
+      easing: 'easeOutBounce'
+    }).staggerFrom('#slide_anz .job__details li', 60, {
+      pos: [100, 100],
+      time: 1000,
+      opacity: 1,
+      easing: 'easeOutQuad'
+    }).on('complete', function (tween) {
+      $('#slide_anz em').animate(null, {
+        color: '#f02673'
+      }, 300);
+    });
+
+    this.scenes.hobsons.to($slideshow, {
+      pos: ['-80%', 0],
+      easing: 'swing'
+    }).to($background, {
+      backgroundPositionX: '1200px'
+    }).from('#slide_hobsons h3', {
+      pos: [0, 100],
+      opacity: 1,
+      easing: 'easeOutBounce'
+    }).staggerFrom('#slide_hobsons .job__details li', 60, {
       pos: [100, 100],
       time: 500,
       opacity: 1,
       easing: 'easeOutQuad'
     }).on('complete', function (tween) {
-      console.log('No it\'s a circle', tween);
-    });
-
-    this.scenes.commonwealth.to($slideshow, {
-      pos: [-(screenWidth * 2), 0],
-      easing: 'swing'
-    }).to($background, {
-      backgroundPositionX: '1500px'
-    }).staggerFrom('#slide_commonwealth .job__details li', 60, {
-      pos: [-100, 100],
-      time: 500,
-      opacity: 1,
-      // easing    : [ 'easeInOutQuad', 'easeOutCirc' ]
-      easing: 'easeOutQuad'
-    }).on('complete', function (tween) {
-      console.log('No it\'s a circle', tween);
+      $('#slide_hobsons em').animate(null, {
+        color: '#f02673'
+      }, 300);
     });
   },
   setLeft: function (direction) {

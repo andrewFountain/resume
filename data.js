@@ -200,14 +200,14 @@ var resume = {
 			title           : 'Client Support',
 			dates           : 'September 2014 - Current',
 			responsibilities: [
-				'Providing ongoing support to existing clients, resolving customer queries.',
+				'Providing ongoing support to existing clients, <em>resolving</em> customer queries.',
 				'Enhancing customer websites with new functionality.',
-				'Ensuring quality standards are maintained.',
-				'Refactoring existing code to comply with modern standards.',
-				'Contributing to QA in a group setting, including quality assurance of colleagues code.',
+				'Ensuring <em>quality</em> standards are maintained.',
+				'Refactoring existing code to comply with <em>modern</em> standards.',
+				'<em>Contributing</em> to QA in a group setting, including quality assurance of colleagues code.',
 				'Documenting functionality and providing training materials for clients.',
-				'Quoting and scoping of website enhancements and micro projects.',
-				'Training new recruits.'
+				'Quoting and scoping of website <em>enhancements</em> and micro projects.',
+				'<em>Training</em> new recruits.'
 			]
 		},
 		{
@@ -219,17 +219,17 @@ var resume = {
 			dates           : 'July 2014 - September 2014',
 			responsibilities: [
 				'Worked on new client projects.',
-				'Built two websites using WordPress (one has since been upgraded).',
+				'Built two websites using <em>WordPress</em> (one has since been upgraded).',
 				'Created the nharchitecture.net website based on design specifications provided by the client.',
-				'Created an image gallery plug-in to display images and video content, and asynchronously downloading images.',
-				'Used Google Maps API to generate a custom-styled map.',
+				'<em>Created</em> an image gallery plug-in to display images and video content, and asynchronously downloading images.',
+				'Used Google Maps API to <em>generate</em> a custom-styled map.',
 				'Migrated existing data to new website.',
-				'Implemented ajax across the site to allow for dynamic components.',
-				'Integrated social media widgets.',
-				'Optimised the UX around image loading.',
-				'Used responsive design best practices to cater for mobile and tablet.',
+				'Implemented ajax across the site to allow for <em>dynamic</em> components.',
+				'<em>Integrated</em> social media widgets.',
+				'<em>Optimised</em> the UX around image loading.',
+				'Used responsive design <em>best practices</em> to cater for mobile and tablet.',
 				'Integrated gravity forms.',
-				'Built with advanced customer fields.'
+				'Built with <em>advanced</em> customer fields.'
 			]
 		},
 		{
@@ -242,14 +242,14 @@ var resume = {
 			responsibilities: [
 				'Average of 90 calls answered per day.',
 				'Average call time 4.08mins.',
-				'Meeting required Quality Assurance targets.Responsibilities:',
+				'Meeting required <em>Quality Assurance</em> targets.Responsibilities:',
 				'Multi skilled in all different aspects of consumer banking e.g. Internet Banking, Telephone Banking, Retail Banking (savings accounts), Credit Cards, Variable Rate Home Loans, Term Deposits.',
 				'Keeping up to date with ever changing information and practices.',
-				'Following predetermined best practice procedures to ensure customers receive the most relevant information.',
+				'Following predetermined <em>best practice</em> procedures to ensure customers receive the most relevant information.',
 				'Liaise with different internal departments to ensure customer\'s needs are met.',
-				'Recognise sales opportunities and refer the customer to the sales team.',
-				'Working as part of a large team to collectively meet targets.',
-				'Upholding Commonwealth Bank\'s code of ethics and conduct while dealing with customers and colleagues and to remain compliant with government regulation.'
+				'<em>Recognise</em> sales opportunities and refer the customer to the sales team.',
+				'Working as part of a large team to <em>collectively</em> meet targets.',
+				'Upholding Commonwealth Bank\'s code of <em>ethics</em> and conduct while dealing with customers and colleagues and to remain compliant with government regulation.'
 			]
 		},
 		{
@@ -261,9 +261,9 @@ var resume = {
 			responsibilities: [
 				'Average of 170 calls answered per day.',
 				'Average call time 1.58mins.',
-				'Meeting required Quality Assurance targets.',
+				'Meeting required <em>Quality Assurance</em> targets.',
 				'Maintaining highest possible score on internal Customer Satisfaction Survey.Responsibilities:',
-				'Multi skilled in all different aspects of consumer banking e.g. Internet Banking, Telephone Banking, Retail Banking (savings accounts), Credit Cards, Variable Rate Home Loans, Term Deposits, Esanda Term Deposits, Aussie Credit Cards.',
+				'<em>Multi skilled</em> in all different aspects of consumer banking e.g. Internet Banking, Telephone Banking, Retail Banking (savings accounts), Credit Cards, Variable Rate Home Loans, Term Deposits, Esanda Term Deposits, Aussie Credit Cards.',
 				'Keeping up to date with ever changing information and practices.',
 				'Following predetermined best practice procedures to ensure customers receive the most relevant information, ensuring ANZ has one voice when talking to customers.',
 				'Liaise with different internal departments of the ANZ to ensure customer\'s needs are met.',
@@ -284,12 +284,12 @@ var resume = {
 				'Average call time 3.20mins.',
 				'Average 90 outbound calls per month.',
 				'Average 690 emails per month.',
-				'Completed Time Management Training with team members to learn to effectively manage high volumes of work.',
+				'Completed Time Management Training with team members to learn to effectively <em>manage high volumes of work</em>.',
 				'Proficient in the use of the Microsoft Office suite.Responsibilities:',
 				'Managed enquiries from prospective Domestic and International students for top Australian education institutions.',
 				'Handled enquiries across educational sectors for Undergraduate, Postgraduate and TAFE courses.',
 				'Responded to enquiries and counseled prospective students by phone and email.',
-				'Liaised with school administration, admissions staff, lecturers, education agents and Government bodies (e.g. DEEWR and VTAC) to ensure I could provide the most up to date relevant information to students.',
+				'Liaised with school administration, admissions staff, lecturers, education agents and Government bodies (e.g. DEEWR and VTAC) to ensure I could provide the most up to date <em>relevant</em> information to students.',
 				'Worked in a team, assisting fellow members with their respective accounts to manage workload effectively and meet our contractual obligations to clients.'
 			]
 		}

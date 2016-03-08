@@ -264,16 +264,14 @@
           curr = window.pageYOffset || document.documentElement.scrollTop,
           progress,
           initial = curr,
-          difference = diff(initial, to);
+          difference = diff(initial, to),
+          mouseScrolling = false;
 
-      //var scroller = new Scroller( to, time, ease );
-      //
-      //animations.push( scroller );
-      //
-      //if( !running ){
-      //  running = true;
-      //  window.requestAnimationFrame( _animate );
-      //}
+      // note: this always fires for the scroll event, need to find just a mouuse event
+      //window.addEventListener('scroll', function( e ){
+      //  console.log('scrolling');
+      //  mouseScrolling = false;
+      //}, true);
 
       function _scrollTo() {
 
@@ -283,7 +281,7 @@
         // console.log( curr );
         window.scrollTo(0, curr);
 
-        if (progress < time) {
+        if (progress < time && !mouseScrolling) {
           window.requestAnimationFrame(_scrollTo);
         }
       }
@@ -995,7 +993,7 @@
       color = parseIntMap(match[1].split(/,\s*/));
     }
 
-    return color;
+    return color.splice(0, 3);
   }
 
   /**

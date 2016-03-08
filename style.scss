@@ -134,6 +134,7 @@ main#site-content {
 	left: 0;
 	bottom: 0;
 	right: 0;
+	// overflow-x: hidden;
 	//overflow-y: auto;
 	//overflow-x : hidden;
 }
@@ -254,6 +255,7 @@ section .slideshow {
 			font-size: 2em;
 			font-weight: 700;
 			transform: matrix(1, 0, 0, 1 ,0, 0);
+			opacity: 0;
 		}
 
 		.job {
@@ -504,6 +506,7 @@ div.hero {
 	background-size     : cover;
 	background-position : center;
 	background-attachment: fixed;
+	overflow: hidden;
 
 	.hero-inner {
 		margin: 0;

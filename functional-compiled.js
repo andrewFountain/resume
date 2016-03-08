@@ -447,7 +447,15 @@ notIn = (arr, ...values) => values.filter(item => arr.indexOf(item) > -1),
 	    ll = left.length;
 
 	for (; ii < ll; ii++) {
-		ret.push(diff(left[ii], right[ii]));
+		var l = left[ii],
+		    r = right[ii];
+
+		if (l && isNaN(r)) {
+			right = l;
+		} else if (r && isNaN(l)) {
+			left = r;
+		}
+		ret = ret.concat(diff(l, r));
 	}
 	return ret;
 },
