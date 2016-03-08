@@ -4,21 +4,6 @@
     <list default="true" id="0e9b303a-228d-46f3-9133-897149adc817" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Generated_files.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data-compiled.js" afterPath="$PROJECT_DIR$/data-compiled.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data-compiled.js.map" afterPath="$PROJECT_DIR$/data-compiled.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data.js" afterPath="$PROJECT_DIR$/data.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/functional-compiled.js" afterPath="$PROJECT_DIR$/functional-compiled.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/functional-compiled.js.map" afterPath="$PROJECT_DIR$/functional-compiled.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/functional.js" afterPath="$PROJECT_DIR$/functional.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gQuery-compiled.js" afterPath="$PROJECT_DIR$/gQuery-compiled.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gQuery-compiled.js.map" afterPath="$PROJECT_DIR$/gQuery-compiled.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gQuery.js" afterPath="$PROJECT_DIR$/gQuery.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/global-compiled.js" afterPath="$PROJECT_DIR$/global-compiled.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/global-compiled.js.map" afterPath="$PROJECT_DIR$/global-compiled.js.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/global.js" afterPath="$PROJECT_DIR$/global.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/style.css" afterPath="$PROJECT_DIR$/style.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/style.scss" afterPath="$PROJECT_DIR$/style.scss" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tween-compiled.js" afterPath="$PROJECT_DIR$/tween-compiled.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tween-compiled.js.map" afterPath="$PROJECT_DIR$/tween-compiled.js.map" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tween.js" afterPath="$PROJECT_DIR$/tween.js" />
@@ -71,7 +56,7 @@
           <file leaf-file-name="global.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/global.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.53341013">
+                <state vertical-scroll-proportion="0.7807757">
                   <caret line="225" column="39" selection-start-line="225" selection-start-column="39" selection-end-line="225" selection-end-column="39" />
                   <folding />
                 </state>
@@ -157,8 +142,8 @@
           <file leaf-file-name="tween.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tween.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.82258064">
-                  <caret line="727" column="26" selection-start-line="727" selection-start-column="26" selection-end-line="727" selection-end-column="26" />
+                <state vertical-scroll-proportion="0.78696346">
+                  <caret line="215" column="45" selection-start-line="215" selection-start-column="45" selection-end-line="215" selection-end-column="45" />
                   <folding />
                 </state>
               </provider>
@@ -478,7 +463,13 @@
       <option name="project" value="LOCAL" />
       <updated>1457152880102</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="improved tweening. added from Tween.from method. added relative positioning to tweens.">
+      <created>1457422545832</created>
+      <option name="number" value="00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1457422545832</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -496,7 +487,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18763441" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.10182208" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29348987" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29348987" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15421003" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -566,7 +557,8 @@
     <MESSAGE value="added different play modes for the timeline: to, from, between, go" />
     <MESSAGE value="bug fixes with scrollTo navigation, refactored tweening library" />
     <MESSAGE value="added tweening to slideshow." />
-    <option name="LAST_COMMIT_MESSAGE" value="added tweening to slideshow." />
+    <MESSAGE value="improved tweening. added from Tween.from method. added relative positioning to tweens." />
+    <option name="LAST_COMMIT_MESSAGE" value="improved tweening. added from Tween.from method. added relative positioning to tweens." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -960,7 +952,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/global.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.53341013">
+        <state vertical-scroll-proportion="0.7807757">
           <caret line="225" column="39" selection-start-line="225" selection-start-column="39" selection-end-line="225" selection-end-column="39" />
           <folding />
         </state>
@@ -968,8 +960,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tween.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.82258064">
-          <caret line="727" column="26" selection-start-line="727" selection-start-column="26" selection-end-line="727" selection-end-column="26" />
+        <state vertical-scroll-proportion="0.78696346">
+          <caret line="215" column="45" selection-start-line="215" selection-start-column="45" selection-end-line="215" selection-end-column="45" />
           <folding />
         </state>
       </provider>

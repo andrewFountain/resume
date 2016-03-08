@@ -310,14 +310,18 @@
 
     prev: function () {
 
-      var start;
+      var scene;
 
-      start = CURRENT_SCENE - 2;
-      if (start < 0) {
-        start = SCENES.length - 1;
+      CURRENT_SCENE = CURRENT_SCENE - 1;
+
+      if (CURRENT_SCENE > -1) {
+        playTween(CURRENT_SCENE, CURRENT_SCENE + 1);
+      } else {
+        CURRENT_SCENE = SCENES.length - 1;
+        playTween(CURRENT_SCENE, CURRENT_SCENE + 1);
       }
 
-      return playTween(start, start);
+      console.log(CURRENT_SCENE);
     },
 
     /**
@@ -384,7 +388,7 @@
     }
 
     CURRENT_SCENE = start && start > -1 ? start : 0;
-    LAST_SCENE = end && end > -1 ? end : SCENES.length;
+    LAST_SCENE = end && end > -1 ? end : SCENES.length - 1;
     this.start = START = Date.now();
 
     SCENES[CURRENT_SCENE]._init();
