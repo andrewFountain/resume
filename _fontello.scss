@@ -55,6 +55,152 @@
 	/* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
 
+@mixin icon( $name, $color: $color-primary ){
+
+	$icons : (
+		'ok': '\e800',
+		'mail-alt': '\e801',
+		'mail': '\e802',
+		'star-empty': '\e803',
+		'heart': '\e804',
+		'heart-empty': '\e805',
+		'star': '\e806',
+		'linked-in': '\e807',
+		'github': '\e808',
+		'facebook': '\e809',
+		'desktop': '\e809',
+		'laptop': '\e809',
+		'tablet': '\e809',
+		'mobile': '\e809',
+		'angle-up': '\e80e',
+		'angle-down': '\e80f',
+		'down-circled': '\e810',
+		'codepen': '\e812',
+		'stackoverflow': '\e813',
+		'linkedin-squared': '\e817',
+		'left': '\e814',
+		'right': '\e815'
+	);
+
+	&::before {
+		font-family     : "fontello";
+		font-style      : normal;
+		font-weight     : normal;
+		speak           : none;
+
+		display         : inline-block;
+		text-decoration : inherit;
+		width           : 1em;
+		margin-right    : .2em;
+		text-align      : center;
+
+		content         : map_get($icons, $name);
+		color: $color;
+	}
+}
+
+@mixin tooltip(){
+	overflow: visible;
+
+	&::before {
+		visibility: hidden;
+		opacity: 0;
+		transition: .4s all;
+		content: attr(data-tooltip);
+		display    : inline-block;
+		text-align : center;
+		position   : absolute;
+		padding    : .2em;
+		background : rgba(255,255,255,1);
+		border     : 1px solid red;
+		color      : red;
+		width      : 140px;
+		bottom        : 60%;
+		transform: translateX(-70px);
+		// left       : -144%;
+	}
+
+	&::after {
+		content: " ";
+		width: 20px;
+		height: 20px;
+		position: absolute;
+		visibility : hidden;
+		opacity    : 0;
+		transition : .4s all;
+		background: rgba(255,255,255,1);
+		transform: translate(-13px, -10px) rotate(45deg);
+		border-right : 1px solid red;
+		border-bottom : 1px solid red;
+	}
+
+	&:hover::after {
+		visibility : visible;
+		opacity    : 1;
+	}
+
+	&:hover::before {
+		visibility: visible;
+		opacity: 1;
+		bottom: 100%
+	}
+}
+
+.hero__cta {
+	position: relative;
+	height: 3em;
+	width: 3em;
+	margin: 0 1em;
+	display: inline-block;
+
+	@include tooltip;
+}
+
+.codepen, .github, .stackoverflow {
+	font-size : 3em;
+	transform : matrix(1, 0, 0, 1, 0, 0);
+	position  : absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	opacity   : 1;
+	line-height: 1;
+
+	&::before {
+		position : absolute;
+		top      : 0;
+		left     : 0;
+		width    : 100%;
+		height   : 100%;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+.github {
+	@include icon('github');
+}
+
+.codepen {
+	@include icon('codepen');
+}
+
+.stackoverflow {
+	@include icon('stackoverflow');
+}
+
+.slideshow-nav {
+	&:first-of-type {
+		@include icon('left');
+	}
+	&:last-of-type {
+		@include icon('right');
+	}
+}
+
 .icon-ok:before {
 	content : '\e800';
 }

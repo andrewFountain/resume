@@ -314,6 +314,35 @@ var resume = {
 			dates      : '2008'
 		}
 	],
+	projects: [
+		{
+			name: 'AsyncEventListener',
+			url: 'https://github.com/synthet1c/asynceventlister.git',
+			description: 'I created this bit of code as I wanted to understand how chained functions can be used for asyncronous event listeners.',
+			sections: [
+				{
+					type: 'paragraph',
+					heading: 'What it solves',
+					content: 'Events can be tricky to deal with and if your not careful you can end up in callback hell. Handling asyncronous events in a continuation passing style makes it immediately understandable what the code should be doing and when.'
+				},
+				{
+					type: 'paragraph',
+					heading: 'What are it\'s limitations',
+					content: 'Using a recursive function means that as the events are fired the call stack grows ever larger and there is a potential that the call stack size could be exceeded and crash the page'
+				},
+				{
+					type: 'paragraph',
+					heading: 'What I learned',
+					content: 'I figured out that instead of using loops I can use recursive function passed to the callback function so if the execution needs to be asyncronous the callback has the same function that the plugin would call anyway'
+				},
+				{
+					type: 'paragraph',
+					heading: 'What\s left to do',
+					content: 'Not much. It\'s pretty basic but complete as it is and doesn\'t need to be overcomplicated. The library is extensible with plugins.'
+				}
+			]
+		}
+	],
 	referees : [
 		{
 			name   : 'Matthew White',

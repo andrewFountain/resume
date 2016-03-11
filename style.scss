@@ -13,6 +13,7 @@ $background-detail: #f9f9f9;
 $background-heading: #87d9fc;
 $purple: #cd80de;
 $background-heading: #f02673;
+$color-primary: $background-heading;
 $transparent: rgba(220,220,220, 0.4);
 $box-shadow: .3em .3em 1em #222;
 
@@ -208,8 +209,11 @@ section .slideshow {
 
 	.slideshow-nav {
 		position: absolute;
-		height: 4em;
-		width: 4em;
+		height: 2em;
+		width: 2em;
+		font-size: 2em;
+		line-height: 2em;
+		text-align: center;
 		top: 50%;
 		margin-top: -2em;
 		z-index : 9999;
@@ -217,16 +221,10 @@ section .slideshow {
 
 		&#slideshow-nav-left {
 			left: 0;
-			&:before {
-			    content: "<";
-			}
 		}
 
 		&#slideshow-nav-right {
 			right: 0;
-			&:before {
-				content: ">"
-			}
 		}
 	}
 
@@ -519,6 +517,11 @@ div.hero {
 		background: rgba(240,240,240,.4);
 		border: 1px solid rgba(240, 240, 240, .8);
 		@include paper;
+		overflow: hidden;
+	}
+
+	.hero__cta {
+
 	}
 
 	#word {

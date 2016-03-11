@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,300");
 @font-face {
   font-family: 'fontello';
@@ -41,6 +42,133 @@
   -moz-osx-font-smoothing: grayscale;
   /* Uncomment for 3D effect */
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+
+.hero__cta {
+  position: relative;
+  height: 3em;
+  width: 3em;
+  margin: 0 1em;
+  display: inline-block;
+  overflow: visible; }
+  .hero__cta::before {
+    visibility: hidden;
+    opacity: 0;
+    transition: .4s all;
+    content: attr(data-tooltip);
+    display: inline-block;
+    text-align: center;
+    position: absolute;
+    padding: .2em;
+    background: white;
+    border: 1px solid red;
+    color: red;
+    width: 140px;
+    bottom: 60%;
+    transform: translateX(-70px); }
+  .hero__cta::after {
+    content: " ";
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    transition: .4s all;
+    background: white;
+    transform: translate(-13px, -10px) rotate(45deg);
+    border-right: 1px solid red;
+    border-bottom: 1px solid red; }
+  .hero__cta:hover::after {
+    visibility: visible;
+    opacity: 1; }
+  .hero__cta:hover::before {
+    visibility: visible;
+    opacity: 1;
+    bottom: 100%; }
+
+.codepen, .github, .stackoverflow {
+  font-size: 3em;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 1;
+  line-height: 1; }
+  .codepen::before, .github::before, .stackoverflow::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0; }
+
+.github::before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  content: "";
+  color: #f02673; }
+
+.codepen::before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  content: "";
+  color: #f02673; }
+
+.stackoverflow::before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  content: "";
+  color: #f02673; }
+
+.slideshow-nav:first-of-type::before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  content: "";
+  color: #f02673; }
+.slideshow-nav:last-of-type::before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  content: "";
+  color: #f02673; }
 
 .icon-ok:before {
   content: '\e800'; }
@@ -191,20 +319,19 @@ section .slideshow {
   background-position-y: 327px; }
   section .slideshow .slideshow-nav {
     position: absolute;
-    height: 4em;
-    width: 4em;
+    height: 2em;
+    width: 2em;
+    font-size: 2em;
+    line-height: 2em;
+    text-align: center;
     top: 50%;
     margin-top: -2em;
     z-index: 9999;
     background: rgba(220, 220, 220, 0.4); }
     section .slideshow .slideshow-nav#slideshow-nav-left {
       left: 0; }
-      section .slideshow .slideshow-nav#slideshow-nav-left:before {
-        content: "<"; }
     section .slideshow .slideshow-nav#slideshow-nav-right {
       right: 0; }
-      section .slideshow .slideshow-nav#slideshow-nav-right:before {
-        content: ">"; }
   section .slideshow ul.slideshow-wrapper {
     list-style-type: none;
     padding: 0;
@@ -417,7 +544,8 @@ div.hero {
     background: rgba(240, 240, 240, 0.4);
     border: 1px solid rgba(240, 240, 240, 0.8);
     box-shadow: 0 0.3em 1.2em rgba(0, 0, 0, 0.3);
-    transition: .3s box-shadow, .3s transform; }
+    transition: .3s box-shadow, .3s transform;
+    overflow: hidden; }
     div.hero .hero-inner:hover {
       box-shadow: 0 0.5em 4em rgba(0, 0, 0, 0.2), 0 0.4em 0.7em rgba(0, 0, 0, 0.3);
       transform: matrix(1, 0, 0, 1, 0, -2); }

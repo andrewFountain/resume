@@ -744,6 +744,20 @@ $('.truck').animate([200, 0], { opacity: 1 }, 4000, function () {
   });
 });
 
+function randomNumber(max) {
+  var rand = parseInt(Math.random() * max);
+  if (Math.random() > .5) {
+    return rand * -1;
+  }
+  return rand;
+}
+
+$('.github').animateFrom([randomNumber(1200), randomNumber(1200)], { opacity: 1 }, 2000, null, 'easeOutBounce');
+
+$('.codepen').animateFrom([randomNumber(1200), randomNumber(1200)], { opacity: 0 }, 2000, null, 'easeOutBounce');
+
+$('.stackoverflow').animateFrom([randomNumber(1200), randomNumber(1200)], { opacity: 0 }, 2000, null, 'easeOutBounce');
+
 function rand() {
   return Math.random() * 2 - 1;
 }
